@@ -1,4 +1,4 @@
-# web
+# Web-based Lab
 
 Laboratorio personale per progetti legati al mondo web/internet.
 
@@ -8,7 +8,7 @@ Questo repository raccoglie esperimenti, appunti e piccoli progetti didattici le
 
 | Cartella | Descrizione |
 |---|---|
-| `laravel-lab/` | Laboratorio didattico Laravel seguito lezione per lezione |
+| `laravel-lab/` | Laboratorio didattico Laravel per principianti. |
 
 ## Percorso Laravel
 
