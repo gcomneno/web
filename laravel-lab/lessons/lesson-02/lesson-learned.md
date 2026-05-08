@@ -1,157 +1,239 @@
-# Lezione 02 — spiegazione fedele
+# Getting Started with Laravel — Lezione 02
+## A look around
 
-## 1. Ricrea un progetto Laravel
-
-Il docente riparte da:
-
-```bash
-laravel new my-project
-```
-
-Sceglie:
-
-| Prompt            | Scelta nel video                             |
-| ----------------- | -------------------------------------------- |
-| Starter kit       | `none`                                       |
-| Testing framework | Pest o PHPUnit, dice che per ora non importa |
-| Database          | MySQL                                        |
-| npm install/build | No                                           |
-
-Punto importante: nella lezione 01 aveva scelto SQLite per semplicità; qui sceglie **MySQL**, ma dice chiaramente di non preoccuparsi se non lo stiamo usando. MySQL può essere configurato tramite Laravel Herd a pagamento o installato separatamente. 
-
-Per noi, ora, **non serve rifare il progetto con MySQL**. Stiamo seguendo il concetto, non dobbiamo complicare il setup.
+Data laboratorio: 2026-05-08  
+Corso: Getting Started with Laravel  
+Episodio: 02 — A look around  
+Durata video: circa 13 minuti  
+Framework usato nel laboratorio: Laravel Framework 13.7.0
 
 ---
 
-## 2. La frase più importante della lezione
+## 1. Obiettivo della lezione
 
-Questa è da scolpire:
+L’obiettivo di questa lezione è:
 
-> La struttura del progetto Laravel **non è il framework Laravel**.
+> fare un primo giro orientativo dentro lo scheletro di un nuovo progetto Laravel.
 
-Tradotto:
+Questa lezione non serve ancora a padroneggiare ogni cartella o ogni file.
 
-```text
+Serve invece a capire:
+
+- dove si trova il codice applicativo
+- cosa rappresenta lo scheletro del progetto
+- dove stanno le configurazioni
+- a cosa serve il file `.env`
+- quali sono i primi concetti legati al database
+
+---
+
+## 2. Punto di partenza
+
+Il docente riparte dalla creazione di un nuovo progetto Laravel:
+
+laravel new my-project
+
+Nel video sceglie:
+
+| Domanda | Risposta |
+|---|---|
+| Starter kit | none |
+| Testing framework | Pest o PHPUnit |
+| Database | MySQL |
+| npm install / npm build automatico | No |
+
+Nota importante:
+
+Nella prima lezione avevamo scelto SQLite per semplicità.  
+In questa lezione il docente sceglie MySQL, ma precisa che non è obbligatorio seguirlo su questo punto.
+
+Per il nostro laboratorio non serve ricreare il progetto con MySQL.  
+Il progetto `first-project` con SQLite va benissimo per seguire i concetti della lezione.
+
+---
+
+## 3. Il progetto Laravel non è il framework Laravel
+
+Questa è l’idea più importante della lezione:
+
+> la cartella del progetto Laravel non è il framework Laravel.
+
+La cartella:
+
 first-project/
-```
 
-è lo **scheletro della tua applicazione**.
+è lo scheletro della nostra applicazione.
 
-Il framework vero sta dietro le quinte, installato da Composer, dentro:
+Il framework vero e proprio viene installato da Composer e sta dentro:
 
-```text
 vendor/laravel/framework
-```
 
 Quindi:
 
-* tu lavori principalmente nella struttura del progetto
-* Composer gestisce il framework
-* non si modifica mai direttamente `vendor/`
+- il progetto è la nostra applicazione
+- `vendor/` contiene il framework e le dipendenze
+- Composer gestisce il codice esterno
+- non bisogna modificare direttamente il framework dentro `vendor/`
 
-Questa distinzione è fondamentale, perché evita il classico errore da apprendista stregone: “vado dentro il framework e cambio roba lì”. No. Male. Bastone sulle dita 🪄
+Regola pratica:
+
+> non modificare mai a mano `vendor/`.
+
+Se vogliamo cambiare il comportamento dell’applicazione, lavoriamo nei file del progetto, non nei file del framework.
 
 ---
 
-## 3. `app/`
+## 4. Lo scheletro iniziale può sembrare vuoto
 
-Il docente dice che `app/` è dove passerai gran parte del tempo.
+Il docente spiega che un progetto Laravel appena creato sembra abbastanza “scarno”.
 
-Contiene il codice principale della tua applicazione:
+Questo è normale.
 
-```text
+Molte cartelle o classi verranno create più avanti tramite Artisan, man mano che serviranno.
+
+Esempio:
+
+- controller
+- policy
+- model
+- migration
+- altri file applicativi
+
+Quindi non bisogna spaventarsi se all’inizio alcune parti sembrano mancanti.
+
+Laravel crea la struttura minima, poi la struttura cresce insieme all’applicazione.
+
+---
+
+## 5. Cartella `app/`
+
+La cartella `app/` contiene gran parte del codice PHP applicativo.
+
+È una delle cartelle in cui passeremo più tempo.
+
+Struttura iniziale tipica:
+
 app/
 ├── Http/
 ├── Models/
 └── Providers/
-```
 
 ### `app/Models`
 
-Qui andranno i **modelli**, cioè classi PHP che rappresentano dati/tabelle.
+Qui stanno i model.
 
-Esempio futuro:
+I model rappresentano entità/dati dell’applicazione.
 
-```text
-User
-Post
-Article
-Product
-```
+Esempi futuri:
 
-Per ora li nomina soltanto.
+- User
+- Post
+- Article
+- Product
+
+Per ora il docente li nomina soltanto.
 
 ### `app/Http/Controllers`
 
-Qui andranno i **controller**, cioè classi che gestiscono richieste web più strutturate.
+Qui stanno i controller.
 
-Per ora abbiamo visto solo una route con una funzione anonima, ma più avanti invece di scrivere tutto in `routes/web.php`, useremo controller.
+I controller servono a gestire richieste HTTP in modo più organizzato.
+
+Più avanti, invece di mettere logica direttamente nelle route, useremo controller dedicati.
 
 ### `app/Providers`
 
-Contiene service provider, cioè classi che configurano o registrano parti dell’applicazione.
+Qui stanno i service provider.
 
-Il docente dice: non serve capirli ora in profondità. Basta sapere che esistono.
+I service provider sono classi che registrano o configurano servizi dell’applicazione.
+
+Per ora non serve capirli in profondità.  
+Basta sapere che esistono e che fanno parte della fase di preparazione/configurazione dell’app.
 
 ---
 
-## 4. `bootstrap/`
+## 6. Cartella `bootstrap/`
 
-Questa parte è interessante perché in Laravel moderno è diventata più importante.
+La cartella `bootstrap/` contiene file usati nella fase di avvio dell’applicazione.
 
-Il docente cita in particolare:
+Il file più importante citato nella lezione è:
 
-```text
 bootstrap/app.php
-```
 
-Qui Laravel configura varie parti del framework, per esempio:
+In Laravel moderno questo file è diventato più rilevante.
 
-* routing
-* middleware
-* exceptions
-* broadcasting / realtime
+Può contenere configurazioni relative a:
 
-Non dobbiamo padroneggiarlo ora, ma dobbiamo sapere che è un punto di configurazione iniziale dell’app.
+- routing
+- middleware
+- gestione delle eccezioni
+- broadcasting / real time
+- altre configurazioni iniziali del framework
+
+Non è necessario padroneggiarlo subito.
+
+Lesson learned pratica:
+
+> sapere che `bootstrap/app.php` è un punto di configurazione iniziale dell’applicazione.
 
 ---
 
-## 5. `config/`
+## 7. Service provider
 
-Questa è una cartella importante.
+Il docente cita anche i provider.
 
-Contiene file come:
+In particolare, nel progetto base troviamo:
 
-```text
+app/Providers/AppServiceProvider.php
+
+Un service provider può essere usato per registrare o avviare servizi prima che l’applicazione gestisca davvero le richieste.
+
+Per ora non dobbiamo modificarlo.
+
+Basta ricordare:
+
+> se in futuro dovremo eseguire configurazioni globali dell’app, probabilmente passeremo anche dai provider.
+
+---
+
+## 8. Cartella `config/`
+
+La cartella `config/` contiene molti file di configurazione Laravel.
+
+Esempi:
+
 config/app.php
 config/database.php
 config/cache.php
 config/mail.php
 config/session.php
-```
+config/services.php
 
-Qui stanno molte impostazioni Laravel.
+Questi file controllano varie parti dell’applicazione.
 
-Il docente però collega subito `config/` al file `.env`.
+Però il docente spiega una cosa importante:
+
+> molti valori nei file di configurazione vengono letti dal file `.env`.
+
+Quindi spesso non si modifica direttamente il valore nel file `config/*.php`, ma si modifica la variabile corrispondente nel `.env`.
 
 ---
 
-## 6. `.env`
+## 9. File `.env`
 
-Il file `.env` contiene configurazioni diverse per ambiente.
+Il file `.env` contiene valori specifici dell’ambiente in cui l’applicazione gira.
 
-Esempi:
+Esempi di ambienti:
 
-| Ambiente   | Esempio valori                   |
-| ---------- | -------------------------------- |
-| locale     | debug attivo, database locale    |
-| produzione | debug disattivato, database vero |
-| staging    | configurazione intermedia        |
-| testing    | database/test separati           |
+| Ambiente | Significato |
+|---|---|
+| locale | macchina dello sviluppatore |
+| produzione | server pubblico reale |
+| staging | ambiente intermedio di prova |
+| testing | ambiente usato per i test |
 
-Esempi di variabili:
+Esempi di variabili `.env`:
 
-```text
 APP_NAME
 APP_ENV
 APP_DEBUG
@@ -159,170 +241,320 @@ DB_CONNECTION
 DB_DATABASE
 DB_USERNAME
 DB_PASSWORD
-```
 
-Punto importantissimo:
+### Perché esiste `.env`
 
-```text
-.env NON si committa su GitHub
-```
+Perché alcune configurazioni cambiano da ambiente ad ambiente.
 
-Perché può contenere password, chiavi, credenziali e configurazioni sensibili.
+Esempi:
 
-Nel nostro `.gitignore` lo abbiamo già escluso. Bene così.
+- in locale `APP_DEBUG` può essere `true`
+- in produzione `APP_DEBUG` deve essere `false`
+- il database locale può essere diverso dal database di produzione
+- password e chiavi API non devono stare nel codice
+
+### Regola importantissima
+
+> `.env` non va committato su GitHub.
+
+Motivo:
+
+può contenere dati sensibili come password, chiavi, token, credenziali e configurazioni private.
+
+Nel nostro laboratorio lo abbiamo escluso tramite `.gitignore`.
 
 ---
 
-## 7. Configurazione tramite `env()`
+## 10. Configurazione tramite `env()`
 
-Il docente fa l’esempio del nome applicazione.
+Il docente mostra il legame tra `config/` e `.env`.
 
-In Laravel spesso nei file `config/*.php` trovi cose tipo:
+Esempio tipico:
 
-```php
 'name' => env('APP_NAME', 'Laravel'),
-```
 
 Significa:
 
-> usa `APP_NAME` dal file `.env`; se manca, usa `Laravel` come fallback.
+> usa il valore `APP_NAME` dal file `.env`; se non esiste, usa `Laravel` come valore di fallback.
 
-Quindi non conviene cambiare direttamente il valore dentro `config/app.php`, se quel valore dipende dall’ambiente.
+Quindi, se vogliamo cambiare il nome dell’applicazione, di solito modifichiamo:
 
-Meglio cambiare:
-
-```text
 APP_NAME=...
-```
 
-nel `.env`.
+nel file `.env`.
+
+Non conviene modificare direttamente il valore dentro `config/app.php` quando quel valore è pensato per cambiare tra ambienti.
 
 ---
 
-## 8. `database/`
+## 11. Cartella `database/`
 
-Il docente introduce tre concetti, senza approfondirli ancora:
+Il docente introduce tre concetti importanti:
 
-```text
 database/
 ├── migrations/
 ├── factories/
 └── seeders/
-```
+
+Non li approfondisce ancora, ma li presenta.
 
 ### Migrations
 
-Le migrations definiscono lo **schema del database**.
+Le migrations definiscono lo schema del database.
 
-Cioè:
+In pratica descrivono:
 
-* quali tabelle esistono
-* quali colonne hanno
-* quali indici/relazioni ci sono
+- quali tabelle esistono
+- quali colonne hanno
+- quali indici ci sono
+- eventuali vincoli o relazioni
 
-Esempio: creare la tabella `users`.
+Esempio:
+
+una migration può creare la tabella `users`.
+
+Le migrations permettono di versionare il database insieme al codice.
 
 ### Factories
 
-Le factories generano dati finti per i modelli.
+Le factories generano dati finti.
 
-Utili per:
+Servono soprattutto per:
 
-* test
-* sviluppo
-* riempire velocemente il database con dati realistici
+- test
+- sviluppo
+- popolamento rapido di dati realistici
+- creare model finti senza scriverli a mano uno per uno
+
+Esempio:
+
+una factory può generare utenti finti con nome, email e password.
 
 ### Seeders
 
 I seeders inseriscono dati iniziali nel database.
 
-Esempio:
+Servono per popolare il database con dati utili.
 
-* creare utenti demo
-* creare categorie iniziali
-* preparare dati per un nuovo sviluppatore nel team
+Esempi:
+
+- creare utenti demo
+- creare categorie iniziali
+- preparare dati comuni per un nuovo sviluppatore
+- riempire l’ambiente locale con dati prevedibili
 
 ---
 
-# Pratica sul nostro progetto
+## 12. Pratica fatta sul nostro progetto
 
-Facciamola sul progetto esistente:
+La pratica della lezione è stata fatta sul progetto:
 
-```text
 ~/Progetti/web/laravel-lab/first-project
-```
 
-## 1. Entra nel progetto
+Comandi utili per esplorare i file citati dalla lezione:
 
-```bash
+Entrare nel progetto:
+
 cd ~/Progetti/web/laravel-lab/first-project
 
-pwd
-```
+Vedere la struttura principale:
 
-## 2. Guarda la struttura principale
-
-```bash
 tree -L 2 app bootstrap config database routes resources
-```
 
-## 3. Controlla dove sta Laravel framework
+Controllare dove sta il framework Laravel:
 
-```bash
 composer show laravel/framework | sed -n '1,40p'
 
 ls -ld vendor/laravel/framework
-```
 
-## 4. Guarda `bootstrap/app.php`
+Guardare `bootstrap/app.php`:
 
-```bash
 sed -n '1,200p' bootstrap/app.php
-```
 
-## 5. Guarda `config/app.php`
+Guardare `config/app.php`:
 
-```bash
 sed -n '1,160p' config/app.php
-```
 
-## 6. Guarda `.env`, senza pubblicarlo mai
+Guardare alcune variabili `.env`, senza pubblicare il file:
 
-```bash
 grep -E '^(APP_NAME|APP_ENV|APP_DEBUG|DB_CONNECTION|DB_DATABASE|DB_USERNAME|DB_PASSWORD)=' .env
-```
 
-## 7. Guarda le migrations iniziali
+Guardare le migrations iniziali:
 
-```bash
 ls -lh database/migrations
 
 sed -n '1,160p' database/migrations/0001_01_01_000000_create_users_table.php
-```
 
-## 8. Guarda factory e seeder
+Guardare factory e seeder:
 
-```bash
 sed -n '1,160p' database/factories/UserFactory.php
 
-echo "----------------------------------------"
+sed -n '1,160p' database/seeders/DatabaseSeeder.php
+
+---
+
+## 13. Cosa NON era obiettivo di questa lezione
+
+Questa lezione non aveva come obiettivo imparare davvero a usare:
+
+- controller
+- model
+- service provider
+- middleware
+- broadcasting
+- migrations in dettaglio
+- factories in dettaglio
+- seeders in dettaglio
+- MySQL in modo operativo
+
+Il docente li nomina per orientarsi nello scheletro del progetto.
+
+Le spiegazioni operative arriveranno più avanti.
+
+---
+
+## 14. Lesson Learned
+
+### 1. La cartella del progetto non è il framework
+
+Il progetto Laravel è lo scheletro dell’applicazione.
+
+Il framework vero sta dentro `vendor/`, installato da Composer.
+
+---
+
+### 2. `vendor/` non si modifica a mano
+
+`vendor/` contiene codice esterno gestito da Composer.
+
+Se modifichiamo file lì dentro, le modifiche possono essere perse al prossimo aggiornamento o reinstallazione.
+
+---
+
+### 3. `app/` contiene il codice principale dell’app
+
+Dentro `app/` finirà gran parte della logica applicativa.
+
+Per ora contiene model, controller di base e provider.
+
+---
+
+### 4. Il progetto cresce usando Artisan
+
+Un progetto Laravel appena creato può sembrare vuoto.
+
+Molte cartelle/classi verranno create più avanti tramite comandi Artisan.
+
+---
+
+### 5. `bootstrap/app.php` è configurazione iniziale
+
+In Laravel moderno `bootstrap/app.php` è un file importante per configurare routing, middleware, eccezioni e altre parti del framework.
+
+Non serve dominarlo subito, ma bisogna sapere che esiste.
+
+---
+
+### 6. `config/` contiene le configurazioni Laravel
+
+La cartella `config/` raccoglie file di configurazione dell’app.
+
+Molti valori però arrivano dal file `.env`.
+
+---
+
+### 7. `.env` contiene valori specifici dell’ambiente
+
+`.env` cambia tra locale, produzione, staging e testing.
+
+Può contenere anche dati sensibili.
+
+Non va committato.
+
+---
+
+### 8. `env()` legge valori dal file `.env`
+
+Nei file `config/*.php` si trovano spesso chiamate tipo:
+
+env('APP_NAME', 'Laravel')
+
+Il secondo valore è il fallback usato se la variabile non esiste.
+
+---
+
+### 9. Le migrations descrivono il database
+
+Le migrations definiscono tabelle, colonne e struttura del database.
+
+Sono il modo Laravel di versionare lo schema del database.
+
+---
+
+### 10. Factories e seeders servono per dati finti o iniziali
+
+Le factories generano dati finti.
+
+I seeders popolano il database con dati iniziali o demo.
+
+---
+
+## 15. Comandi riassuntivi
+
+Entrare nel progetto:
+
+cd ~/Progetti/web/laravel-lab/first-project
+
+Vedere struttura principale:
+
+tree -L 2 app bootstrap config database routes resources
+
+Controllare framework Laravel:
+
+composer show laravel/framework | sed -n '1,40p'
+
+ls -ld vendor/laravel/framework
+
+Leggere bootstrap/app.php:
+
+sed -n '1,200p' bootstrap/app.php
+
+Leggere config/app.php:
+
+sed -n '1,160p' config/app.php
+
+Leggere variabili `.env` selezionate:
+
+grep -E '^(APP_NAME|APP_ENV|APP_DEBUG|DB_CONNECTION|DB_DATABASE|DB_USERNAME|DB_PASSWORD)=' .env
+
+Leggere migrations:
+
+ls -lh database/migrations
+
+sed -n '1,160p' database/migrations/0001_01_01_000000_create_users_table.php
+
+Leggere factory e seeder:
+
+sed -n '1,160p' database/factories/UserFactory.php
 
 sed -n '1,160p' database/seeders/DatabaseSeeder.php
-```
 
-# Lesson Learned provvisorie
+---
 
-Da questa lezione dobbiamo portarci via:
+## 16. Stato finale della lezione
 
-1. Il progetto Laravel generato è lo **scheletro dell’app**, non il framework.
-2. Il framework vero sta in `vendor/`, installato da Composer.
-3. Non si modifica mai `vendor/`.
-4. `app/` è la casa principale del codice applicativo.
-5. `bootstrap/app.php` configura parti importanti del framework moderno.
-6. `config/` contiene configurazioni Laravel.
-7. `.env` contiene valori specifici dell’ambiente e **non va committato**.
-8. `database/migrations` definisce lo schema del database.
-9. `database/factories` genera dati finti.
-10. `database/seeders` popola il database con dati iniziali.
+Alla fine della lezione abbiamo chiarito:
 
-Esegui i blocchi di pratica sopra; poi con i tuoi output preparo il Markdown finale scaricabile della **Lezione 02** 📘
+- la differenza tra progetto Laravel e framework Laravel
+- il ruolo di `vendor/`
+- perché non modificare il framework direttamente
+- a cosa serve la cartella `app/`
+- a cosa serve `bootstrap/app.php`
+- a cosa serve `config/`
+- il ruolo del file `.env`
+- perché `.env` non va su GitHub
+- cosa sono migrations, factories e seeders a livello introduttivo
+
+Obiettivo raggiunto:
+
+> abbiamo fatto un primo giro orientativo nello scheletro di un progetto Laravel.

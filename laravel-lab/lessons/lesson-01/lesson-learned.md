@@ -1,66 +1,95 @@
 # Getting Started with Laravel — Lezione 01
 ## Let’s install Laravel
 
-Data: 2026-05-01  
+Data laboratorio: 2026-05-01  
 Corso: Getting Started with Laravel  
 Episodio: 01 — Let’s install Laravel  
 Durata video: circa 12 minuti  
-Framework installato durante la lezione: Laravel Framework 13.7.0
+Framework usato nel laboratorio: Laravel Framework 13.7.0
 
 ---
 
 ## 1. Obiettivo della lezione
 
-L’obiettivo del primo episodio è molto semplice:
+L’obiettivo di questa lezione è uno solo:
 
-> installare Laravel, creare un primo progetto locale e avviarlo nel browser.
+> riuscire a creare un nuovo progetto Laravel in locale e aprirlo nel browser.
 
-Il video non entra ancora in routing avanzato, controller, Blade, database applicativo, modelli o validazione.  
-Questa lezione serve a preparare l’ambiente e verificare che Laravel funzioni.
+Questa lezione non serve ancora a imparare routing, controller, Blade, model, database applicativo o struttura interna del progetto.
+
+Il punto è preparare l’ambiente minimo e verificare che Laravel parta.
 
 ---
 
-## 2. Dipendenze richieste
+## 2. Cosa serve per installare Laravel
 
-Laravel richiede alcune dipendenze di base:
+Laravel è scritto in PHP, quindi serve prima di tutto un ambiente PHP funzionante.
+
+Gli strumenti fondamentali sono:
 
 - PHP
 - Composer
 - Node.js
 - npm
 
-Nel nostro caso iniziale erano presenti solo Node e npm.
+### PHP
 
-Verifiche usate:
+PHP è il linguaggio su cui gira Laravel.
+
+Verifica:
 
 php -v
 
+Nel nostro laboratorio abbiamo installato PHP 8.3.
+
+Laravel 13 richiede PHP 8.3, quindi questa versione è corretta.
+
+### Composer
+
+Composer è il gestore delle dipendenze PHP.
+
+Serve per:
+
+- installare Laravel
+- installare i pacchetti richiesti dal framework
+- gestire le librerie PHP del progetto
+
+Verifica:
+
 composer --version
+
+### Node.js e npm
+
+Node.js e npm servono per la parte frontend, cioè JavaScript e CSS.
+
+Anche se nella prima lezione non entriamo davvero nel frontend, Laravel li usa per strumenti come Vite.
+
+Verifiche:
 
 node -v
 
 npm -v
 
-Risultato iniziale:
-
-- PHP mancante
-- Composer mancante
-- Node presente
-- npm presente
-
 ---
 
-## 3. Installazione PHP e Composer
+## 3. Stato iniziale del nostro ambiente
 
-Su Ubuntu 24.04 abbiamo installato PHP 8.3, Composer e alcune estensioni utili a Laravel.
+All’inizio del laboratorio avevamo:
 
-Comando usato:
+- Node.js già installato
+- npm già installato
+- PHP mancante
+- Composer mancante
+
+Abbiamo quindi installato PHP, Composer e alcune estensioni utili.
+
+Comando usato su Ubuntu 24.04:
 
 sudo apt update
 
 sudo apt install php8.3-cli php8.3-xml php8.3-mbstring php8.3-sqlite3 php8.3-curl unzip composer
 
-Estensioni importanti controllate:
+Verifica delle estensioni PHP:
 
 php -m | grep -E 'mbstring|xml|sqlite3|curl'
 
@@ -76,538 +105,349 @@ Risultato ottenuto:
 - xmlreader presente
 - xmlwriter presente
 
-Nota importante:
-
-Laravel 13 richiede PHP 8.3, quindi installare PHP 8.3 è stata la scelta corretta.
-
 ---
 
-## 4. Installazione Laravel Installer
+## 4. Laravel Installer
 
-Laravel Installer serve per creare nuovi progetti Laravel da terminale.
+Per creare nuovi progetti Laravel da terminale si può installare Laravel Installer.
 
-Comando usato:
+Comando:
 
 composer global require laravel/installer
 
-Versione installata:
+Verifica:
+
+laravel --version
+
+Nel nostro caso:
 
 Laravel Installer 5.26.1
 
-Problema incontrato:
+---
+
+## 5. Problema incontrato: comando `laravel` non trovato
+
+Dopo l’installazione, il comando:
+
+laravel --version
+
+inizialmente non funzionava.
+
+Errore:
 
 laravel: comando non trovato
 
-Causa:
+Il problema era il PATH.
 
-Composer installa i binari globali in una directory che non era ancora presente nel PATH.
+Composer installa i comandi globali in una directory specifica, che deve essere raggiungibile dalla shell.
 
-Directory rilevata:
+Comando per scoprire la directory:
+
+composer global config bin-dir --absolute
+
+Nel nostro caso:
 
 /home/baltimora/.config/composer/vendor/bin
 
-Correzione applicata:
+Abbiamo aggiunto quella directory al PATH:
 
 echo 'export PATH="$HOME/.config/composer/vendor/bin:$PATH"' >> ~/.bashrc
 
 source ~/.bashrc
 
-Verifica finale:
+Dopo questa correzione:
 
 laravel --version
 
-Risultato:
-
-Laravel Installer 5.26.1
+ha funzionato.
 
 ---
 
-## 5. Creazione del progetto Laravel
+## 6. Creazione del primo progetto Laravel
 
-Abbiamo creato il primo progetto Laravel.
+Il video mostra la creazione di un nuovo progetto Laravel.
 
-Cartella di lavoro scelta:
+Nel nostro laboratorio abbiamo creato:
 
-~/Progetti/web
+first-project
 
 Comando:
 
 laravel new first-project
 
-Scelte fatte durante la creazione:
+Durante la creazione del progetto Laravel fa alcune domande.
 
-- Starter kit: none
-- Testing framework: Pest
-- Database: SQLite
-- npm install / npm run build automatico: No
+Scelte fatte:
 
-Motivo della scelta “none” come starter kit:
+| Domanda | Risposta |
+|---|---|
+| Starter kit | none |
+| Testing framework | Pest |
+| Database | SQLite |
+| npm install / npm build automatico | No |
 
-Per la prima lezione è meglio evitare Vue, React, Livewire o altri starter kit.  
-Lo scopo è capire Laravel puro prima di aggiungere un frontend framework.
+---
 
-Motivo della scelta SQLite:
+## 7. Perché scegliere `none` come starter kit
 
-SQLite permette di iniziare senza installare o configurare MySQL, MariaDB o PostgreSQL.  
-Il database è un singolo file locale:
+Per la prima lezione abbiamo scelto:
+
+none
+
+Motivo:
+
+> l’obiettivo è imparare Laravel base, senza aggiungere subito Vue, React, Livewire o altri strumenti.
+
+Uno starter kit frontend aggiunge molte cose:
+
+- componenti frontend
+- autenticazione
+- Vite più centrale
+- file JavaScript aggiuntivi
+- più complessità iniziale
+
+Per partire da zero è meglio evitare.
+
+---
+
+## 8. Perché scegliere SQLite
+
+Il video propone SQLite come scelta semplice per iniziare.
+
+SQLite è un database basato su file.
+
+Invece di dover configurare un server MySQL o PostgreSQL, Laravel può usare un singolo file locale:
 
 database/database.sqlite
 
----
+Vantaggio:
 
-## 6. Messaggio finale del Laravel Installer
+> si può iniziare subito senza configurare un database server.
 
-Dopo la creazione Laravel ha mostrato:
-
-Application ready in [first-project]. You can start your local development using:
-
-cd first-project
-
-npm install --ignore-scripts && npm run build
-
-composer run dev
-
-Nota:
-
-Il video usava soprattutto:
-
-php artisan serve
-
-Laravel moderno propone anche:
-
-composer run dev
-
-La differenza è importante:
-
-php artisan serve
-
-avvia solo il server locale Laravel.
-
-composer run dev
-
-avvia più processi insieme, tra cui:
-
-- php artisan serve
-- queue listener
-- pail per i log
-- npm run dev per Vite
-
-Per questa prima lezione abbiamo scelto l’avvio minimale.
+Per una prima installazione è perfetto.
 
 ---
 
-## 7. Avvio minimale del progetto
+## 9. npm install / npm build: perché abbiamo risposto No
 
-Siamo entrati nel progetto:
+Laravel chiede se vogliamo eseguire automaticamente:
+
+npm install
+
+e una build frontend.
+
+Nel video il docente preferisce rispondere No e farlo eventualmente a mano dopo.
+
+Abbiamo seguito la stessa logica.
+
+Motivo:
+
+> nella prima lezione vogliamo capire cosa stiamo facendo, non far partire troppi automatismi.
+
+Per avviare Laravel in modo minimale non ci serve ancora lavorare davvero con Vite o frontend build.
+
+---
+
+## 10. Entrare nel progetto
+
+Dopo la creazione del progetto:
 
 cd first-project
 
-Poi abbiamo avviato Laravel con:
+Nel nostro laboratorio il progetto è finito poi dentro:
+
+~/Progetti/web/laravel-lab/first-project
+
+---
+
+## 11. Avvio minimale con Artisan
+
+Laravel include un comando CLI chiamato `artisan`.
+
+Per avviare il server locale:
 
 php artisan serve
 
-Il progetto è stato aperto nel browser all’indirizzo locale:
+Questo avvia un server di sviluppo PHP.
+
+L’app diventa disponibile nel browser su un indirizzo simile a:
 
 http://127.0.0.1:8000
 
-Risultato:
+Nel nostro caso l’avvio minimale è riuscito.
 
-Laravel avviato correttamente.
+Questo è il punto principale della lezione:
 
-Obiettivo principale della lezione raggiunto.
-
----
-
-## 8. Verifica versione Laravel
-
-Comando:
-
-php artisan --version
-
-Risultato:
-
-Laravel Framework 13.7.0
-
-Comando più dettagliato:
-
-composer show laravel/framework
-
-Informazioni importanti ricavate:
-
-- Framework: Laravel 13.7.0
-- Release: 2026-04-28
-- PHP richiesto: ^8.3
-- Percorso framework nel progetto: vendor/laravel/framework
-
-Regola importante:
-
-Non modificare mai direttamente la cartella vendor/.
-
-La cartella vendor/ contiene il framework e le dipendenze installate da Composer.  
-Se viene modificata a mano, le modifiche possono essere perse al prossimo composer install o composer update.
+> Laravel è installato, il progetto esiste e risponde nel browser.
 
 ---
 
-## 9. Lettura degli script Composer
+## 12. `php artisan serve` vs `composer run dev`
 
-Abbiamo letto gli script presenti in composer.json.
+Il progetto Laravel moderno può suggerire:
 
-Comando corretto con jq:
+composer run dev
 
-jq '.scripts' composer.json
+Questo comando avvia più processi insieme, per esempio:
 
-Errore iniziale:
+- server Laravel
+- queue listener
+- log viewer
+- Vite
 
-jq "scripts"
-
-Perché era sbagliato:
-
-In jq, per accedere a una proprietà JSON serve il punto davanti al nome del campo.
-
-Forma corretta:
-
-jq '.scripts' composer.json
-
-Altri esempi utili:
-
-jq '.scripts.dev' composer.json
-
-jq '.scripts.setup' composer.json
-
-jq '.scripts | keys' composer.json
-
-Script importanti trovati:
-
-setup:
-- composer install
-- copia .env.example in .env se manca
-- genera la chiave applicativa
-- esegue le migration
-- installa dipendenze npm
-- esegue la build frontend
-
-dev:
-- avvia server Laravel
-- avvia queue listener
-- avvia pail
-- avvia Vite
-
-test:
-- pulisce la config
-- esegue i test Laravel
-
-post-create-project-cmd:
-- genera la application key
-- crea database/database.sqlite se manca
-- esegue le migration iniziali
-
----
-
-## 10. Struttura del progetto Laravel
-
-Comando usato:
-
-tree -L 2
-
-Cartelle principali viste:
-
-app/
-bootstrap/
-config/
-database/
-public/
-resources/
-routes/
-storage/
-tests/
-vendor/
-
-File principali:
-
-artisan
-composer.json
-composer.lock
-package.json
-phpunit.xml
-vite.config.js
-
----
-
-## 11. Significato delle cartelle principali
-
-### app/
-
-Contiene il codice PHP dell’applicazione.
-
-Sottocartelle iniziali:
-
-- app/Http
-- app/Models
-- app/Providers
-
-Uso generale:
-
-- app/Http: codice legato alle richieste HTTP, come controller e middleware
-- app/Models: modelli Eloquent
-- app/Providers: service provider Laravel
-
----
-
-### routes/
-
-Contiene le rotte dell’applicazione.
-
-File visto:
-
-routes/web.php
-
-Questo file definisce cosa succede quando un utente visita un certo URL web.
-
----
-
-### resources/
-
-Contiene risorse sorgente usate dall’applicazione.
-
-Sottocartelle iniziali:
-
-- resources/css
-- resources/js
-- resources/views
-
-La cartella più importante per ora è:
-
-resources/views
-
-Qui stanno le view Blade.
-
----
-
-### database/
-
-Contiene file e cartelle legate al database.
-
-Elementi importanti:
-
-- database/database.sqlite
-- database/migrations
-- database/factories
-- database/seeders
-
-SQLite è stato scelto per semplicità.
-
----
-
-### public/
-
-È la porta d’ingresso pubblica dell’applicazione.
-
-File chiave:
-
-public/index.php
-
-In Laravel le richieste web passano da questo file.
-
----
-
-### config/
-
-Contiene i file di configurazione.
-
-Esempi:
-
-- config/app.php
-- config/database.php
-- config/cache.php
-- config/mail.php
-- config/session.php
-
-All’inizio conviene guardarli, ma modificarli solo se necessario.
-
----
-
-### storage/
-
-Contiene file generati a runtime.
-
-Esempi:
-
-- log
-- cache
-- sessioni
-- viste compilate
-- file salvati dall’applicazione
-
-File utile in caso di errori:
-
-storage/logs/laravel.log
-
----
-
-### vendor/
-
-Contiene Laravel e tutte le dipendenze Composer.
-
-Regola:
-
-Non modificare vendor/ a mano.
-
----
-
-### artisan
-
-È il comando CLI di Laravel.
-
-Esempi:
+Per la prima lezione però abbiamo scelto il percorso più semplice:
 
 php artisan serve
 
-php artisan migrate
+Motivo:
 
-php artisan route:list
+> serve solo verificare che Laravel funzioni.
 
-php artisan test
-
----
-
-## 12. Prima rotta Laravel
-
-Contenuto di routes/web.php:
-
-<?php
-
-use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Spiegazione:
-
-Quando arriva una richiesta GET all’indirizzo /, Laravel esegue la funzione anonima e restituisce la view welcome.
-
-Traduzione pratica:
-
-/ -> resources/views/welcome.blade.php
-
-Laravel non richiede di scrivere .blade.php dentro view('welcome').
-
-Laravel cerca automaticamente:
-
-resources/views/welcome.blade.php
+`composer run dev` sarà utile più avanti, quando avremo bisogno anche del frontend e degli altri processi.
 
 ---
 
 ## 13. Laravel Herd
 
-Il video mostra anche Laravel Herd come alternativa più completa e grafica.
+Il video mostra anche Laravel Herd.
 
-Herd può gestire:
+Laravel Herd è un’applicazione che aiuta a gestire un ambiente Laravel locale più completo.
 
-- PHP
-- Node
-- siti locali .test
-- servizi aggiuntivi
-- ambiente più completo per lo sviluppo Laravel
+Può offrire:
 
-Decisione presa nella lezione:
+- siti locali con dominio `.test`
+- gestione PHP
+- integrazione con servizi aggiuntivi
+- ambiente più comodo per chi sviluppa spesso con Laravel
 
-Non usare Herd per ora.
+Il docente però dice una cosa importante:
 
-Motivo:
+> se sei nuovo a PHP, ambienti di sviluppo e Laravel, puoi tranquillamente iniziare con la command line e `php artisan serve`.
 
-Per imparare Laravel da zero è meglio partire dal setup minimale:
+Nel nostro laboratorio abbiamo seguito questa scelta.
 
-- PHP
-- Composer
-- Node
-- Laravel Installer
-- SQLite
-- php artisan serve
-
-Herd può essere utile più avanti, ma all’inizio aggiunge complessità non necessaria.
+Non abbiamo usato Herd.
 
 ---
 
-## 14. Lesson Learned operative
+## 14. Cosa NON era obiettivo di questa lezione
 
-### 1. Per iniziare Laravel non serve tutto il mondo
+Questa lezione non aveva come obiettivo spiegare:
 
-Non servono subito:
+- struttura completa del progetto Laravel
+- cartella `app/`
+- cartella `routes/`
+- `routes/web.php`
+- Blade
+- controller
+- model
+- migrations in dettaglio
+- factories
+- seeders
+- service provider
+- `vendor/`
 
-- Docker
-- MySQL
-- Nginx
-- Laravel Herd
-- Vue
-- React
-- Livewire
-
-Per partire bastano:
-
-- PHP
-- Composer
-- Node/npm
-- Laravel Installer
-- SQLite
-- php artisan serve
+Questi argomenti appartengono alle lezioni successive.
 
 ---
 
-### 2. Laravel moderno può essere più avanti del corso
+## 15. Lesson Learned
 
-Il video mostrava un flusso leggermente diverso, ma il progetto creato ora usa Laravel 13.7.0.
+### 1. Laravel richiede prima un ambiente PHP funzionante
 
-Il messaggio generato dal Laravel Installer suggerisce composer run dev, ma per replicare la lezione basta php artisan serve.
+Prima di pensare al framework, bisogna verificare:
+
+php -v
+
+composer --version
+
+node -v
+
+npm -v
+
+Senza PHP e Composer non si parte.
 
 ---
 
-### 3. Composer global richiede attenzione al PATH
+### 2. Composer è il gestore delle dipendenze PHP
 
-Se dopo composer global require laravel/installer il comando laravel non viene trovato, controllare:
+Composer sta a PHP un po’ come npm sta a JavaScript.
+
+Serve per installare Laravel e le sue dipendenze.
+
+---
+
+### 3. Laravel Installer permette di creare progetti da terminale
+
+Dopo averlo installato con Composer:
+
+composer global require laravel/installer
+
+si può creare un progetto con:
+
+laravel new nome-progetto
+
+---
+
+### 4. Se `laravel` non viene trovato, controllare il PATH
+
+Il comando `laravel` può essere installato ma non raggiungibile dalla shell.
+
+Controllare con:
 
 composer global config bin-dir --absolute
 
 Poi aggiungere quella directory al PATH.
 
-Nel nostro caso:
+---
 
-export PATH="$HOME/.config/composer/vendor/bin:$PATH"
+### 5. Per iniziare conviene scegliere `none` come starter kit
+
+Starter kit come Vue, React o Livewire sono utili, ma aggiungono complessità.
+
+Per la prima installazione è meglio Laravel pulito.
 
 ---
 
-### 4. SQLite è ideale per imparare
+### 6. SQLite è la scelta più semplice per imparare
 
-SQLite evita la configurazione di un server database.  
-Laravel crea o usa un file locale:
+SQLite evita di installare subito MySQL o PostgreSQL.
 
-database/database.sqlite
-
-Questo rende il primo setup molto più semplice.
+Per una prima app Laravel è più che sufficiente.
 
 ---
 
-### 5. vendor/ non si tocca
+### 7. Non serve fare subito la build frontend
 
-vendor/ contiene codice gestito da Composer.
+Per verificare che Laravel parta, non serve ancora concentrarsi su npm, Vite o build CSS/JS.
 
-Se si vuole cambiare il comportamento dell’applicazione, si lavora nel codice dell’app, non dentro vendor/.
-
----
-
-### 6. routes/web.php è il primo punto da capire
-
-La prima rotta mostra il meccanismo base:
-
-URL -> funzione -> view
-
-Nel caso iniziale:
-
-/ -> view('welcome') -> resources/views/welcome.blade.php
+`php artisan serve` basta.
 
 ---
 
-## 15. Comandi riassuntivi della lezione
+### 8. `php artisan serve` è il modo più semplice per vedere Laravel nel browser
+
+Comando:
+
+php artisan serve
+
+URL tipico:
+
+http://127.0.0.1:8000
+
+Se la pagina Laravel si apre nel browser, la lezione ha raggiunto il suo obiettivo.
+
+---
+
+### 9. Herd è utile, ma non necessario per iniziare
+
+Laravel Herd può semplificare ambienti più completi, ma per imparare da zero non è obbligatorio.
+
+Prima command line, poi eventualmente strumenti più comodi.
+
+---
+
+## 16. Comandi riassuntivi
 
 Verifica strumenti:
 
@@ -619,7 +459,7 @@ node -v
 
 npm -v
 
-Installazione dipendenze Ubuntu:
+Installazione dipendenze su Ubuntu 24.04:
 
 sudo apt update
 
@@ -633,11 +473,11 @@ Installazione Laravel Installer:
 
 composer global require laravel/installer
 
-Verifica bin Composer globale:
+Controllo directory binaria globale Composer:
 
 composer global config bin-dir --absolute
 
-Aggiunta PATH:
+Aggiunta al PATH:
 
 echo 'export PATH="$HOME/.config/composer/vendor/bin:$PATH"' >> ~/.bashrc
 
@@ -655,47 +495,26 @@ Entrare nel progetto:
 
 cd first-project
 
-Avvio minimale:
+Avvio server locale:
 
 php artisan serve
 
-Verifica versione Laravel:
-
-php artisan --version
-
-Dettagli framework:
-
-composer show laravel/framework
-
-Lettura script Composer:
-
-jq '.scripts' composer.json
-
-Struttura progetto:
-
-tree -L 2
-
-Prima rotta:
-
-cat routes/web.php
-
 ---
 
-## 16. Stato finale
+## 17. Stato finale della lezione
 
-Alla fine della lezione abbiamo:
+Alla fine della lezione siamo arrivati a questo risultato:
 
-- installato PHP 8.3
-- installato Composer
-- verificato Node e npm
-- installato Laravel Installer
-- creato il progetto first-project
-- usato SQLite
-- avviato Laravel con php artisan serve
-- aperto Laravel nel browser
-- verificato Laravel Framework 13.7.0
-- letto composer.json
-- letto la struttura del progetto
-- spiegato routes/web.php
+- PHP installato
+- Composer installato
+- Node e npm verificati
+- Laravel Installer installato
+- comando `laravel` funzionante
+- progetto `first-project` creato
+- SQLite scelto come database semplice
+- progetto avviato con `php artisan serve`
+- Laravel visibile nel browser
 
-Obiettivo lezione 1 completato.
+Obiettivo raggiunto:
+
+> Laravel è installato e il primo progetto funziona localmente.
