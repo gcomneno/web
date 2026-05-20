@@ -1,4 +1,5 @@
 # Getting Started with Laravel — Lezione 03
+
 ## First route
 
 Data laboratorio: 2026-05-19  
@@ -12,14 +13,12 @@ Framework usato nel laboratorio: Laravel Framework 13.7.0
 ## 1. Obiettivo della lezione
 
 L’obiettivo di questa lezione è:
-
 > scrivere la prima rotta Laravel e capire come una richiesta HTTP entra nell’applicazione.
 
 Nelle lezioni precedenti abbiamo installato Laravel e guardato lo scheletro del progetto.  
 Ora iniziamo finalmente a scrivere codice.
 
 Il punto centrale è questo:
-
 > una richiesta web parte da una rotta.
 
 In modo molto semplificato:
@@ -59,14 +58,13 @@ Route::get('/', function () {
 ```
 
 Questa rotta dice:
-
 > quando arriva una richiesta `GET` all’URL `/`, esegui questa funzione e restituisci la view `welcome`.
 
 ---
 
 ## 3. HTTP verbs: GET, POST, PUT, PATCH, DELETE
 
-Il docente mostra che Laravel permette di definire rotte per vari verbi HTTP.
+Laravel permette di definire rotte per vari "verbi HTTP".
 
 Esempi:
 
@@ -108,10 +106,10 @@ Route::get('/', function () {
 
 I due pezzi importanti sono:
 
-| Pezzo | Significato |
-|---|---|
+| Pezzo | Significato     |
+|-------|-----------------|
 | `'/'` | URL della rotta |
-| `function () { ... }` | codice da eseguire quando quella rotta viene richiesta |
+| `function () { ... }`   | codice da eseguire quando quella rotta viene richiesta |
 
 Questa rotta risponde con testo semplice:
 
@@ -156,10 +154,9 @@ Route::get(...)
 ```
 
 sembra una chiamata statica, ma dietro le quinte Laravel inoltra quella chiamata a un oggetto reale già configurato nel container dell’applicazione.
-
 Quindi non dobbiamo immaginare che tutta la logica viva davvero nella classe `Route`.
 
-La facade è una specie di “sportello comodo” davanti a un servizio più complesso.
+La facade è una specie di “sportello di comodo” davanti a un servizio più complesso.
 
 ### Immagine mentale
 
@@ -384,7 +381,7 @@ Se una pagina “si ferma” improvvisamente mostrando un dump, probabilmente c�
 
 ## 8. Rispondere a una richiesta con `response()`
 
-Il docente mostra che una rotta può restituire una risposta semplice:
+Una rotta può restituire una risposta semplice:
 
 ```php
 Route::get('/', function () {
@@ -412,10 +409,10 @@ Route::get('/', function () {
 
 Qui:
 
-| Valore | Significato |
-|---|---|
+| Valore   | Significato |
+|----------|-------------|
 | `'home'` | contenuto della risposta |
-| `200` | status code HTTP OK |
+| `200`    | status code HTTP OK |
 
 ### `response()` non è una semplice echo
 
@@ -556,7 +553,6 @@ php artisan route:list
 ```
 
 mostra l’elenco delle rotte registrate nell’applicazione Laravel.
-
 È uno dei comandi più utili quando si lavora con Laravel.
 
 Serve a rispondere a domande come:
@@ -609,7 +605,6 @@ GET|HEAD  up
 ```
 
 Queste rotte non le abbiamo scritte noi in `routes/web.php`.
-
 Sono registrate dal framework Laravel.
 
 ### `GET|HEAD storage/{path}`
@@ -642,7 +637,6 @@ storage/images/photo.jpg
 ```
 
 Non dobbiamo modificarla ora.
-
 È una rotta di supporto registrata dal framework.
 
 ### `PUT storage/{path}`
@@ -658,7 +652,6 @@ Anche questa riguarda lo storage locale.
 `PUT` è un verbo HTTP usato spesso per caricare o sostituire una risorsa.
 
 Nel nostro caso è una rotta interna/di supporto del framework.
-
 Non è una rotta applicativa scritta da noi.
 
 ### `GET|HEAD up`
@@ -676,7 +669,6 @@ vendor/laravel/framework/src/Illuminate/Foundation/Configuration/ApplicationBuil
 ```
 
 Questa è una rotta registrata da Laravel per controllare che l’applicazione sia “up”, cioè viva/raggiungibile.
-
 È una specie di endpoint di salute minimale.
 
 In ambienti reali, endpoint simili sono spesso usati da sistemi di deploy, monitoraggio o load balancer.
@@ -684,7 +676,6 @@ In ambienti reali, endpoint simili sono spesso usati da sistemi di deploy, monit
 ### Lesson learned sulle rotte interne
 
 Non tutte le rotte mostrate da `route:list` sono scritte da noi.
-
 Alcune sono registrate automaticamente dal framework o dai service provider.
 
 Per capire se una rotta è nostra o interna, guardiamo la colonna `Action`.
@@ -763,25 +754,7 @@ php artisan route:list
 
 ---
 
-## 15. Cosa NON era obiettivo di questa lezione
-
-Questa lezione non aveva come obiettivo imparare già:
-
-- controller
-- route model binding
-- form submission
-- validazione
-- Blade
-- view
-- middleware in dettaglio
-- service container in dettaglio
-- implementazione interna completa delle facade
-
-Il docente cita alcuni di questi concetti, ma solo per dire che arriveranno più avanti.
-
----
-
-## 16. Lesson Learned
+## 15. Lesson Learned
 
 ### 1. Le rotte sono l’ingresso dell’applicazione web
 
@@ -882,7 +855,7 @@ Se la colonna `Action` punta a `vendor/laravel/framework`, sono rotte interne o 
 
 ---
 
-## 17. Comandi riassuntivi
+## 16. Comandi riassuntivi
 
 Entrare nel progetto:
 
