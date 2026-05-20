@@ -22,6 +22,19 @@ Il percorso segue lezioni video analizzate una alla volta:
 |---|---|---|
 | 01 | Installare Laravel | `lessons/lesson-01/lesson-learned.md` |
 | 02 | Primo giro nello scheletro del progetto | `lessons/lesson-02/lesson-learned.md` |
+| 03 | Prime rotte Laravel | `lessons/lesson-03/lesson-learned.md` |
+| 04 | Prime view Blade | `lessons/lesson-04/lesson-learned.md` |
+
+## Stato del progetto esempio
+
+Il progetto `first-project/` segue passo passo le lezioni pratiche.
+
+Al momento contiene:
+
+- progetto Laravel installato e avviabile localmente
+- prime rotte definite in `routes/web.php`
+- homepage servita tramite view Blade
+- view organizzata in `resources/views/pages/home.blade.php`
 
 ## Come ripartire da zero
 
@@ -60,6 +73,24 @@ Poi apri nel browser:
 
     http://127.0.0.1:8000
 
+## Comandi utili durante il laboratorio
+
+Mostrare le rotte registrate:
+
+    php artisan route:list
+
+Creare una view Blade semplice:
+
+    php artisan make:view home
+
+Creare una view Blade in sottocartella:
+
+    php artisan make:view pages.home
+
+Vedere i file view creati:
+
+    find resources/views -maxdepth 3 -type f | sort
+
 ## Requisiti locali
 
 Per usare il progetto servono:
@@ -74,3 +105,5 @@ Per la prima esecuzione minimale non è necessario avere `vendor/` o `node_modul
 ## Nota sui contenuti video e trascrizioni
 
 I file video, audio e le trascrizioni integrali del corso non sono inclusi nel repository pubblico.
+
+Sono presenti solo appunti, lesson learned, codice prodotto nel laboratorio e script di supporto.

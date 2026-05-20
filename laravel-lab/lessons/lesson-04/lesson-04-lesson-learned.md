@@ -1,4 +1,5 @@
 # Getting Started with Laravel — Lezione 04
+
 ## View basics
 
 Data laboratorio: 2026-05-20  
@@ -33,8 +34,7 @@ Per costruire pagine web vere usiamo le **view**.
 
 ## 2. Perché non scrivere HTML direttamente nella rotta
 
-Il docente spiega che, in una vera applicazione Laravel, non vogliamo costruire l’HTML direttamente dentro la route.
-
+In una vera applicazione Laravel, non vogliamo costruire l’HTML direttamente dentro la route.
 Tecnicamente potremmo fare qualcosa del genere:
 
 ```php
@@ -44,7 +44,6 @@ Route::get('/', function () {
 ```
 
 Ma è una cattiva direzione.
-
 Motivi:
 
 - la route diventerebbe disordinata
@@ -55,7 +54,7 @@ Motivi:
 
 La soluzione Laravel è:
 
-> la rotta decide cosa restituire, ma l’HTML vive in una view.
+> la rotta decide cosa restituire, ma l’HTML vive in una view separata.
 
 ---
 
@@ -73,11 +72,11 @@ In un progetto nuovo Laravel contiene già una view iniziale:
 resources/views/welcome.blade.php
 ```
 
-Il docente la cita e poi lavora creando una nuova view `home`.
-
 ---
 
 ## 4. Cos’è Blade
+
+Blade è il motore di template di Laravel.
 
 I file view Laravel usano spesso estensione:
 
@@ -85,14 +84,11 @@ I file view Laravel usano spesso estensione:
 .blade.php
 ```
 
-Blade è il motore di template di Laravel.
-
 Per ora possiamo pensare a un file Blade come a:
 
 > un file HTML con superpoteri Laravel.
 
-Nella lezione il docente dice di trattarlo sostanzialmente come un file HTML.
-
+Viene trattato sostanzialmente come un file HTML.
 Quindi dentro una view possiamo scrivere HTML normale:
 
 ```html
@@ -129,8 +125,6 @@ resources/views/home.blade.php
 ```
 
 Questo funziona.
-
-Però il docente preferisce mostrare un modo più comodo usando Artisan.
 
 ---
 
@@ -276,7 +270,6 @@ view('home')
 ```
 
 ma dietro Laravel usa il sistema delle view, il container e la view factory per trovare e renderizzare il file corretto.
-
 Non serve sapere tutti i dettagli interni ora.
 
 Serve però capire che:
@@ -287,7 +280,7 @@ Serve però capire che:
 
 ## 11. Sub-directory nelle view
 
-Il docente mostra anche come organizzare le view in sottocartelle.
+Si possono anche organizzare le view in sottocartelle.
 
 Per esempio, invece di:
 
@@ -365,7 +358,7 @@ return view('pages/home');
 Quindi:
 
 | File fisico | Nome view Laravel |
-|---|---|
+|-------------|-------------------|
 | `resources/views/home.blade.php` | `home` |
 | `resources/views/pages/home.blade.php` | `pages.home` |
 | `resources/views/admin/dashboard.blade.php` | `admin.dashboard` |
@@ -501,33 +494,11 @@ La pagina `/about` può restare testuale per ora, perché la lezione si concentr
 
 ---
 
-## 17. Cosa NON era obiettivo di questa lezione
-
-Questa lezione non aveva come obiettivo imparare già:
-
-- passare dati alle view
-- usare variabili Blade
-- creare layout
-- usare componenti Blade
-- usare partial/include
-- usare CSS con Vite
-- creare controller
-- organizzare tutta l’architettura frontend
-
-Il docente anticipa che il passaggio di dati alle view arriverà dopo.
-
-Per ora il focus è solo:
-
-> creare una view e restituirla da una rotta.
-
----
-
 ## 18. Lesson Learned
 
 ### 1. Le pagine HTML non si scrivono direttamente nelle rotte
 
 Una rotta deve rimanere leggibile.
-
 L’HTML va in una view.
 
 ---
