@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Project</title>
+    <title>{{ config('app.name') }}</title>
 </head>
 <body>
     @if ($showGreeting)
