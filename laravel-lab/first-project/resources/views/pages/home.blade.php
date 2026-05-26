@@ -5,6 +5,8 @@
     <title>My Project</title>
 </head>
 <body>
-    <h1>Home</h1>
+    @if ($showGreeting)
+        <h1>{{ $greeting }}</h1>
+    @endif
 </body>
 </html>
