@@ -1,13 +1,9 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('pages.home', [
-        'greeting' => 'Hello',
-        'showGreeting' => true,
-    ]);
-})->name('home');
+Route::get('/', HomeController::class)->name('home');
 
 Route::get('/about', function () {
     return response('about', 200);
