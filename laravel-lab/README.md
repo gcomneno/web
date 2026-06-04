@@ -24,6 +24,10 @@ Il percorso segue lezioni video analizzate una alla volta:
 | 02 | Primo giro nello scheletro del progetto | `lessons/lesson-02/lesson-learned.md` |
 | 03 | Prime rotte Laravel | `lessons/lesson-03/lesson-learned.md` |
 | 04 | Prime view Blade | `lessons/lesson-04/lesson-learned.md` |
+| 05 | Blade e dati passati alla view | `lessons/lesson-05/lesson-learned.md` |
+| 06 | Configurazione `.env` e `config()` | `lessons/lesson-06/lesson-learned.md` |
+| 07 | Passaggio dalle closure ai controller | `lessons/lesson-07/lesson-learned.md` |
+| 08 | Ripasso di Artisan e comandi principali | `lessons/lesson-08/lesson-learned.md` |
 
 ## Stato del progetto esempio
 
@@ -35,6 +39,10 @@ Al momento contiene:
 - prime rotte definite in `routes/web.php`
 - homepage servita tramite view Blade
 - view organizzata in `resources/views/pages/home.blade.php`
+- dati passati dalla logica applicativa alla view
+- titolo della pagina letto tramite `config('app.name')`
+- homepage gestita da `HomeController`
+- uso operativo di Artisan per esplorare comandi, route, ambiente, cache view e strumenti di generazione
 
 ## Come ripartire da zero
 
@@ -75,6 +83,26 @@ Poi apri nel browser:
 
 ## Comandi utili durante il laboratorio
 
+Mostrare tutti i comandi Artisan disponibili:
+
+    php artisan
+
+oppure:
+
+    php artisan list
+
+Mostrare informazioni sull’applicazione:
+
+    php artisan about
+
+Mostrare l’ambiente corrente:
+
+    php artisan env
+
+Chiedere aiuto su un comando:
+
+    php artisan help make:controller
+
 Mostrare le rotte registrate:
 
     php artisan route:list
@@ -87,9 +115,21 @@ Creare una view Blade in sottocartella:
 
     php artisan make:view pages.home
 
+Creare un controller:
+
+    php artisan make:controller HomeController
+
+Pulire le view compilate:
+
+    php artisan view:clear
+
 Vedere i file view creati:
 
     find resources/views -maxdepth 3 -type f | sort
+
+Controllare che `.env` non sia tracciato da Git:
+
+    git ls-files | grep -E '(^|/)\.env$' || true
 
 ## Requisiti locali
 
