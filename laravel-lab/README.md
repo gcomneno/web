@@ -28,6 +28,8 @@ Il percorso segue lezioni video analizzate una alla volta:
 | 06 | Configurazione `.env` e `config()` | `lessons/lesson-06/lesson-learned.md` |
 | 07 | Passaggio dalle closure ai controller | `lessons/lesson-07/lesson-learned.md` |
 | 08 | Ripasso di Artisan e comandi principali | `lessons/lesson-08/lesson-learned.md` |
+| 09 | Introduzione alle migration database | `lessons/lesson-09/lesson-learned.md` |
+| 10 | Creazione dei model Laravel | `lessons/lesson-10/lesson-learned.md` |
 
 ## Stato del progetto esempio
 
@@ -43,6 +45,9 @@ Al momento contiene:
 - titolo della pagina letto tramite `config('app.name')`
 - homepage gestita da `HomeController`
 - uso operativo di Artisan per esplorare comandi, route, ambiente, cache view e strumenti di generazione
+- tabella `projects` definita tramite migration
+- model `Project` creato in `app/Models/Project.php`
+- route didattica `/eloquent` per osservare `Project::all()`
 
 ## Come ripartire da zero
 
@@ -119,6 +124,30 @@ Creare un controller:
 
     php artisan make:controller HomeController
 
+Creare una migration:
+
+    php artisan make:migration create_projects_table
+
+Eseguire le migration:
+
+    php artisan migrate
+
+Vedere lo stato delle migration:
+
+    php artisan migrate:status
+
+Annullare l’ultimo batch di migration in locale:
+
+    php artisan migrate:rollback
+
+Creare un model:
+
+    php artisan make:model Project
+
+Creare model e migration insieme:
+
+    php artisan make:model Project -m
+
 Pulire le view compilate:
 
     php artisan view:clear
@@ -130,6 +159,10 @@ Vedere i file view creati:
 Controllare che `.env` non sia tracciato da Git:
 
     git ls-files | grep -E '(^|/)\.env$' || true
+
+Controllare che file locali pesanti o sensibili non siano tracciati:
+
+    git ls-files | grep -E '(^|/)\.env$|database/database\.sqlite|vendor/|node_modules/|_work/|transcript\.txt$|\.mp4$|\.mp3$' || true
 
 ## Requisiti locali
 

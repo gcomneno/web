@@ -157,17 +157,57 @@ In alcune versioni può apparire anche come alias `config:make`.
 
 Comando Artisan per creare una migration.
 
-Esempio futuro:
+Esempio:
 
-    php artisan make:migration create_posts_table
+    php artisan make:migration create_projects_table
+
+## make:model
+
+Comando Artisan per creare un model.
+
+Esempio:
+
+    php artisan make:model Project
+
+Crea:
+
+    app/Models/Project.php
+
+## make:model -m
+
+Comando Artisan che crea insieme model e migration.
+
+Esempio:
+
+    php artisan make:model Project -m
+
+Crea il model `Project` e una migration per la tabella `projects`.
 
 ## migrate
 
-Comando Artisan che esegue le migration.
+Comando Artisan che esegue le migration non ancora applicate.
 
 Esempio:
 
     php artisan migrate
+
+## migrate:status
+
+Comando Artisan che mostra quali migration sono state eseguite.
+
+Esempio:
+
+    php artisan migrate:status
+
+## migrate:rollback
+
+Comando Artisan che annulla l’ultimo batch di migration.
+
+Esempio:
+
+    php artisan migrate:rollback
+
+È comodo in locale, ma va usato con prudenza perché può cancellare strutture e dati.
 
 ## config:cache
 
@@ -319,6 +359,128 @@ File PHP che descrive modifiche alla struttura del database.
 
 Esempio: creare una tabella, aggiungere una colonna, creare un indice.
 
+Le migration stanno in:
+
+    database/migrations
+
+## Tabella `migrations`
+
+Tabella speciale usata da Laravel per ricordare quali migration sono già state eseguite.
+
+Serve a evitare che `php artisan migrate` rilanci ogni volta tutte le migration.
+
+## Schema
+
+Facade Laravel usata nelle migration per creare o modificare tabelle.
+
+Esempi:
+
+    Schema::create(...)
+    Schema::table(...)
+
+## Schema::create
+
+Metodo usato per creare una nuova tabella.
+
+Esempio:
+
+    Schema::create('projects', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->timestamps();
+    });
+
+## Schema::table
+
+Metodo usato per modificare una tabella esistente.
+
+Esempio:
+
+    Schema::table('projects', function (Blueprint $table) {
+        $table->string('slug')->unique();
+    });
+
+## Blueprint
+
+Oggetto usato nelle migration per descrivere colonne, indici e vincoli di una tabella.
+
+Esempio:
+
+    function (Blueprint $table) {
+        $table->string('name');
+    }
+
+## up()
+
+Metodo di una migration che applica la modifica.
+
+Viene eseguito da:
+
+    php artisan migrate
+
+## down()
+
+Metodo di una migration che descrive l’operazione inversa.
+
+Viene usato da:
+
+    php artisan migrate:rollback
+
+Può essere pericoloso se elimina tabelle o colonne con dati reali.
+
+## Rollback
+
+Operazione che annulla l’ultimo batch di migration.
+
+Comando:
+
+    php artisan migrate:rollback
+
+In locale è utile per correggere una migration appena creata.
+
+In produzione va trattato con cautela.
+
+## Batch migration
+
+Gruppo di migration eseguite insieme da Laravel.
+
+`migrate:rollback` annulla l’ultimo batch.
+
+## $table->id()
+
+Metodo Blueprint che crea una colonna `id` primaria e auto-incrementale.
+
+## $table->string()
+
+Metodo Blueprint che crea una colonna testuale.
+
+Esempio:
+
+    $table->string('name');
+
+## $table->timestamps()
+
+Metodo Blueprint che crea due colonne:
+
+    created_at
+    updated_at
+
+## unique()
+
+Vincolo che rende una colonna unica.
+
+Esempio:
+
+    $table->string('slug')->unique();
+
+## created_at
+
+Colonna timestamp che indica quando una riga è stata creata.
+
+## updated_at
+
+Colonna timestamp che indica quando una riga è stata aggiornata.
+
 ## Factory
 
 Classe usata per generare dati finti.
@@ -333,13 +495,127 @@ Utile per preparare un ambiente locale o demo.
 
 ## Model
 
-Classe PHP che rappresenta un dato o una tabella.
+Classe PHP che rappresenta una tabella del database.
 
-Esempi futuri:
+Esempio:
 
-- User
-- Post
-- Product
+    app/Models/Project.php
+
+Per convenzione Laravel usa model al singolare e tabella al plurale:
+
+    Project → projects
+    User    → users
+
+## Eloquent
+
+ORM di Laravel.
+
+Permette di leggere e scrivere dati nel database usando model PHP.
+
+Esempio:
+
+    Project::all()
+
+## ORM
+
+Abbreviazione di Object-Relational Mapper.
+
+È uno strumento che collega tabelle relazionali del database e oggetti del linguaggio di programmazione.
+
+Eloquent è l’ORM di Laravel.
+
+## Project
+
+Model creato nel laboratorio per rappresentare la tabella `projects`.
+
+File:
+
+    app/Models/Project.php
+
+## Project::all()
+
+Metodo Eloquent che restituisce tutti i record della tabella collegata al model `Project`.
+
+Esempio didattico:
+
+    Project::all()
+
+Restituisce una collection.
+
+## Collection
+
+Contenitore Laravel di elementi.
+
+Nel caso di `Project::all()`, contiene zero, uno o più oggetti `Project`.
+
+## User
+
+Model Laravel già presente nel progetto.
+
+Rappresenta la tabella `users`.
+
+È più complesso di un model base perché integra funzionalità di autenticazione.
+
+## Authenticatable
+
+Classe base usata dal model `User` per partecipare al sistema di autenticazione Laravel.
+
+## Trait
+
+Meccanismo PHP per riusare metodi dentro classi diverse.
+
+Laravel usa trait nei model per aggiungere funzionalità.
+
+Esempi:
+
+    HasFactory
+    Notifiable
+
+## HasFactory
+
+Trait che permette a un model di usare factory.
+
+Utile per generare dati finti in test o seeding.
+
+## Notifiable
+
+Trait che permette a un model di ricevere notifiche Laravel.
+
+## $fillable
+
+Proprietà del model che indica quali campi possono essere riempiti tramite assegnazione massiva.
+
+Esempio:
+
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+
+## $hidden
+
+Proprietà del model che indica quali campi nascondere quando il model viene convertito in array o JSON.
+
+Esempi tipici:
+
+    password
+    remember_token
+
+## Cast
+
+Regola del model che trasforma valori tra database e PHP.
+
+Esempi:
+
+- timestamp del database → oggetto data/Carbon
+- password → hash
+
+## Carbon
+
+Libreria PHP usata per lavorare con date e orari.
+
+Laravel la usa spesso per gestire campi come `created_at`, `updated_at` o `email_verified_at`.
 
 ## Controller
 

@@ -33,6 +33,9 @@ Il percorso ha già coperto:
 - configurazione con `.env` e `config()`
 - passaggio dalle closure ai controller
 - ripasso operativo di Artisan e dei comandi principali
+- introduzione alle migration database
+- creazione del primo model Laravel
+- primo assaggio di Eloquent
 
 ## Nota
 
