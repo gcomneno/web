@@ -36,6 +36,12 @@ Il percorso ha già coperto:
 - introduzione alle migration database
 - creazione del primo model Laravel
 - primo assaggio di Eloquent
+- operazioni CRUD base con Eloquent
+- protezione mass assignment con `$fillable`
+- parametri dinamici nelle route
+- recupero dati da URL con `findOrFail()`
+- passaggio di model Eloquent a view Blade
+- uso base di Carbon per formattare date
 
 ## Nota
 
