@@ -20,16 +20,18 @@ Il percorso segue lezioni video analizzate una alla volta:
 
 | Lezione | Argomento | File |
 |---|---|---|
-| 01 | Installare Laravel | `lessons/lesson-01/lesson-learned.md` |
-| 02 | Primo giro nello scheletro del progetto | `lessons/lesson-02/lesson-learned.md` |
-| 03 | Prime rotte Laravel | `lessons/lesson-03/lesson-learned.md` |
-| 04 | Prime view Blade | `lessons/lesson-04/lesson-learned.md` |
-| 05 | Blade e dati passati alla view | `lessons/lesson-05/lesson-learned.md` |
-| 06 | Configurazione `.env` e `config()` | `lessons/lesson-06/lesson-learned.md` |
-| 07 | Passaggio dalle closure ai controller | `lessons/lesson-07/lesson-learned.md` |
-| 08 | Ripasso di Artisan e comandi principali | `lessons/lesson-08/lesson-learned.md` |
-| 09 | Introduzione alle migration database | `lessons/lesson-09/lesson-learned.md` |
-| 10 | Creazione dei model Laravel | `lessons/lesson-10/lesson-learned.md` |
+| 01 | Installare Laravel | `lessons/lesson-01-learned.md` |
+| 02 | Primo giro nello scheletro del progetto | `lessons/lesson-02-learned.md` |
+| 03 | Prime rotte Laravel | `lessons/lesson-03-learned.md` |
+| 04 | Prime view Blade | `lessons/lesson-04-learned.md` |
+| 05 | Blade e dati passati alla view | `lessons/lesson-05-learned.md` |
+| 06 | Configurazione `.env` e `config()` | `lessons/lesson-06-learned.md` |
+| 07 | Passaggio dalle closure ai controller | `lessons/lesson-07-learned.md` |
+| 08 | Ripasso di Artisan e comandi principali | `lessons/lesson-08-learned.md` |
+| 09 | Introduzione alle migration database | `lessons/lesson-09-learned.md` |
+| 10 | Creazione dei model Laravel | `lessons/lesson-10-learned.md` |
+| 11 | Primo CRUD con Eloquent | `lessons/lesson-11-learned.md` |
+| 12 | Parametri route, request data e view dinamiche | `lessons/lesson-12-learned.md` |
 
 ## Stato del progetto esempio
 
@@ -47,7 +49,14 @@ Al momento contiene:
 - uso operativo di Artisan per esplorare comandi, route, ambiente, cache view e strumenti di generazione
 - tabella `projects` definita tramite migration
 - model `Project` creato in `app/Models/Project.php`
+- protezione mass assignment tramite `$fillable`
 - route didattica `/eloquent` per osservare `Project::all()`
+- esempi CRUD base con Eloquent
+- route dinamica `/projects/{id}`
+- recupero progetto tramite `Project::findOrFail($id)`
+- view `resources/views/projects/show.blade.php`
+- pagina dettaglio progetto con dati letti dal database
+- uso di `created_at` e Carbon nella view
 
 ## Come ripartire da zero
 
@@ -120,6 +129,10 @@ Creare una view Blade in sottocartella:
 
     php artisan make:view pages.home
 
+Creare la view dettaglio progetto:
+
+    php artisan make:view projects.show
+
 Creare un controller:
 
     php artisan make:controller HomeController
@@ -155,6 +168,10 @@ Pulire le view compilate:
 Vedere i file view creati:
 
     find resources/views -maxdepth 3 -type f | sort
+
+Vedere gli appunti delle lezioni:
+
+    find laravel-lab/lessons -maxdepth 1 -type f | sort
 
 Controllare che `.env` non sia tracciato da Git:
 

@@ -28,7 +28,7 @@ Va eseguito dalla root del progetto Laravel, cioè dalla cartella che contiene i
 
 Nel nostro laboratorio:
 
-    cd ~/Progetti/web/laravel-lab/first-project
+    cd ~/Progetti/labs/web/laravel-lab/first-project
     php artisan
 
 ## php artisan list
@@ -542,6 +542,181 @@ Esempio didattico:
 
 Restituisce una collection.
 
+## Project::create()
+
+Metodo Eloquent che crea un nuovo record nella tabella associata al model.
+
+Esempio:
+
+    Project::create([
+        'name' => 'A second project',
+    ]);
+
+Per usare `create()` con assegnazione massiva serve configurare `$fillable` oppure `$guarded`.
+
+## Project::find()
+
+Metodo Eloquent che cerca un record tramite primary key.
+
+Esempio:
+
+    Project::find(1)
+
+Se il record esiste restituisce un model `Project`.
+
+Se non esiste restituisce `null`.
+
+## Project::findOrFail()
+
+Metodo Eloquent che cerca un record tramite primary key.
+
+Esempio:
+
+    Project::findOrFail(1)
+
+Se il record esiste restituisce un model.
+
+Se non esiste genera automaticamente una risposta 404.
+
+È molto utile per pagine dettaglio come:
+
+    /projects/1
+
+## where()
+
+Metodo Eloquent per costruire una query con una condizione.
+
+Esempio:
+
+    Project::where('name', 'A second project')
+
+Da solo costruisce la query, ma non restituisce ancora i risultati finali.
+
+## Query builder
+
+Oggetto che rappresenta una query in costruzione.
+
+Esempio:
+
+    Project::where('name', 'A second project')
+
+La query viene davvero eseguita quando chiamiamo metodi finali come:
+
+    get()
+    first()
+    firstOrFail()
+
+## get()
+
+Metodo che esegue una query Eloquent e restituisce una collection.
+
+Esempio:
+
+    Project::where('name', 'A second project')->get()
+
+## first()
+
+Metodo che esegue una query Eloquent e restituisce il primo record trovato.
+
+Esempio:
+
+    Project::where('name', 'A second project')->first()
+
+Se non trova niente, restituisce `null`.
+
+## firstOrFail()
+
+Metodo che esegue una query Eloquent e restituisce il primo record trovato.
+
+Esempio:
+
+    Project::where('id', 5)->firstOrFail()
+
+Se non trova niente, genera automaticamente una risposta 404.
+
+## update()
+
+Metodo Eloquent per aggiornare un model esistente.
+
+Esempio:
+
+    $project->update([
+        'name' => 'A first project',
+    ]);
+
+Di solito viene chiamato su una istanza di model già recuperata dal database.
+
+## delete()
+
+Metodo Eloquent per eliminare un model esistente.
+
+Esempio:
+
+    $project->delete();
+
+Di solito viene chiamato su una istanza di model già recuperata dal database.
+
+## CRUD
+
+Acronimo di Create, Read, Update, Delete.
+
+Indica le quattro operazioni base sui dati:
+
+- creare
+- leggere
+- aggiornare
+- eliminare
+
+Nel laboratorio lo incontriamo con Eloquent.
+
+## Mass assignment
+
+Assegnazione massiva di dati a un model tramite array.
+
+Esempio:
+
+    Project::create([
+        'name' => 'A second project',
+    ]);
+
+È comoda, ma Laravel la protegge per evitare che campi non autorizzati vengano riempiti accidentalmente o in modo pericoloso.
+
+## MassAssignmentException
+
+Eccezione Laravel generata quando proviamo a riempire un model tramite mass assignment senza aver autorizzato i campi.
+
+Esempio tipico:
+
+    Project::create([
+        'name' => 'A second project',
+    ]);
+
+senza avere nel model:
+
+    protected $fillable = [
+        'name',
+    ];
+
+## $guarded
+
+Proprietà del model che indica quali campi non possono essere riempiti tramite assegnazione massiva.
+
+Esempio:
+
+    protected $guarded = [];
+
+Con array vuoto, il model viene praticamente “unguarded”: comodo, ma più rischioso se i dati utente non sono validati con cura.
+
+## Model instance
+
+Istanza concreta di un model Eloquent.
+
+Esempio:
+
+    $project = Project::find(1);
+
+In questo caso `$project` rappresenta una singola riga della tabella `projects`.
+
 ## Collection
 
 Contenitore Laravel di elementi.
@@ -616,6 +791,53 @@ Esempi:
 Libreria PHP usata per lavorare con date e orari.
 
 Laravel la usa spesso per gestire campi come `created_at`, `updated_at` o `email_verified_at`.
+
+## Cast implicito
+
+Cast applicato automaticamente da Laravel senza doverlo dichiarare esplicitamente nel model.
+
+Esempio importante:
+
+    created_at
+    updated_at
+
+Questi campi vengono trattati automaticamente come oggetti Carbon.
+
+## toDateTimeString()
+
+Metodo Carbon che restituisce data e ora in formato leggibile.
+
+Esempio:
+
+    $project->created_at->toDateTimeString()
+
+Output tipico:
+
+    2026-06-18 16:47:08
+
+## toTimeString()
+
+Metodo Carbon che restituisce solo l’orario.
+
+Esempio:
+
+    $project->created_at->toTimeString()
+
+Output tipico:
+
+    16:47:08
+
+## diffForHumans()
+
+Metodo Carbon che restituisce una data in formato relativo e leggibile per esseri umani.
+
+Esempio:
+
+    $project->created_at->diffForHumans()
+
+Output tipico:
+
+    22 minutes ago
 
 ## Controller
 
@@ -714,6 +936,78 @@ Regola che collega un URL a una risposta dell’applicazione.
 Esempio:
 
     Route::get('/', HomeController::class)->name('home');
+
+## Route parameter
+
+Parametro dinamico dentro una route Laravel.
+
+Esempio:
+
+    Route::get('/projects/{id}', function (int $id) {
+        //
+    });
+
+La parte `{id}` viene estratta dall’URL.
+
+Esempi:
+
+    /projects/1  →  $id = 1
+    /projects/42 →  $id = 42
+
+## Parametro URL
+
+Valore dinamico presente nell’indirizzo della richiesta.
+
+Esempio:
+
+    /projects/1
+
+In questo caso `1` è il parametro usato per cercare il progetto.
+
+## Request data
+
+Dati che arrivano dalla richiesta HTTP.
+
+Possono arrivare da:
+
+- URL
+- query string
+- form
+- body della richiesta
+- header
+
+Nella lezione 12 il primo dato di request usato è l’ID dentro l’URL.
+
+## Cast del parametro
+
+Conversione di un valore in un tipo specifico.
+
+Esempio:
+
+    function (int $id) {
+        //
+    }
+
+In questo caso il parametro `$id` viene trattato come intero.
+
+## Pagina dettaglio
+
+Pagina che mostra una singola risorsa.
+
+Esempio:
+
+    /projects/1
+
+Nel laboratorio questa pagina mostra un singolo `Project`.
+
+## 404
+
+Codice HTTP che indica “Not Found”.
+
+Laravel può generarlo automaticamente con metodi come:
+
+    findOrFail()
+    firstOrFail()
 
 ## HTTP verb
 
@@ -980,6 +1274,36 @@ Esempio:
     ]);
 
 La chiave `greeting` diventa variabile `$greeting` nella view.
+
+## Passare un model alla view
+
+Una route o un controller può passare un model Eloquent intero a una view.
+
+Esempio:
+
+    return view('projects.show', [
+        'project' => $project,
+    ]);
+
+Dentro la view sarà disponibile la variabile:
+
+    $project
+
+## projects.show
+
+Nome dot notation della view dettaglio progetto.
+
+Corrisponde al file:
+
+    resources/views/projects/show.blade.php
+
+## resources/views/projects/show.blade.php
+
+View Blade usata nel laboratorio per mostrare un singolo progetto.
+
+Esempio:
+
+    <h1>{{ $project->name }}</h1>
 
 ## Direttiva Blade
 
