@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Models\Project;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -29,3 +30,16 @@ Route::get('/projects/{project:slug}', function (Project $project) {
         'project' => $project,
     ]);
 })->name('projects.show');
+
+Route::get('/projects/create', function () {
+    return view('projects.create');
+})->name('projects.create');
+
+Route::post('/projects', function (Request $request) {
+    Project::create([
+        'name' => $request->name,
+        'slug' => str($request->name)->slug(),
+    ]);
+
+    return back();
+})->name('projects.store');
