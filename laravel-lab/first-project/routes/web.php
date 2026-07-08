@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProjectController;
 use App\Models\Project;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 
 Route::get('/', HomeController::class)->name('home');
 
@@ -15,31 +15,11 @@ Route::get('/eloquent', function () {
     dd(Project::all());
 })->name('eloquent');
 
-/*
-Route::get('/projects/{id}', function (int $id) {
-    $project = Project::findOrFail($id);
+Route::get('/projects/create', [ProjectController::class, 'create'])
+    ->name('projects.create');
 
-    return view('projects.show', [
-        'project' => $project,
-    ]);
-})->name('projects.show');
-*/
+Route::post('/projects', [ProjectController::class, 'store'])
+    ->name('projects.store');
 
-Route::get('/projects/{project:slug}', function (Project $project) {
-    return view('projects.show', [
-        'project' => $project,
-    ]);
-})->name('projects.show');
-
-Route::get('/projects/create', function () {
-    return view('projects.create');
-})->name('projects.create');
-
-Route::post('/projects', function (Request $request) {
-    Project::create([
-        'name' => $request->name,
-        'slug' => str($request->name)->slug(),
-    ]);
-
-    return back();
-})->name('projects.store');
+Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])
+    ->name('projects.show');
