@@ -32,6 +32,9 @@ Il percorso segue lezioni video analizzate una alla volta:
 | 10 | Creazione dei model Laravel | `lessons/lesson-10-learned.md` |
 | 11 | Primo CRUD con Eloquent | `lessons/lesson-11-learned.md` |
 | 12 | Parametri route, request data e view dinamiche | `lessons/lesson-12-learned.md` |
+| 13 | Route model binding e slug | `lessons/lesson-13-learned.md` |
+| 14 | Invio form, CSRF e creazione progetto | `lessons/lesson-14-learned.md` |
+| 15 | ProjectController e pulizia delle route | `lessons/lesson-15-learned.md` |
 
 ## Stato del progetto esempio
 
@@ -48,15 +51,21 @@ Al momento contiene:
 - homepage gestita da `HomeController`
 - uso operativo di Artisan per esplorare comandi, route, ambiente, cache view e strumenti di generazione
 - tabella `projects` definita tramite migration
+- colonna `slug` aggiunta alla tabella `projects`
 - model `Project` creato in `app/Models/Project.php`
 - protezione mass assignment tramite `$fillable`
 - route didattica `/eloquent` per osservare `Project::all()`
 - esempi CRUD base con Eloquent
-- route dinamica `/projects/{id}`
-- recupero progetto tramite `Project::findOrFail($id)`
+- route dinamica `/projects/{project:slug}`
+- recupero progetto tramite route model binding
 - view `resources/views/projects/show.blade.php`
 - pagina dettaglio progetto con dati letti dal database
 - uso di `created_at` e Carbon nella view
+- view `resources/views/projects/create.blade.php`
+- form `POST /projects` con protezione `@csrf`
+- creazione progetto da dati della request
+- generazione automatica dello slug con `str()->slug()`
+- controller `ProjectController` con metodi `create`, `store` e `show`
 
 ## Come ripartire da zero
 
@@ -94,6 +103,24 @@ Questa sezione serve per chi clona il repository e vuole avviare il progetto Lar
 Poi apri nel browser:
 
     http://127.0.0.1:8000
+
+## Pagine utili del laboratorio
+
+Homepage:
+
+    http://127.0.0.1:8000
+
+Form creazione progetto:
+
+    http://127.0.0.1:8000/projects/create
+
+Dettaglio progetto tramite slug:
+
+    http://127.0.0.1:8000/projects/a-first-project
+
+Route didattica Eloquent:
+
+    http://127.0.0.1:8000/eloquent
 
 ## Comandi utili durante il laboratorio
 
@@ -133,13 +160,25 @@ Creare la view dettaglio progetto:
 
     php artisan make:view projects.show
 
+Creare la view form progetto:
+
+    php artisan make:view projects.create
+
 Creare un controller:
 
     php artisan make:controller HomeController
 
+Creare il controller dei progetti:
+
+    php artisan make:controller ProjectController
+
 Creare una migration:
 
     php artisan make:migration create_projects_table
+
+Creare una migration per aggiungere una colonna:
+
+    php artisan make:migration add_slug_to_projects_table
 
 Eseguire le migration:
 

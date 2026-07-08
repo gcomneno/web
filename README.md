@@ -42,6 +42,13 @@ Il percorso ha già coperto:
 - recupero dati da URL con `findOrFail()`
 - passaggio di model Eloquent a view Blade
 - uso base di Carbon per formattare date
+- route model binding su ID e slug
+- aggiunta della colonna `slug` alla tabella `projects`
+- primo form POST con `@csrf`
+- lettura dati da `Request`
+- creazione di record dal form con `Project::create()`
+- generazione slug con `str()->slug()`
+- spostamento delle route progetto in `ProjectController`
 
 ## Nota
 
