@@ -7,6 +7,8 @@
 <body>
     <h1>{{ $project->name }}</h1>
 
+    <p>Slug: {{ $project->slug }}</p>
+
     <p>Created: {{ $project->created_at->diffForHumans() }}</p>
 </body>
 </html>
