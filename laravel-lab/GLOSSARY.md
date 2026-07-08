@@ -87,29 +87,23 @@ Comando che apre una sessione PHP interattiva dentro il contesto dell’app Lara
 
 Permette di provare codice usando classi, model e configurazioni dell’applicazione.
 
+## php artisan route:list
+
+Comando Artisan che mostra tutte le rotte registrate nell’applicazione.
+
+Aiuta a capire:
+
+- quali URL esistono
+- quali metodi HTTP usano
+- quale nome hanno
+- quale closure/controller/azione eseguono
+- quali rotte sono nostre e quali sono interne al framework
+
 ## php artisan view:clear
 
 Comando che cancella le view Blade compilate.
 
 È utile quando una view o un componente sembrano non aggiornarsi.
-
-## php artisan view:cache
-
-Comando che compila tutte le view Blade.
-
-È più utile in contesti di ottimizzazione/deploy che durante le prime lezioni.
-
-## php artisan optimize
-
-Comando che crea cache di bootstrap, configurazione e metadati per aumentare le prestazioni.
-
-Da usare con criterio, soprattutto in ambienti di produzione.
-
-## php artisan optimize:clear
-
-Comando che rimuove vari file cache generati dal framework.
-
-Utile quando qualcosa sembra “incastrato” a livello di cache.
 
 ## Comandi make:*
 
@@ -119,39 +113,36 @@ Esempi:
 
     php artisan make:view pages.home
     php artisan make:controller HomeController
-    php artisan make:model Post
-    php artisan make:migration create_posts_table
-    php artisan make:command SendDailyReport
+    php artisan make:model Project
+    php artisan make:migration create_projects_table
 
 Regola pratica:
 
 > quando devi creare qualcosa in Laravel, prima chiediti se esiste un comando `make:*`.
 
-## make:command
+## make:view
 
-Comando Artisan per creare un comando Artisan personalizzato.
-
-Esempio:
-
-    php artisan make:command SendDailyReport
-
-Non è ancora usato nel laboratorio, ma mostra che Artisan può essere esteso con comandi propri.
-
-## make:component
-
-Comando Artisan per creare un componente Blade.
+Comando Artisan per creare una view.
 
 Esempio:
 
-    php artisan make:component Alert
+    php artisan make:view projects.create
 
-I componenti Blade verranno trattati più avanti.
+Crea:
 
-## make:config
+    resources/views/projects/create.blade.php
 
-Comando Artisan per creare un file di configurazione.
+## make:controller
 
-In alcune versioni può apparire anche come alias `config:make`.
+Comando Artisan per creare un controller.
+
+Esempio:
+
+    php artisan make:controller ProjectController
+
+Crea:
+
+    app/Http/Controllers/ProjectController.php
 
 ## make:migration
 
@@ -159,7 +150,7 @@ Comando Artisan per creare una migration.
 
 Esempio:
 
-    php artisan make:migration create_projects_table
+    php artisan make:migration add_slug_to_projects_table
 
 ## make:model
 
@@ -172,16 +163,6 @@ Esempio:
 Crea:
 
     app/Models/Project.php
-
-## make:model -m
-
-Comando Artisan che crea insieme model e migration.
-
-Esempio:
-
-    php artisan make:model Project -m
-
-Crea il model `Project` e una migration per la tabella `projects`.
 
 ## migrate
 
@@ -208,28 +189,6 @@ Esempio:
     php artisan migrate:rollback
 
 È comodo in locale, ma va usato con prudenza perché può cancellare strutture e dati.
-
-## config:cache
-
-Comando Artisan che crea una cache della configurazione.
-
-È utile in produzione, ma durante lo sviluppo bisogna ricordarsi che la configurazione può essere cacheata.
-
-## config:clear
-
-Comando Artisan che rimuove la cache della configurazione.
-
-Utile se config o `.env` sembrano non aggiornarsi.
-
-## route:cache
-
-Comando Artisan che crea una cache delle route.
-
-È più utile in produzione che nelle prime fasi di sviluppo.
-
-## route:clear
-
-Comando Artisan che rimuove la cache delle route.
 
 ## Composer
 
@@ -337,12 +296,6 @@ Esempi:
     staging
     production
 
-## APP_URL
-
-URL base dell’applicazione.
-
-In locale può essere `http://localhost`, mentre in produzione sarà il dominio reale.
-
 ## SQLite
 
 Database basato su file.
@@ -404,12 +357,6 @@ Esempio:
 
 Oggetto usato nelle migration per descrivere colonne, indici e vincoli di una tabella.
 
-Esempio:
-
-    function (Blueprint $table) {
-        $table->string('name');
-    }
-
 ## up()
 
 Metodo di una migration che applica la modifica.
@@ -426,7 +373,7 @@ Viene usato da:
 
     php artisan migrate:rollback
 
-Può essere pericoloso se elimina tabelle o colonne con dati reali.
+Se `up()` aggiunge una colonna, `down()` dovrebbe rimuoverla.
 
 ## Rollback
 
@@ -435,16 +382,6 @@ Operazione che annulla l’ultimo batch di migration.
 Comando:
 
     php artisan migrate:rollback
-
-In locale è utile per correggere una migration appena creata.
-
-In produzione va trattato con cautela.
-
-## Batch migration
-
-Gruppo di migration eseguite insieme da Laravel.
-
-`migrate:rollback` annulla l’ultimo batch.
 
 ## $table->id()
 
@@ -473,6 +410,16 @@ Esempio:
 
     $table->string('slug')->unique();
 
+## after()
+
+Metodo usato in una migration per indicare dopo quale colonna posizionare una nuova colonna.
+
+Esempio:
+
+    $table->string('slug')->after('name');
+
+Nota: il supporto può dipendere dal database usato.
+
 ## created_at
 
 Colonna timestamp che indica quando una riga è stata creata.
@@ -480,18 +427,6 @@ Colonna timestamp che indica quando una riga è stata creata.
 ## updated_at
 
 Colonna timestamp che indica quando una riga è stata aggiornata.
-
-## Factory
-
-Classe usata per generare dati finti.
-
-Utile per test, sviluppo e dati demo.
-
-## Seeder
-
-Classe usata per inserire dati iniziali nel database.
-
-Utile per preparare un ambiente locale o demo.
 
 ## Model
 
@@ -536,10 +471,6 @@ File:
 
 Metodo Eloquent che restituisce tutti i record della tabella collegata al model `Project`.
 
-Esempio didattico:
-
-    Project::all()
-
 Restituisce una collection.
 
 ## Project::create()
@@ -550,6 +481,7 @@ Esempio:
 
     Project::create([
         'name' => 'A second project',
+        'slug' => 'a-second-project',
     ]);
 
 Per usare `create()` con assegnazione massiva serve configurare `$fillable` oppure `$guarded`.
@@ -570,17 +502,7 @@ Se non esiste restituisce `null`.
 
 Metodo Eloquent che cerca un record tramite primary key.
 
-Esempio:
-
-    Project::findOrFail(1)
-
-Se il record esiste restituisce un model.
-
-Se non esiste genera automaticamente una risposta 404.
-
-È molto utile per pagine dettaglio come:
-
-    /projects/1
+Se il record non esiste genera automaticamente una risposta 404.
 
 ## where()
 
@@ -588,17 +510,11 @@ Metodo Eloquent per costruire una query con una condizione.
 
 Esempio:
 
-    Project::where('name', 'A second project')
-
-Da solo costruisce la query, ma non restituisce ancora i risultati finali.
+    Project::where('slug', 'a-first-project')
 
 ## Query builder
 
 Oggetto che rappresenta una query in costruzione.
-
-Esempio:
-
-    Project::where('name', 'A second project')
 
 La query viene davvero eseguita quando chiamiamo metodi finali come:
 
@@ -610,27 +526,15 @@ La query viene davvero eseguita quando chiamiamo metodi finali come:
 
 Metodo che esegue una query Eloquent e restituisce una collection.
 
-Esempio:
-
-    Project::where('name', 'A second project')->get()
-
 ## first()
 
 Metodo che esegue una query Eloquent e restituisce il primo record trovato.
-
-Esempio:
-
-    Project::where('name', 'A second project')->first()
 
 Se non trova niente, restituisce `null`.
 
 ## firstOrFail()
 
 Metodo che esegue una query Eloquent e restituisce il primo record trovato.
-
-Esempio:
-
-    Project::where('id', 5)->firstOrFail()
 
 Se non trova niente, genera automaticamente una risposta 404.
 
@@ -644,8 +548,6 @@ Esempio:
         'name' => 'A first project',
     ]);
 
-Di solito viene chiamato su una istanza di model già recuperata dal database.
-
 ## delete()
 
 Metodo Eloquent per eliminare un model esistente.
@@ -653,8 +555,6 @@ Metodo Eloquent per eliminare un model esistente.
 Esempio:
 
     $project->delete();
-
-Di solito viene chiamato su una istanza di model già recuperata dal database.
 
 ## CRUD
 
@@ -666,8 +566,6 @@ Indica le quattro operazioni base sui dati:
 - leggere
 - aggiornare
 - eliminare
-
-Nel laboratorio lo incontriamo con Eloquent.
 
 ## Mass assignment
 
@@ -685,16 +583,15 @@ Esempio:
 
 Eccezione Laravel generata quando proviamo a riempire un model tramite mass assignment senza aver autorizzato i campi.
 
-Esempio tipico:
+## $fillable
 
-    Project::create([
-        'name' => 'A second project',
-    ]);
+Proprietà del model che indica quali campi possono essere riempiti tramite assegnazione massiva.
 
-senza avere nel model:
+Esempio:
 
     protected $fillable = [
         'name',
+        'slug',
     ];
 
 ## $guarded
@@ -707,90 +604,13 @@ Esempio:
 
 Con array vuoto, il model viene praticamente “unguarded”: comodo, ma più rischioso se i dati utente non sono validati con cura.
 
-## Model instance
-
-Istanza concreta di un model Eloquent.
-
-Esempio:
-
-    $project = Project::find(1);
-
-In questo caso `$project` rappresenta una singola riga della tabella `projects`.
-
-## Collection
-
-Contenitore Laravel di elementi.
-
-Nel caso di `Project::all()`, contiene zero, uno o più oggetti `Project`.
-
-## User
-
-Model Laravel già presente nel progetto.
-
-Rappresenta la tabella `users`.
-
-È più complesso di un model base perché integra funzionalità di autenticazione.
-
-## Authenticatable
-
-Classe base usata dal model `User` per partecipare al sistema di autenticazione Laravel.
-
-## Trait
-
-Meccanismo PHP per riusare metodi dentro classi diverse.
-
-Laravel usa trait nei model per aggiungere funzionalità.
-
-Esempi:
-
-    HasFactory
-    Notifiable
-
-## HasFactory
-
-Trait che permette a un model di usare factory.
-
-Utile per generare dati finti in test o seeding.
-
-## Notifiable
-
-Trait che permette a un model di ricevere notifiche Laravel.
-
-## $fillable
-
-Proprietà del model che indica quali campi possono essere riempiti tramite assegnazione massiva.
-
-Esempio:
-
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
-
 ## $hidden
 
 Proprietà del model che indica quali campi nascondere quando il model viene convertito in array o JSON.
 
-Esempi tipici:
-
-    password
-    remember_token
-
 ## Cast
 
 Regola del model che trasforma valori tra database e PHP.
-
-Esempi:
-
-- timestamp del database → oggetto data/Carbon
-- password → hash
-
-## Carbon
-
-Libreria PHP usata per lavorare con date e orari.
-
-Laravel la usa spesso per gestire campi come `created_at`, `updated_at` o `email_verified_at`.
 
 ## Cast implicito
 
@@ -803,29 +623,19 @@ Esempio importante:
 
 Questi campi vengono trattati automaticamente come oggetti Carbon.
 
+## Carbon
+
+Libreria PHP usata per lavorare con date e orari.
+
+Laravel la usa spesso per gestire campi come `created_at`, `updated_at` o `email_verified_at`.
+
 ## toDateTimeString()
 
 Metodo Carbon che restituisce data e ora in formato leggibile.
 
-Esempio:
-
-    $project->created_at->toDateTimeString()
-
-Output tipico:
-
-    2026-06-18 16:47:08
-
 ## toTimeString()
 
 Metodo Carbon che restituisce solo l’orario.
-
-Esempio:
-
-    $project->created_at->toTimeString()
-
-Output tipico:
-
-    16:47:08
 
 ## diffForHumans()
 
@@ -835,9 +645,61 @@ Esempio:
 
     $project->created_at->diffForHumans()
 
-Output tipico:
+## Collection
 
-    22 minutes ago
+Contenitore Laravel di elementi.
+
+Nel caso di `Project::all()`, contiene zero, uno o più oggetti `Project`.
+
+## Model instance
+
+Istanza concreta di un model Eloquent.
+
+Esempio:
+
+    $project = Project::find(1);
+
+## Slug
+
+Stringa leggibile e adatta agli URL.
+
+Esempio:
+
+    a-first-project
+
+È utile per avere URL più descrittivi:
+
+    /projects/a-first-project
+
+## str()
+
+Helper Laravel per lavorare con stringhe in modo fluente.
+
+Esempio:
+
+    str('A New Project')->slug()
+
+## Str
+
+Classe Laravel per lavorare con stringhe.
+
+Esempio:
+
+    Illuminate\Support\Str::slug('A New Project')
+
+Nel laboratorio viene usato soprattutto l’helper `str()`.
+
+## slug()
+
+Metodo/helper che trasforma una stringa in uno slug.
+
+Esempio:
+
+    str('A New Project')->slug()
+
+Risultato:
+
+    a-new-project
 
 ## Controller
 
@@ -857,15 +719,23 @@ Nel progetto si trova in:
 
     app/Http/Controllers/Controller.php
 
-Per ora non serve modificarla.
-
 ## HomeController
 
 Controller creato nel laboratorio per gestire la homepage.
 
-Esempio:
+## ProjectController
 
-    app/Http/Controllers/HomeController.php
+Controller creato nel laboratorio per gestire le azioni sui progetti.
+
+File:
+
+    app/Http/Controllers/ProjectController.php
+
+Nel laboratorio contiene:
+
+    create()
+    store()
+    show()
 
 ## Invocable controller
 
@@ -877,57 +747,67 @@ Può essere usato nella route così:
 
     Route::get('/', HomeController::class)->name('home');
 
-È comodo quando il controller ha un solo compito.
+## create()
 
-## __invoke()
+Metodo convenzionale di un controller RESTful.
 
-Magic method PHP.
+Mostra il form per creare una nuova risorsa.
 
-Se una classe definisce `__invoke()`, un suo oggetto può essere chiamato come una funzione.
+Nel laboratorio:
 
-Laravel usa questa possibilità per i controller invocabili.
+    ProjectController::create
 
-## Metodo nominato del controller
+mostra:
 
-Metodo esplicito dentro un controller, per esempio:
+    resources/views/projects/create.blade.php
 
-    index()
+## store()
 
-Una route può puntare a un metodo nominato così:
+Metodo convenzionale di un controller RESTful.
 
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+Riceve dati da una richiesta POST e salva una nuova risorsa.
 
-## index()
+Nel laboratorio:
 
-Nome molto comune per il metodo che mostra una pagina principale o una lista di risorse.
+    ProjectController::store
 
-Nei controller RESTful, `index()` di solito mostra l’elenco delle risorse.
+crea un nuovo `Project`.
 
-## Controller RESTful
+## show()
 
-Controller organizzato intorno alle azioni tipiche su una risorsa.
+Metodo convenzionale di un controller RESTful.
+
+Mostra una singola risorsa.
+
+Nel laboratorio:
+
+    ProjectController::show
+
+mostra un progetto tramite route model binding.
+
+## Resource controller
+
+Controller organizzato intorno alle azioni standard su una risorsa.
 
 Metodi comuni:
 
-- `index()` — lista risorse
-- `show()` — mostra singola risorsa
-- `store()` — salva nuova risorsa
-- `update()` — aggiorna risorsa
-- `destroy()` — elimina risorsa
+- index
+- create
+- store
+- show
+- edit
+- update
+- destroy
 
-## Invalid route action
+## Route::resource
 
-Errore Laravel che può comparire quando una route punta a un controller ma Laravel non trova un metodo invocabile valido.
+Metodo Laravel per registrare automaticamente le route RESTful di un controller.
 
-Esempio tipico:
+Esempio futuro:
 
-- route scritta come `HomeController::class`
-- controller senza metodo `__invoke()`
+    Route::resource('projects', ProjectController::class);
 
-Soluzione:
-
-- aggiungere `__invoke()`
-- oppure indicare il metodo nella route con `[HomeController::class, 'index']`
+Nel laboratorio viene solo citato, non ancora usato.
 
 ## Route
 
@@ -947,12 +827,37 @@ Esempio:
         //
     });
 
-La parte `{id}` viene estratta dall’URL.
+## Route model binding
 
-Esempi:
+Funzione Laravel che converte automaticamente un parametro della route in un model Eloquent.
 
-    /projects/1  →  $id = 1
-    /projects/42 →  $id = 42
+Esempio:
+
+    Route::get('/projects/{project}', function (Project $project) {
+        //
+    });
+
+Laravel cerca automaticamente il record corrispondente.
+
+## Binding implicito
+
+Route model binding configurato tramite nome del parametro e type hint del model.
+
+Esempio:
+
+    Route::get('/projects/{project}', function (Project $project) {
+        //
+    });
+
+## Binding su colonna custom
+
+Route model binding che usa una colonna diversa dall’ID.
+
+Esempio:
+
+    Route::get('/projects/{project:slug}', [ProjectController::class, 'show']);
+
+Qui Laravel cerca il `Project` usando la colonna `slug`.
 
 ## Parametro URL
 
@@ -960,9 +865,9 @@ Valore dinamico presente nell’indirizzo della richiesta.
 
 Esempio:
 
-    /projects/1
+    /projects/a-first-project
 
-In questo caso `1` è il parametro usato per cercare il progetto.
+In questo caso `a-first-project` è il parametro usato per cercare il progetto.
 
 ## Request data
 
@@ -976,38 +881,127 @@ Possono arrivare da:
 - body della richiesta
 - header
 
-Nella lezione 12 il primo dato di request usato è l’ID dentro l’URL.
+## Request
 
-## Cast del parametro
+Oggetto Laravel che rappresenta la richiesta HTTP.
 
-Conversione di un valore in un tipo specifico.
+Classe:
 
-Esempio:
+    Illuminate\Http\Request
 
-    function (int $id) {
-        //
-    }
+Può contenere dati del form, header, cookie, file caricati e altre informazioni.
 
-In questo caso il parametro `$id` viene trattato come intero.
+## $request->get()
 
-## Pagina dettaglio
-
-Pagina che mostra una singola risorsa.
+Metodo per leggere un valore dalla request.
 
 Esempio:
 
-    /projects/1
+    $request->get('name')
 
-Nel laboratorio questa pagina mostra un singolo `Project`.
+## $request->name
 
-## 404
+Accesso pratico a un campo della request.
 
-Codice HTTP che indica “Not Found”.
+Esempio:
 
-Laravel può generarlo automaticamente con metodi come:
+    $request->name
 
-    findOrFail()
-    firstOrFail()
+Nel laboratorio viene usato per leggere il campo `name` del form.
+
+## $request->only()
+
+Metodo per estrarre solo alcuni campi dalla request.
+
+Esempio futuro:
+
+    $request->only(['name', 'slug'])
+
+## Form
+
+Elemento HTML usato per inviare dati al server.
+
+Esempio:
+
+    <form action="/projects" method="POST">
+        ...
+    </form>
+
+## action
+
+Attributo HTML del form che indica verso quale URL inviare i dati.
+
+Esempio:
+
+    action="/projects"
+
+## method
+
+Attributo HTML del form che indica il metodo HTTP da usare.
+
+Esempio:
+
+    method="POST"
+
+## POST
+
+Verbo HTTP usato normalmente per inviare dati che creano una nuova risorsa.
+
+Nel laboratorio:
+
+    POST /projects
+
+crea un nuovo progetto.
+
+## CSRF
+
+Abbreviazione di Cross-Site Request Forgery.
+
+È un tipo di attacco in cui un sito esterno prova a far inviare una richiesta a nome dell’utente.
+
+Laravel protegge i form tramite token CSRF.
+
+## @csrf
+
+Direttiva Blade che inserisce un token CSRF nel form.
+
+Esempio:
+
+    <form method="POST">
+        @csrf
+    </form>
+
+Senza `@csrf`, Laravel può mostrare “Page expired” sulle richieste POST.
+
+## _token
+
+Campo hidden generato da `@csrf`.
+
+Laravel lo usa per verificare che il form sia legittimo.
+
+## Page expired
+
+Errore che può comparire quando inviamo una richiesta POST senza token CSRF valido.
+
+## back()
+
+Helper Laravel che restituisce un redirect alla pagina precedente.
+
+Esempio:
+
+    return back();
+
+## Redirect
+
+Risposta HTTP che dice al browser di andare verso un’altra pagina.
+
+Nel laboratorio viene introdotto con:
+
+    return back();
+
+## GET
+
+Verbo HTTP usato normalmente dal browser quando apriamo una pagina.
 
 ## HTTP verb
 
@@ -1015,29 +1009,11 @@ Metodo HTTP usato da una richiesta.
 
 Esempi comuni:
 
-- `GET` — leggere/visualizzare una risorsa
-- `POST` — inviare dati
-- `PUT` — sostituire o caricare una risorsa
-- `PATCH` — modificare parzialmente una risorsa
-- `DELETE` — eliminare una risorsa
-
-In Laravel li incontriamo con metodi come:
-
-    Route::get(...)
-    Route::post(...)
-    Route::put(...)
-    Route::patch(...)
-    Route::delete(...)
-
-## GET
-
-Verbo HTTP usato normalmente dal browser quando apriamo una pagina.
-
-Esempio Laravel:
-
-    Route::get('/about', function () {
-        return response('about');
-    });
+- GET
+- POST
+- PUT
+- PATCH
+- DELETE
 
 ## Status code
 
@@ -1049,43 +1025,30 @@ Esempio:
 
 Significa OK, richiesta riuscita.
 
-In Laravel possiamo restituirlo così:
+## 404
 
-    return response('home', 200);
+Codice HTTP che indica “Not Found”.
+
+Laravel può generarlo automaticamente con metodi come:
+
+    findOrFail()
+    firstOrFail()
+
+e con route model binding quando un model non viene trovato.
 
 ## Facade
 
 Classe Laravel che offre una sintassi comoda per accedere a un servizio gestito dal framework.
 
-Esempio:
-
-    Route::get('/', function () {
-        return response('home');
-    });
-
-`Route` sembra una classe usata staticamente, ma dietro le quinte Laravel inoltra la chiamata al router reale registrato nel container.
-
 ## Service Container
 
 Sistema con cui Laravel costruisce e fornisce oggetti e servizi all’applicazione.
-
-È una specie di fabbrica intelligente.
-
-Le facade e molti helper usano servizi che Laravel sa recuperare dal container.
 
 ## Closure
 
 Funzione anonima definita direttamente nel punto in cui serve.
 
-Esempio:
-
-    function () {
-        return response('home');
-    }
-
 Nelle prime rotte Laravel la closure è il codice eseguito quando l’URL viene raggiunto.
-
-Mentalmente assomiglia a una lambda/callback anonima.
 
 ## Helper function
 
@@ -1097,32 +1060,24 @@ Esempi:
     view(...)
     route(...)
     config(...)
-
-Sembrano funzioni semplici, ma spesso usano servizi Laravel già configurati.
+    str(...)
+    back(...)
 
 ## response()
 
 Helper Laravel che crea una risposta HTTP.
 
+## view()
+
+Helper Laravel che renderizza una view.
+
 Esempio:
 
-    return response('home', 200);
-
-Restituisce contenuto, status code e, se necessario, header.
+    return view('projects.show');
 
 ## config()
 
 Helper Laravel che legge valori dai file in `config/`.
-
-Esempio:
-
-    config('app.name')
-
-Legge la chiave `name` dal file:
-
-    config/app.php
-
-È preferibile usare `config()` nel codice applicativo invece di leggere direttamente `env()`.
 
 ## env()
 
@@ -1130,43 +1085,15 @@ Helper che legge valori dall’ambiente o dal file `.env`.
 
 Nei normali file applicativi è meglio evitarlo e usare `config()`.
 
-Uso tipico dentro un file config:
-
-    'name' => env('APP_NAME', 'Laravel'),
-
-## Fallback
-
-Valore di riserva usato quando una configurazione non è definita.
-
-Esempio:
-
-    env('APP_NAME', 'Laravel')
-
-Se `APP_NAME` non esiste, Laravel usa `Laravel`.
-
-## Config cache
-
-Meccanismo Laravel che può ottimizzare il caricamento della configurazione.
-
-È uno dei motivi per cui conviene leggere configurazioni tramite `config()` invece di usare `env()` direttamente nel codice applicativo.
-
 ## dump()
 
 Funzione di debug che stampa un valore senza fermare l’esecuzione.
-
-Esempio:
-
-    dump('debug');
 
 ## dd()
 
 Abbreviazione pratica di “dump and die”.
 
 Stampa un valore e ferma l’esecuzione.
-
-Esempio:
-
-    dd('first route');
 
 Utile durante lo sviluppo, ma non deve restare nel codice finale.
 
@@ -1176,52 +1103,8 @@ Rotta con un nome assegnato tramite `->name(...)`.
 
 Esempio:
 
-    Route::get('/', HomeController::class)->name('home');
-
-Dare nomi alle rotte permette di riferirsi a esse senza scrivere URL a mano.
-
-## php artisan route:list
-
-Comando Artisan che mostra tutte le rotte registrate nell’applicazione.
-
-Comando:
-
-    php artisan route:list
-
-Aiuta a capire:
-
-- quali URL esistono
-- quali metodi HTTP usano
-- quale nome hanno
-- quale closure/controller/azione eseguono
-- quali rotte sono nostre e quali sono interne al framework
-
-## Rotta interna Laravel
-
-Rotta registrata automaticamente dal framework o da un service provider.
-
-Esempi incontrati:
-
-    storage/{path}
-    up
-
-Se in `php artisan route:list` la colonna Action punta a `vendor/laravel/framework/...`, probabilmente è una rotta interna o di supporto.
-
-## storage/{path}
-
-Rotta interna vista in `php artisan route:list`.
-
-Serve a supportare l’accesso o il caricamento di file nello storage locale.
-
-`{path}` indica un parametro dinamico.
-
-## up
-
-Rotta interna Laravel usata come controllo minimale dello stato dell’applicazione.
-
-Serve a indicare che l’applicazione è raggiungibile/viva.
-
-È simile a un endpoint di health check.
+    Route::post('/projects', [ProjectController::class, 'store'])
+        ->name('projects.store');
 
 ## Blade
 
@@ -1231,8 +1114,6 @@ I file Blade hanno estensione:
 
     .blade.php
 
-Un file Blade può essere pensato, all’inizio, come un file HTML con superpoteri Laravel.
-
 ## View
 
 File che contiene l’HTML da restituire al browser.
@@ -1241,27 +1122,33 @@ Le view Laravel stanno in:
 
     resources/views
 
-Esempio:
-
-    resources/views/pages/home.blade.php
-
-## view()
-
-Helper Laravel che renderizza una view.
-
-Esempio:
-
-    return view('pages.home');
-
-Laravel cerca la view corrispondente dentro `resources/views`.
-
 ## resources/views
 
 Cartella dove stanno le view Laravel.
 
-Esempio:
+## resources/views/projects/create.blade.php
 
-    resources/views/pages/home.blade.php
+View Blade usata nel laboratorio per mostrare il form di creazione progetto.
+
+## resources/views/projects/show.blade.php
+
+View Blade usata nel laboratorio per mostrare un singolo progetto.
+
+## projects.create
+
+Nome dot notation della view di creazione progetto.
+
+Corrisponde a:
+
+    resources/views/projects/create.blade.php
+
+## projects.show
+
+Nome dot notation della view dettaglio progetto.
+
+Corrisponde a:
+
+    resources/views/projects/show.blade.php
 
 ## Dati della view
 
@@ -1269,11 +1156,9 @@ Dati passati dalla route o dal controller alla view tramite il secondo argomento
 
 Esempio:
 
-    return view('pages.home', [
-        'greeting' => 'Hello',
+    return view('projects.show', [
+        'project' => $project,
     ]);
-
-La chiave `greeting` diventa variabile `$greeting` nella view.
 
 ## Passare un model alla view
 
@@ -1285,35 +1170,13 @@ Esempio:
         'project' => $project,
     ]);
 
-Dentro la view sarà disponibile la variabile:
-
-    $project
-
-## projects.show
-
-Nome dot notation della view dettaglio progetto.
-
-Corrisponde al file:
-
-    resources/views/projects/show.blade.php
-
-## resources/views/projects/show.blade.php
-
-View Blade usata nel laboratorio per mostrare un singolo progetto.
-
-Esempio:
-
-    <h1>{{ $project->name }}</h1>
-
 ## Direttiva Blade
 
 Istruzione Blade che inizia con `@`.
 
 Esempio:
 
-    @if ($showGreeting)
-        {{ $greeting }}
-    @endif
+    @csrf
 
 ## @if
 
@@ -1329,7 +1192,7 @@ Sintassi Blade per stampare un valore nella pagina.
 
 Esempio:
 
-    {{ $greeting }}
+    {{ $project->name }}
 
 ## Dot notation
 
@@ -1337,69 +1200,19 @@ Convenzione Laravel per indicare elementi annidati usando il punto.
 
 Per le view:
 
-    view('pages.home')
+    view('projects.show')
 
 corrisponde a:
 
-    resources/views/pages/home.blade.php
-
-Per la configurazione:
-
-    config('app.name')
-
-corrisponde a:
-
-    config/app.php → name
-
-## make:view
-
-Comando Artisan per creare una view.
-
-Esempio:
-
-    php artisan make:view home
-
-Crea:
-
-    resources/views/home.blade.php
-
-Esempio con sottocartella:
-
-    php artisan make:view pages.home
-
-Crea:
-
-    resources/views/pages/home.blade.php
-
-## make:controller
-
-Comando Artisan per creare un controller.
-
-Esempio:
-
-    php artisan make:controller HomeController
-
-Crea:
-
-    app/Http/Controllers/HomeController.php
-
-Per controller in sottocartelle si usa lo slash:
-
-    php artisan make:controller Admin/DashboardController
+    resources/views/projects/show.blade.php
 
 ## Vite
 
 Strumento frontend usato da Laravel per JavaScript e CSS moderni.
 
-Viene usato più avanti quando serve lavorare sulla parte frontend.
-
 ## Service provider
 
 Classe che registra o configura servizi Laravel prima che l’applicazione gestisca le richieste.
-
-Esempio nel progetto:
-
-    app/Providers/AppServiceProvider.php
 
 ## Middleware
 
@@ -1407,11 +1220,11 @@ Strato intermedio tra richiesta e risposta.
 
 Può servire per autenticazione, sicurezza, sessioni, controlli e trasformazioni della richiesta.
 
+Il controllo CSRF avviene tramite middleware.
+
 ## Debug
 
 Modalità che mostra errori dettagliati agli sviluppatori.
-
-In locale può essere attiva.
 
 In produzione deve essere disattivata.
 
