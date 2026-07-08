@@ -16,6 +16,10 @@ Il percorso segue lezioni video analizzate una alla volta:
 - `scripts/` — script di supporto, ad esempio trascrizione video
 - `GLOSSARY.md` — glossario minimo dei termini Laravel/PHP incontrati
 
+## Sintesi di ripasso
+
+- [Sintesi delle nozioni fondamentali — lezioni 01-15](lessons/summary-lessons-01-15.md)
+
 ## Lezioni
 
 | Lezione | Argomento | File |
