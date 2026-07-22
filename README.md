@@ -49,6 +49,10 @@ Il percorso ha già coperto:
 - creazione di record dal form con `Project::create()`
 - generazione slug con `str()->slug()`
 - spostamento delle route progetto in `ProjectController`
+- validazione dei form con `$request->validate()`
+- visualizzazione errori di validazione con `@error`
+- recupero valori precedenti del form con `old()`
+- messaggi flash di successo con `with()` e `@session`
 
 ## Nota
 

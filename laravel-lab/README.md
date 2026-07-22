@@ -39,6 +39,9 @@ Il percorso segue lezioni video analizzate una alla volta:
 | 13 | Route model binding e slug | `lessons/lesson-13-learned.md` |
 | 14 | Invio form, CSRF e creazione progetto | `lessons/lesson-14-learned.md` |
 | 15 | ProjectController e pulizia delle route | `lessons/lesson-15-learned.md` |
+| 16 | Validazione form con `$request->validate()` | `lessons/lesson-16-learned.md` |
+| 17 | Visualizzazione errori e `old()` | `lessons/lesson-17-learned.md` |
+| 18 | Flash messages di successo | `lessons/lesson-18-learned.md` |
 
 ## Stato del progetto esempio
 
@@ -70,6 +73,10 @@ Al momento contiene:
 - creazione progetto da dati della request
 - generazione automatica dello slug con `str()->slug()`
 - controller `ProjectController` con metodi `create`, `store` e `show`
+- validazione del campo `name` con `$request->validate()`
+- visualizzazione errori di validazione nella view del form
+- conservazione del valore inserito con `old('name')`
+- messaggio flash temporaneo dopo la creazione di un progetto
 
 ## Come ripartire da zero
 
