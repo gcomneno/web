@@ -1231,3 +1231,130 @@ In produzione deve essere disattivata.
 Variabile tipica:
 
     APP_DEBUG=false
+
+## Validazione
+
+Controllo dei dati ricevuti prima di usarli o salvarli.
+
+Nel laboratorio viene introdotta nel metodo `store()` di `ProjectController`.
+
+Esempio:
+
+    $request->validate([
+        'name' => ['required', 'max:255'],
+    ]);
+
+## $request->validate()
+
+Metodo Laravel per validare i dati della request.
+
+Se la validazione fallisce:
+
+- il codice successivo non viene eseguito
+- Laravel reindirizza indietro
+- gli errori vengono messi in sessione
+- i vecchi valori del form sono disponibili tramite `old()`
+
+## Regola required
+
+Regola di validazione che richiede che un campo sia presente e non vuoto.
+
+Esempio:
+
+    'name' => ['required']
+
+## Regola max
+
+Regola di validazione che limita la lunghezza o dimensione massima di un valore.
+
+Per una stringa:
+
+    'name' => ['max:255']
+
+significa massimo 255 caratteri.
+
+## @error
+
+Direttiva Blade per mostrare l’errore di validazione di un campo.
+
+Esempio:
+
+    @error('name')
+        <p>{{ $message }}</p>
+    @enderror
+
+Dentro `@error`, Laravel rende disponibile la variabile `$message`.
+
+## $message
+
+Variabile disponibile dentro la direttiva Blade `@error`.
+
+Contiene il messaggio di errore del campo validato.
+
+## old()
+
+Helper Laravel che recupera il valore precedente di un campo dopo un redirect con errore di validazione.
+
+Esempio:
+
+    value="{{ old('name') }}"
+
+Serve a non far perdere all’utente ciò che aveva scritto nel form.
+
+## Flash message
+
+Messaggio temporaneo salvato in sessione per essere mostrato nella richiesta successiva.
+
+Tipico dopo un redirect.
+
+Esempio:
+
+    return back()->with('status', 'Your project was created.');
+
+## with()
+
+Metodo usato su un redirect per flashare dati in sessione.
+
+Esempio:
+
+    return back()->with('status', 'Your project was created.');
+
+## @session
+
+Direttiva Blade per leggere un valore dalla sessione.
+
+Esempio:
+
+    @session('status')
+        <p>{{ $value }}</p>
+    @endsession
+
+Dentro `@session`, Laravel rende disponibile la variabile `$value`.
+
+## $value
+
+Variabile disponibile dentro la direttiva Blade `@session`.
+
+Contiene il valore della chiave di sessione richiesta.
+
+## session()->flash()
+
+Metodo per salvare un valore temporaneo nella sessione.
+
+Esempio:
+
+    session()->flash('status', 'Your project was created.');
+
+È simile a usare `with()` su un redirect.
+
+## session()->put()
+
+Metodo per salvare un valore persistente nella sessione.
+
+Non è adatto per messaggi temporanei di successo, perché il valore non sparisce automaticamente dopo la richiesta successiva.
+
+## Page expired
+
+Messaggio che può comparire quando una richiesta POST viene inviata senza token CSRF valido.
+
+Nel laboratorio è stato risolto aggiungendo `@csrf` al form.
