@@ -39,9 +39,18 @@ if ! command -v ffmpeg >/dev/null 2>&1; then
     exit 1
 fi
 
-if [ ! -d "$HOME/.venvs/whisper" ]; then
-    echo "Errore: venv Whisper non trovata in $HOME/.venvs/whisper" >&2
-    exit 1
+WHISPER_BIN="${WHISPER_BIN:-}"
+
+if [ -z "$WHISPER_BIN" ]; then
+    if command -v whisper >/dev/null 2>&1; then
+        WHISPER_BIN="$(command -v whisper)"
+    elif [ -x "$HOME/.venvs/whisper/bin/whisper" ]; then
+        WHISPER_BIN="$HOME/.venvs/whisper/bin/whisper"
+    else
+        echo "Errore: comando whisper non trovato." >&2
+        echo "Installa whisper oppure esporta WHISPER_BIN=/percorso/al/binario/whisper" >&2
+        exit 1
+    fi
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -88,13 +97,11 @@ else
 fi
 
 echo
-echo "==> Attivo la venv Whisper..."
-# shellcheck disable=SC1091
-source "$HOME/.venvs/whisper/bin/activate"
+echo "==> Whisper binary:   $WHISPER_BIN"
 
 echo
 echo "==> Trascrivo con Whisper..."
-whisper "$VIDEO_FOR_WHISPER" \
+"$WHISPER_BIN" "$VIDEO_FOR_WHISPER" \
     --language en \
     --model base \
     --output_format txt \
