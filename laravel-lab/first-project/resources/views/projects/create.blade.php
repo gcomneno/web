@@ -7,6 +7,10 @@
 <body>
     <h1>New project</h1>
 
+    @session('status')
+        <p>{{ $value }}</p>
+    @endsession
+
     <form action="/projects" method="POST">
         @csrf
 

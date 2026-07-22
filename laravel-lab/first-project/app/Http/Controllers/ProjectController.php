@@ -23,7 +23,7 @@ class ProjectController extends Controller
             'slug' => str($request->name)->slug(),
         ]);
 
-        return back();
+        return back()->with('status', 'Your project was created.');
     }
 
     public function show(Project $project)
