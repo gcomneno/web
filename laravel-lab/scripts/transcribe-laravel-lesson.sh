@@ -41,11 +41,16 @@ fi
 
 WHISPER_BIN="${WHISPER_BIN:-}"
 
+WHISPER_VENV="$HOME/.venvs/whisper"
+
 if [ -z "$WHISPER_BIN" ]; then
+    if [ -d "$WHISPER_VENV" ]; then
+        # shellcheck disable=SC1091
+        source "$WHISPER_VENV/bin/activate"
+    fi
+
     if command -v whisper >/dev/null 2>&1; then
         WHISPER_BIN="$(command -v whisper)"
-    elif [ -x "$HOME/.venvs/whisper/bin/whisper" ]; then
-        WHISPER_BIN="$HOME/.venvs/whisper/bin/whisper"
     else
         echo "Errore: comando whisper non trovato." >&2
         echo "Installa whisper oppure esporta WHISPER_BIN=/percorso/al/binario/whisper" >&2
