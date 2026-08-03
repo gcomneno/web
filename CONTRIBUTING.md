@@ -63,6 +63,8 @@ Prose does not need to be translated word for word, but neither version may omit
 
 Existing Italian-only documents may temporarily retain their current unsuffixed filenames while the repository is migrated.
 
+The manifest records temporary files in `legacy_unpaired_documents` and deliberate exceptions in `excluded_documents`. Every public Markdown file must belong to one of those lists or to a registered canonical pair; otherwise validation fails.
+
 Migration is performed one document pair at a time:
 
 1. rename the existing Italian document with `git mv` to the `.it.md` filename
@@ -94,7 +96,7 @@ Run the bilingual documentation validator from the repository root:
 python3 scripts/check-bilingual-docs.py
 ```
 
-The validator checks registered document pairs, heading hierarchy, fenced code blocks, inline technical literals, reciprocal language links, and local link targets.
+The validator checks registered document pairs, heading hierarchy, fenced code blocks, inline technical literals, reciprocal language links, local link targets, and the complete classification of public Markdown files.
 
 ## Review checklist
 

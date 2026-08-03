@@ -7,6 +7,32 @@
     "CONTRIBUTING.md",
     "README.md"
   ],
+  "legacy_unpaired_documents": [
+    "laravel-lab/GLOSSARY.md",
+    "laravel-lab/README.md",
+    "laravel-lab/lessons/lesson-01-learned.md",
+    "laravel-lab/lessons/lesson-02-learned.md",
+    "laravel-lab/lessons/lesson-03-learned.md",
+    "laravel-lab/lessons/lesson-04-learned.md",
+    "laravel-lab/lessons/lesson-05-learned.md",
+    "laravel-lab/lessons/lesson-06-learned.md",
+    "laravel-lab/lessons/lesson-07-learned.md",
+    "laravel-lab/lessons/lesson-08-learned.md",
+    "laravel-lab/lessons/lesson-09-learned.md",
+    "laravel-lab/lessons/lesson-10-learned.md",
+    "laravel-lab/lessons/lesson-11-learned.md",
+    "laravel-lab/lessons/lesson-12-learned.md",
+    "laravel-lab/lessons/lesson-13-learned.md",
+    "laravel-lab/lessons/lesson-14-learned.md",
+    "laravel-lab/lessons/lesson-15-learned.md",
+    "laravel-lab/lessons/lesson-16-learned.md",
+    "laravel-lab/lessons/lesson-17-learned.md",
+    "laravel-lab/lessons/lesson-18-learned.md",
+    "laravel-lab/lessons/summary-lessons-01-15.md"
+  ],
+  "excluded_documents": [
+    "laravel-lab/first-project/README.md"
+  ],
   "ignored_directories": [
     ".git",
     "node_modules",

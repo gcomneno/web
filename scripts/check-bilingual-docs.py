@@ -293,8 +293,18 @@ def main() -> int:
         print(f"ERRORE: manifest JSON non valido: {exc}")
         return 1
 
+    if not isinstance(manifest, dict):
+        print("ERRORE: il manifest JSON deve essere un oggetto")
+        return 1
+
     if manifest.get("schema_version") != 1:
         errors.append("schema_version del manifest non supportata")
+
+    if manifest.get("canonical_language") != "en":
+        errors.append("canonical_language deve essere esattamente en")
+
+    if manifest.get("translation_language") != "it":
+        errors.append("translation_language deve essere esattamente it")
 
     suffix = manifest.get("translation_suffix")
 
@@ -304,22 +314,97 @@ def main() -> int:
         )
         suffix = ".it.md"
 
-    canonical_documents = manifest.get("canonical_documents")
+    def read_string_list(key: str) -> list[str]:
+        value = manifest.get(key)
 
-    if not isinstance(canonical_documents, list):
-        errors.append(
-            "canonical_documents deve essere una lista"
-        )
-        canonical_documents = []
+        if not isinstance(value, list):
+            errors.append(f"{key} deve essere una lista")
+            return []
 
-    if canonical_documents != sorted(set(canonical_documents)):
-        errors.append(
-            "canonical_documents deve essere ordinato e senza duplicati"
-        )
+        if not all(isinstance(item, str) for item in value):
+            errors.append(
+                f"{key} deve contenere soltanto stringhe"
+            )
+            return [
+                item for item in value
+                if isinstance(item, str)
+            ]
 
-    ignored_directories = set(
-        manifest.get("ignored_directories", [])
+        if value != sorted(set(value)):
+            errors.append(
+                f"{key} deve essere ordinato e senza duplicati"
+            )
+
+        return value
+
+    canonical_documents = read_string_list(
+        "canonical_documents"
     )
+    legacy_documents = read_string_list(
+        "legacy_unpaired_documents"
+    )
+    excluded_documents = read_string_list(
+        "excluded_documents"
+    )
+    ignored_directories = set(
+        read_string_list("ignored_directories")
+    )
+
+    categories = {
+        "canonical_documents": set(canonical_documents),
+        "legacy_unpaired_documents": set(legacy_documents),
+        "excluded_documents": set(excluded_documents),
+    }
+    category_names = list(categories)
+
+    for index, left_name in enumerate(category_names):
+        for right_name in category_names[index + 1:]:
+            overlap = (
+                categories[left_name]
+                & categories[right_name]
+            )
+
+            if overlap:
+                errors.append(
+                    f"{left_name} e {right_name} "
+                    "si sovrappongono: "
+                    + ", ".join(sorted(overlap))
+                )
+
+    for category_name, documents in (
+        (
+            "legacy_unpaired_documents",
+            legacy_documents,
+        ),
+        (
+            "excluded_documents",
+            excluded_documents,
+        ),
+    ):
+        for document_name in documents:
+            if not document_name.endswith(".md"):
+                errors.append(
+                    f"{category_name} contiene un file "
+                    f"non Markdown: {document_name}"
+                )
+                continue
+
+            if (
+                category_name
+                == "legacy_unpaired_documents"
+                and document_name.endswith(suffix)
+            ):
+                errors.append(
+                    f"{category_name} non può contenere "
+                    "una traduzione italiana: "
+                    f"{document_name}"
+                )
+
+            if not (ROOT / document_name).is_file():
+                errors.append(
+                    f"{category_name} contiene un file "
+                    f"assente: {document_name}"
+                )
 
     expected_translations: set[str] = set()
 
@@ -359,30 +444,73 @@ def main() -> int:
                 errors,
             )
 
-    translations_on_disk: set[str] = set()
+    translation_overlap = expected_translations & (
+        set(canonical_documents)
+        | set(legacy_documents)
+        | set(excluded_documents)
+    )
 
-    for path in ROOT.rglob(f"*{suffix}"):
+    if translation_overlap:
+        errors.append(
+            "le traduzioni attese si sovrappongono ad altre "
+            "categorie del manifest: "
+            + ", ".join(sorted(translation_overlap))
+        )
+
+    all_markdown: set[str] = set()
+
+    for path in ROOT.rglob("*.md"):
         relative = path.relative_to(ROOT)
 
-        if any(part in ignored_directories for part in relative.parts):
+        if any(
+            part in ignored_directories
+            for part in relative.parts
+        ):
             continue
 
         if path.is_file():
-            translations_on_disk.add(relative.as_posix())
+            all_markdown.add(relative.as_posix())
 
-    unregistered = translations_on_disk - expected_translations
-    missing_registered = expected_translations - translations_on_disk
+    translations_on_disk = {
+        name
+        for name in all_markdown
+        if name.endswith(suffix)
+    }
 
-    if unregistered:
+    unregistered_translations = (
+        translations_on_disk
+        - expected_translations
+    )
+
+    if unregistered_translations:
         errors.append(
-            "traduzioni italiane non registrate nel manifest: "
-            + ", ".join(sorted(unregistered))
+            "traduzioni italiane non registrate "
+            "nel manifest: "
+            + ", ".join(
+                sorted(unregistered_translations)
+            )
         )
 
-    if missing_registered:
+    classified_documents = (
+        set(canonical_documents)
+        | expected_translations
+        | set(legacy_documents)
+        | set(excluded_documents)
+    )
+
+    unclassified_documents = (
+        all_markdown
+        - classified_documents
+        - unregistered_translations
+    )
+
+    if unclassified_documents:
         errors.append(
-            "traduzioni registrate ma assenti: "
-            + ", ".join(sorted(missing_registered))
+            "documenti Markdown pubblici non classificati "
+            "nel manifest: "
+            + ", ".join(
+                sorted(unclassified_documents)
+            )
         )
 
     if errors:
@@ -396,6 +524,12 @@ def main() -> int:
     print("VALIDAZIONE BILINGUE SUPERATA")
     print(
         f"Coppie verificate: {len(canonical_documents)}"
+    )
+    print(
+        f"Documenti legacy censiti: {len(legacy_documents)}"
+    )
+    print(
+        f"Documenti esclusi censiti: {len(excluded_documents)}"
     )
 
     for canonical_name in canonical_documents:

@@ -63,6 +63,8 @@ Il testo non deve essere tradotto parola per parola, ma nessuna versione può om
 
 Durante la migrazione, i documenti esistenti disponibili soltanto in italiano possono conservare temporaneamente il nome attuale senza suffisso.
 
+Il manifest registra i file temporanei in `legacy_unpaired_documents` e le esclusioni deliberate in `excluded_documents`. Ogni file Markdown pubblico deve appartenere a uno di questi elenchi oppure a una coppia canonica registrata; altrimenti la validazione fallisce.
+
 La migrazione viene eseguita una coppia documentale alla volta:
 
 1. rinominare con `git mv` il documento italiano esistente usando il suffisso `.it.md`
@@ -94,7 +96,7 @@ Eseguire il validatore della documentazione bilingue dalla radice del repository
 python3 scripts/check-bilingual-docs.py
 ```
 
-Il validatore controlla le coppie documentali registrate, la gerarchia degli heading, i blocchi di codice, i riferimenti tecnici inline, i link reciproci per la lingua e le destinazioni dei link locali.
+Il validatore controlla le coppie documentali registrate, la gerarchia degli heading, i blocchi di codice, i riferimenti tecnici inline, i link reciproci per la lingua, le destinazioni dei link locali e la classificazione completa dei file Markdown pubblici.
 
 ## Checklist di revisione
 
