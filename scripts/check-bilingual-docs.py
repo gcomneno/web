@@ -3,9 +3,11 @@
 
 from __future__ import annotations
 
+import html
 import json
 import re
 import sys
+import unicodedata
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -44,6 +46,103 @@ def parse_link_target(raw_target: str) -> str:
         return target[1 : target.index(">")].strip()
 
     return target.split(maxsplit=1)[0] if target else ""
+
+
+\
+def markdown_heading_text(raw_heading: str) -> str:
+    heading = re.sub(
+        r"!\[([^\]]*)\]\([^)]+\)",
+        r"\1",
+        raw_heading,
+    )
+    heading = re.sub(
+        r"\[([^\]]+)\]\([^)]+\)",
+        r"\1",
+        heading,
+    )
+    heading = re.sub(r"<[^>]+>", "", heading)
+    heading = heading.replace("`", "")
+    heading = heading.replace("*", "")
+    heading = heading.replace("~", "")
+    return html.unescape(heading).strip()
+
+
+def github_slug_base(raw_heading: str) -> str:
+    heading = markdown_heading_text(raw_heading)
+    heading = re.sub(r"\s+", "-", heading.lower().strip())
+
+    characters: list[str] = []
+
+    for character in heading:
+        category = unicodedata.category(character)
+
+        if (
+            character in {"-", "_"}
+            or character.isalnum()
+            or category.startswith("M")
+        ):
+            characters.append(character)
+
+    return "".join(characters)
+
+
+def github_heading_anchors(text: str) -> tuple[str, ...]:
+    anchors: list[str] = []
+    occurrences: Counter[str] = Counter()
+
+    in_fence = False
+    fence_character = ""
+    fence_length = 0
+
+    for line in text.splitlines():
+        if not in_fence:
+            fence_match = FENCE_RE.match(line)
+
+            if fence_match:
+                marker = fence_match.group(1)
+                in_fence = True
+                fence_character = marker[0]
+                fence_length = len(marker)
+                continue
+
+            heading_match = HEADING_RE.match(line)
+
+            if not heading_match:
+                continue
+
+            raw_heading = re.sub(
+                r"\s+#+\s*$",
+                "",
+                heading_match.group(2),
+            ).strip()
+
+            base = github_slug_base(raw_heading)
+            occurrence = occurrences[base]
+            occurrences[base] += 1
+
+            anchor = (
+                base
+                if occurrence == 0
+                else f"{base}-{occurrence}"
+            )
+            anchors.append(anchor)
+            continue
+
+        stripped = line.lstrip()
+        closing = stripped.strip()
+
+        if (
+            closing.startswith(
+                fence_character * fence_length
+            )
+            and set(closing) <= {fence_character}
+            and len(closing) >= fence_length
+        ):
+            in_fence = False
+            fence_character = ""
+            fence_length = 0
+
+    return tuple(anchors)
 
 
 def parse_markdown(path: Path, errors: list[str]) -> MarkdownDocument:
@@ -137,48 +236,130 @@ def translation_for(canonical: str, suffix: str) -> str:
     return canonical[:-3] + suffix
 
 
+\
+def split_local_target(target: str) -> tuple[str, str]:
+    path_and_query, separator, fragment = target.partition("#")
+    path_part = path_and_query.split("?", 1)[0]
+
+    return (
+        unquote(path_part),
+        unquote(fragment) if separator else "",
+    )
+
+
+def resolve_local_target(
+    document: MarkdownDocument,
+    target: str,
+) -> tuple[Path, str] | None:
+    path_part, fragment = split_local_target(target)
+
+    candidate = (
+        document.path
+        if not path_part
+        else document.path.parent / path_part
+    )
+    resolved = candidate.resolve()
+
+    try:
+        resolved.relative_to(ROOT.resolve())
+    except ValueError:
+        return None
+
+    return resolved, fragment
+
+
 def validate_local_links(
     document: MarkdownDocument,
     errors: list[str],
 ) -> None:
     for target in document.links:
-        if (
-            not target
-            or target.startswith("#")
-            or URI_SCHEME_RE.match(target)
-        ):
+        if not target or URI_SCHEME_RE.match(target):
             continue
 
-        path_part = target.split("#", 1)[0].split("?", 1)[0]
+        resolved_target = resolve_local_target(
+            document,
+            target,
+        )
 
-        if not path_part:
+        if resolved_target is None:
+            errors.append(
+                f"{relative_name(document.path)}: "
+                f"link locale esterno al repository: {target}"
+            )
             continue
 
-        resolved = document.path.parent / unquote(path_part)
+        resolved, fragment = resolved_target
 
         if not resolved.exists():
             errors.append(
                 f"{relative_name(document.path)}: "
                 f"link locale inesistente: {target}"
             )
+            continue
+
+        if (
+            fragment
+            and resolved.is_file()
+            and resolved.suffix.lower() == ".md"
+        ):
+            anchors = github_heading_anchors(
+                resolved.read_text(encoding="utf-8")
+            )
+
+            if fragment not in anchors:
+                errors.append(
+                    f"{relative_name(document.path)}: "
+                    f"anchor locale inesistente: {target}"
+                )
 
 
-def normalized_link_target(target: str, suffix: str) -> str:
-    target = target.strip()
-
-    if not target:
-        return target
-
+def normalized_navigation_target(
+    document: MarkdownDocument,
+    target: str,
+    suffix: str,
+) -> str:
     if URI_SCHEME_RE.match(target):
         return target
 
-    path_part = target.split("#", 1)[0]
-    path_part = path_part.split("?", 1)[0]
+    resolved_target = resolve_local_target(
+        document,
+        target,
+    )
 
-    if path_part.endswith(suffix):
-        path_part = path_part[: -len(suffix)] + ".md"
+    if resolved_target is None:
+        return f"outside:{target}"
 
-    return unquote(path_part)
+    resolved, fragment = resolved_target
+
+    try:
+        relative = resolved.relative_to(
+            ROOT.resolve()
+        ).as_posix()
+    except ValueError:
+        return f"outside:{target}"
+
+    if relative.endswith(suffix):
+        relative = relative[: -len(suffix)] + ".md"
+
+    if not fragment:
+        return relative
+
+    if (
+        resolved.is_file()
+        and resolved.suffix.lower() == ".md"
+    ):
+        anchors = github_heading_anchors(
+            resolved.read_text(encoding="utf-8")
+        )
+
+        try:
+            heading_index = anchors.index(fragment)
+        except ValueError:
+            return f"{relative}#missing:{fragment}"
+
+        return f"{relative}#heading-index:{heading_index}"
+
+    return f"{relative}#{fragment}"
 
 
 def validate_language_links(
@@ -261,11 +442,19 @@ def validate_pair(
         )
 
     canonical_links = Counter(
-        normalized_link_target(target, suffix)
+        normalized_navigation_target(
+            canonical,
+            target,
+            suffix,
+        )
         for target in canonical.links
     )
     translation_links = Counter(
-        normalized_link_target(target, suffix)
+        normalized_navigation_target(
+            translation,
+            target,
+            suffix,
+        )
         for target in translation.links
     )
 

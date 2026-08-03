@@ -96,7 +96,7 @@ Eseguire il validatore della documentazione bilingue dalla radice del repository
 python3 scripts/check-bilingual-docs.py
 ```
 
-Il validatore controlla le coppie documentali registrate, la gerarchia degli heading, i blocchi di codice, i riferimenti tecnici inline, i link reciproci per la lingua, le destinazioni dei link locali e la classificazione completa dei file Markdown pubblici.
+Il validatore controlla le coppie documentali registrate, la gerarchia degli heading, i blocchi di codice, i riferimenti tecnici inline, i link reciproci per la lingua, le destinazioni dei file e degli anchor locali e la classificazione completa dei file Markdown pubblici.
 
 ## Checklist di revisione
 
