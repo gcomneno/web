@@ -1,61 +1,63 @@
 # Web-based Lab
 
-Laboratorio personale per progetti legati al mondo web/internet.
+[English](README.md) | [Italiano](README.it.md)
 
-Questo repository raccoglie esperimenti, appunti e piccoli progetti didattici legati allo sviluppo web.
+Personal laboratory for projects related to the web and the Internet.
 
-## Sottoprogetti
+This repository contains experiments, notes, and small educational projects related to web development.
 
-| Cartella | Descrizione |
+## Subprojects
+
+| Directory | Description |
 |---|---|
-| `laravel-lab/` | Laboratorio didattico Laravel per principianti, seguito lezione per lezione. |
+| `laravel-lab/` | Step-by-step Laravel learning laboratory for beginners. |
 
-## Percorso Laravel
+## Laravel learning path
 
-Il primo sottoprogetto attivo è `laravel-lab/`.
+The first active subproject is `laravel-lab/`.
 
-Da qui puoi partire se vuoi seguire il laboratorio Laravel da zero:
+Start here to follow the Laravel laboratory from scratch:
 
-1. leggi `laravel-lab/README.md`
-2. consulta `laravel-lab/GLOSSARY.md` quando incontri termini nuovi
-3. segui le lezioni in ordine dentro `laravel-lab/lessons/`
-4. avvia il progetto locale in `laravel-lab/first-project/`
+1. read `laravel-lab/README.md`
+2. consult `laravel-lab/GLOSSARY.md` when you encounter unfamiliar terms
+3. follow the lessons in order inside `laravel-lab/lessons/`
+4. run the local project in `laravel-lab/first-project/`
 
-## Stato attuale del laboratorio Laravel
+## Current Laravel laboratory status
 
-Il percorso ha già coperto:
+The learning path has already covered:
 
-- installazione e setup locale
-- primo giro nello scheletro del progetto
-- prime route
-- prime view Blade
-- passaggio dati da route a view
-- configurazione con `.env` e `config()`
-- passaggio dalle closure ai controller
-- ripasso operativo di Artisan e dei comandi principali
-- introduzione alle migration database
-- creazione del primo model Laravel
-- primo assaggio di Eloquent
-- operazioni CRUD base con Eloquent
-- protezione mass assignment con `$fillable`
-- parametri dinamici nelle route
-- recupero dati da URL con `findOrFail()`
-- passaggio di model Eloquent a view Blade
-- uso base di Carbon per formattare date
-- route model binding su ID e slug
-- aggiunta della colonna `slug` alla tabella `projects`
-- primo form POST con `@csrf`
-- lettura dati da `Request`
-- creazione di record dal form con `Project::create()`
-- generazione slug con `str()->slug()`
-- spostamento delle route progetto in `ProjectController`
-- validazione dei form con `$request->validate()`
-- visualizzazione errori di validazione con `@error`
-- recupero valori precedenti del form con `old()`
-- messaggi flash di successo con `with()` e `@session`
+- local installation and setup
+- an initial tour of the project skeleton
+- basic routes
+- basic Blade views
+- passing data from routes to views
+- configuration through `.env` and `config()`
+- moving from closures to controllers
+- practical review of Artisan and its main commands
+- introduction to database migrations
+- creation of the first Laravel model
+- initial use of Eloquent
+- basic CRUD operations with Eloquent
+- mass-assignment protection through `$fillable`
+- dynamic route parameters
+- retrieving URL-driven data with `findOrFail()`
+- passing Eloquent models to Blade views
+- basic Carbon date formatting
+- route model binding by ID and slug
+- addition of the `slug` column to the `projects` table
+- the first POST form with `@csrf`
+- reading data from `Request`
+- creating records from a form with `Project::create()`
+- generating slugs with `str()->slug()`
+- moving project routes into `ProjectController`
+- form validation with `$request->validate()`
+- displaying validation errors with `@error`
+- restoring submitted form values with `old()`
+- success flash messages with `with()` and `@session`
 
-## Nota
+## Content policy
 
-I file video, audio e le trascrizioni integrali dei corsi non sono inclusi nel repository pubblico.
+Video files, audio files, and complete course transcripts are not included in the public repository.
 
-Sono presenti solo appunti, lesson learned, codice prodotto nel laboratorio e script di supporto.
+Only original notes, lessons learned, laboratory code, and supporting scripts are published.
