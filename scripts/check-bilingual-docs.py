@@ -6,6 +6,7 @@ from __future__ import annotations
 import html
 import json
 import re
+import subprocess
 import sys
 import unicodedata
 from collections import Counter
@@ -466,6 +467,61 @@ def validate_pair(
         )
 
 
+def repository_markdown_files(
+    ignored_directories: set[str],
+    errors: list[str],
+) -> set[str]:
+    result = subprocess.run(
+        [
+            "git",
+            "ls-files",
+            "-z",
+            "--cached",
+            "--others",
+            "--exclude-standard",
+            "--",
+            "*.md",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+
+    if result.returncode != 0:
+        diagnostic = result.stderr.decode(
+            "utf-8",
+            errors="replace",
+        ).strip()
+
+        errors.append(
+            "impossibile inventariare i Markdown tramite Git"
+            + (f": {diagnostic}" if diagnostic else "")
+        )
+        return set()
+
+    documents: set[str] = set()
+
+    for raw_path in result.stdout.split(b"\0"):
+        if not raw_path:
+            continue
+
+        relative_name = raw_path.decode(
+            "utf-8",
+            errors="surrogateescape",
+        )
+        relative = Path(relative_name)
+
+        if any(
+            part in ignored_directories
+            for part in relative.parts
+        ):
+            continue
+
+        documents.add(relative.as_posix())
+
+    return documents
+
+
 def main() -> int:
     errors: list[str] = []
 
@@ -646,19 +702,10 @@ def main() -> int:
             + ", ".join(sorted(translation_overlap))
         )
 
-    all_markdown: set[str] = set()
-
-    for path in ROOT.rglob("*.md"):
-        relative = path.relative_to(ROOT)
-
-        if any(
-            part in ignored_directories
-            for part in relative.parts
-        ):
-            continue
-
-        if path.is_file():
-            all_markdown.add(relative.as_posix())
+    all_markdown = repository_markdown_files(
+        ignored_directories,
+        errors,
+    )
 
     translations_on_disk = {
         name

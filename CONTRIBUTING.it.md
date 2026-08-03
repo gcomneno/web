@@ -98,6 +98,8 @@ python3 scripts/check-bilingual-docs.py
 
 Il validatore controlla le coppie documentali registrate, la gerarchia degli heading, i blocchi di codice, i riferimenti tecnici inline, i link reciproci per la lingua, le destinazioni dei file e degli anchor locali e la classificazione completa dei file Markdown pubblici.
 
+La classificazione dei Markdown pubblici segue Git: vengono validati i file tracciati e i nuovi file non tracciati che non siano esclusi da `.gitignore`. Il materiale di lavoro locale ignorato resta fuori dall'ambito della documentazione pubblica.
+
 ## Checklist di revisione
 
 Prima di richiedere la revisione, verificare che:
