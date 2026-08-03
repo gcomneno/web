@@ -86,6 +86,16 @@ When changing an already migrated document:
 
 Code identifiers, commands, paths, filenames, API names, and literal output should normally remain unchanged across translations.
 
+## Automated validation
+
+Run the bilingual documentation validator from the repository root:
+
+```bash
+python3 scripts/check-bilingual-docs.py
+```
+
+The validator checks registered document pairs, heading hierarchy, fenced code blocks, inline technical literals, reciprocal language links, and local link targets.
+
 ## Review checklist
 
 Before requesting review, verify that:

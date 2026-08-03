@@ -86,6 +86,16 @@ Quando si modifica un documento già migrato:
 
 Identificatori del codice, comandi, percorsi, nomi di file, API e output letterali devono normalmente rimanere invariati nelle traduzioni.
 
+## Validazione automatica
+
+Eseguire il validatore della documentazione bilingue dalla radice del repository:
+
+```bash
+python3 scripts/check-bilingual-docs.py
+```
+
+Il validatore controlla le coppie documentali registrate, la gerarchia degli heading, i blocchi di codice, i riferimenti tecnici inline, i link reciproci per la lingua e le destinazioni dei link locali.
+
 ## Checklist di revisione
 
 Prima di richiedere la revisione, verificare che:

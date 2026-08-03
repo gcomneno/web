@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "canonical_language": "en",
+  "translation_language": "it",
+  "translation_suffix": ".it.md",
+  "canonical_documents": [
+    "CONTRIBUTING.md",
+    "README.md"
+  ],
+  "ignored_directories": [
+    ".git",
+    "node_modules",
+    "vendor"
+  ]
+}
