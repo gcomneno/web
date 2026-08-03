@@ -51,3 +51,7 @@ transcript.txt
 Thumbs.db
 .vscode/
 .idea/
+
+# Python bytecode and interpreter caches
+__pycache__/
+*.py[cod]

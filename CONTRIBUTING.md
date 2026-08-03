@@ -96,7 +96,13 @@ Run the bilingual documentation validator from the repository root:
 python3 scripts/check-bilingual-docs.py
 ```
 
-The validator checks registered document pairs, heading hierarchy, fenced code blocks, inline technical literals, reciprocal language links, local file and heading-anchor targets, and the complete classification of public Markdown files.
+Run the validator regression tests with:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p "test_bilingual_docs.py" -v
+```
+
+The validator checks registered document pairs, heading hierarchy, fenced and indented code blocks, inline technical literals, reciprocal language links, local file and heading-anchor targets, and the complete classification of public Markdown files.
 
 Public Markdown classification follows Git: tracked files and new untracked files not excluded by `.gitignore` are validated. Ignored local working material remains outside the public documentation scope.
 
