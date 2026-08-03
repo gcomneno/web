@@ -5,11 +5,11 @@
   "translation_suffix": ".it.md",
   "canonical_documents": [
     "CONTRIBUTING.md",
-    "README.md"
+    "README.md",
+    "laravel-lab/README.md"
   ],
   "legacy_unpaired_documents": [
     "laravel-lab/GLOSSARY.md",
-    "laravel-lab/README.md",
     "laravel-lab/lessons/lesson-01-learned.md",
     "laravel-lab/lessons/lesson-02-learned.md",
     "laravel-lab/lessons/lesson-03-learned.md",
