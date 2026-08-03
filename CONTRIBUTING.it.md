@@ -96,7 +96,13 @@ Eseguire il validatore della documentazione bilingue dalla radice del repository
 python3 scripts/check-bilingual-docs.py
 ```
 
-Il validatore controlla le coppie documentali registrate, la gerarchia degli heading, i blocchi di codice, i riferimenti tecnici inline, i link reciproci per la lingua, le destinazioni dei file e degli anchor locali e la classificazione completa dei file Markdown pubblici.
+Eseguire i test di regressione del validatore con:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p "test_bilingual_docs.py" -v
+```
+
+Il validatore controlla le coppie documentali registrate, la gerarchia degli heading, i blocchi di codice delimitati o indentati, i riferimenti tecnici inline, i link reciproci per la lingua, le destinazioni dei file e degli anchor locali e la classificazione completa dei file Markdown pubblici.
 
 La classificazione dei Markdown pubblici segue Git: vengono validati i file tracciati e i nuovi file non tracciati che non siano esclusi da `.gitignore`. Il materiale di lavoro locale ignorato resta fuori dall'ambito della documentazione pubblica.
 

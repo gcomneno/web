@@ -146,7 +146,194 @@ def github_heading_anchors(text: str) -> tuple[str, ...]:
     return tuple(anchors)
 
 
-def parse_markdown(path: Path, errors: list[str]) -> MarkdownDocument:
+def strip_indentation(
+    line: str,
+    required_width: int,
+) -> str | None:
+    position = 0
+    width = 0
+
+    while position < len(line) and width < required_width:
+        character = line[position]
+
+        if character == " ":
+            width += 1
+            position += 1
+            continue
+
+        if character == "\t":
+            next_width = width + 4 - (width % 4)
+            position += 1
+
+            if next_width > required_width:
+                return (
+                    " " * (next_width - required_width)
+                    + line[position:]
+                )
+
+            width = next_width
+            continue
+
+        return None
+
+    if width < required_width:
+        return None
+
+    return line[position:]
+
+
+def indented_code_content(line: str) -> str | None:
+    return strip_indentation(line, 4)
+
+
+def indentation_width(line: str) -> int:
+    width = 0
+
+    for character in line:
+        if character == " ":
+            width += 1
+            continue
+
+        if character == "\t":
+            width += 4 - (width % 4)
+            continue
+
+        break
+
+    return width
+
+
+def is_thematic_break(line: str) -> bool:
+    compact = line.strip().replace(" ", "").replace("\t", "")
+
+    return (
+        len(compact) >= 3
+        and compact[0] in "*-_"
+        and set(compact) == {compact[0]}
+    )
+
+
+def list_item_content_indent(line: str) -> int | None:
+    if is_thematic_break(line):
+        return None
+
+    match = re.match(
+        r"^( {0,3})([-+*]|\d{1,9}[.)])([ \t]+|$)",
+        line,
+    )
+
+    if match is None:
+        return None
+
+    marker_indent = len(match.group(1))
+    marker_width = len(match.group(2))
+    whitespace = match.group(3)
+    whitespace_width = indentation_width(whitespace)
+
+    if 1 <= whitespace_width <= 4:
+        padding = whitespace_width
+    else:
+        padding = 1
+
+    return marker_indent + marker_width + padding
+
+
+def active_list_content_indent(
+    lines: list[str],
+    index: int,
+) -> int | None:
+    cursor = index - 1
+    immediate_blank_count = 0
+
+    while cursor >= 0 and not lines[cursor].strip():
+        immediate_blank_count += 1
+        cursor -= 1
+
+    if (
+        immediate_blank_count == 0
+        or immediate_blank_count >= 2
+    ):
+        return None
+
+    intervening_lines: list[str] = []
+    blank_run = 0
+
+    while cursor >= 0:
+        line = lines[cursor]
+
+        if not line.strip():
+            blank_run += 1
+
+            if blank_run >= 2:
+                return None
+
+            cursor -= 1
+            continue
+
+        blank_run = 0
+        content_indent = list_item_content_indent(line)
+
+        if content_indent is not None:
+            compatible = all(
+                (
+                    not candidate.strip()
+                    or indentation_width(candidate)
+                    >= content_indent
+                )
+                for candidate in intervening_lines
+            )
+
+            return content_indent if compatible else None
+
+        intervening_lines.append(line)
+        cursor -= 1
+
+    return None
+
+
+def indented_code_start_indent(
+    lines: list[str],
+    index: int,
+) -> int | None:
+    current_indent = indentation_width(lines[index])
+
+    if current_indent < 4:
+        return None
+
+    if index == 0:
+        return 4
+
+    previous_line = lines[index - 1]
+
+    if HEADING_RE.match(previous_line):
+        return 4
+
+    if previous_line.strip():
+        return None
+
+    list_content_indent = active_list_content_indent(
+        lines,
+        index,
+    )
+
+    if list_content_indent is None:
+        return 4
+
+    nested_code_indent = list_content_indent + 4
+
+    if current_indent >= nested_code_indent:
+        return nested_code_indent
+
+    if current_indent < list_content_indent:
+        return 4
+
+    return None
+
+
+def parse_markdown(
+    path: Path,
+    errors: list[str],
+) -> MarkdownDocument:
     text = path.read_text(encoding="utf-8")
     lines = text.splitlines()
 
@@ -160,44 +347,118 @@ def parse_markdown(path: Path, errors: list[str]) -> MarkdownDocument:
     fence_info = ""
     fence_body: list[str] = []
 
-    for line_number, line in enumerate(lines, start=1):
-        if not in_fence:
-            fence_match = FENCE_RE.match(line)
+    index = 0
 
-            if fence_match:
-                marker = fence_match.group(1)
-                in_fence = True
-                fence_character = marker[0]
-                fence_length = len(marker)
-                fence_info = fence_match.group(2).strip()
+    while index < len(lines):
+        line = lines[index]
+
+        if in_fence:
+            stripped = line.lstrip()
+
+            if (
+                stripped.startswith(
+                    fence_character * fence_length
+                )
+                and set(stripped.strip())
+                <= {fence_character}
+                and len(stripped.strip()) >= fence_length
+            ):
+                code_blocks.append(
+                    (fence_info, "\n".join(fence_body))
+                )
+                in_fence = False
+                fence_character = ""
+                fence_length = 0
+                fence_info = ""
                 fence_body = []
-                continue
+            else:
+                fence_body.append(line)
 
-            heading_match = HEADING_RE.match(line)
-
-            if heading_match:
-                heading_levels.append(len(heading_match.group(1)))
-
-            prose_lines.append(line)
+            index += 1
             continue
 
-        stripped = line.lstrip()
+        fence_match = FENCE_RE.match(line)
 
-        if (
-            stripped.startswith(fence_character * fence_length)
-            and set(stripped.strip()) <= {fence_character}
-            and len(stripped.strip()) >= fence_length
-        ):
-            code_blocks.append(
-                (fence_info, "\n".join(fence_body))
-            )
-            in_fence = False
-            fence_character = ""
-            fence_length = 0
-            fence_info = ""
+        if fence_match:
+            marker = fence_match.group(1)
+            in_fence = True
+            fence_character = marker[0]
+            fence_length = len(marker)
+            fence_info = fence_match.group(2).strip()
             fence_body = []
-        else:
-            fence_body.append(line)
+            index += 1
+            continue
+
+        indented_code_indent = indented_code_start_indent(
+            lines,
+            index,
+        )
+
+        if indented_code_indent is not None:
+            indented_content = strip_indentation(
+                line,
+                indented_code_indent,
+            )
+
+            if indented_content is None:
+                raise RuntimeError(
+                    "Inconsistent indented-code start"
+                )
+
+            indented_body = [indented_content]
+            index += 1
+
+            while index < len(lines):
+                candidate = lines[index]
+                candidate_content = strip_indentation(
+                    candidate,
+                    indented_code_indent,
+                )
+
+                if candidate_content is not None:
+                    indented_body.append(candidate_content)
+                    index += 1
+                    continue
+
+                if not candidate.strip():
+                    lookahead = index
+                    blank_lines: list[str] = []
+
+                    while (
+                        lookahead < len(lines)
+                        and not lines[lookahead].strip()
+                    ):
+                        blank_lines.append("")
+                        lookahead += 1
+
+                    if (
+                        lookahead < len(lines)
+                        and strip_indentation(
+                            lines[lookahead],
+                            indented_code_indent,
+                        )
+                        is not None
+                    ):
+                        indented_body.extend(blank_lines)
+                        index = lookahead
+                        continue
+
+                break
+
+            code_blocks.append(
+                ("", "\n".join(indented_body))
+            )
+            continue
+
+        heading_match = HEADING_RE.match(line)
+
+        if heading_match:
+            heading_levels.append(
+                len(heading_match.group(1))
+            )
+
+        prose_lines.append(line)
+        index += 1
 
     if in_fence:
         errors.append(
@@ -205,7 +466,9 @@ def parse_markdown(path: Path, errors: list[str]) -> MarkdownDocument:
         )
 
     prose = "\n".join(prose_lines)
-    inline_code = Counter(INLINE_CODE_RE.findall(prose))
+    inline_code = Counter(
+        INLINE_CODE_RE.findall(prose)
+    )
     links = tuple(
         parse_link_target(raw)
         for raw in LINK_RE.findall(prose)
