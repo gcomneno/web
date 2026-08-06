@@ -44,6 +44,9 @@ Il percorso segue lezioni video analizzate una alla volta:
 | 16 | Validazione form con `$request->validate()` | `lessons/lesson-16-learned.md` |
 | 17 | Visualizzazione errori e `old()` | `lessons/lesson-17-learned.md` |
 | 18 | Flash messages di successo | `lessons/lesson-18-learned.md` |
+| 19 | Elenco progetti in Blade | `lessons/lesson-19-learned.md` |
+| 20 | Ordinamento record con Eloquent | `lessons/lesson-20-learned.md` |
+| 21 | Altri verbi HTTP e cancellazione progetto | `lessons/lesson-21-learned.md` |
 
 ## Stato del progetto esempio
 
@@ -78,7 +81,15 @@ Al momento contiene:
 - validazione del campo `name` con `$request->validate()`
 - visualizzazione errori di validazione nella view del form
 - conservazione del valore inserito con `old('name')`
-- messaggio flash temporaneo dopo la creazione di un progetto
+- view indice dei progetti in `resources/views/projects/index.blade.php`
+- metodo `index` in `ProjectController`
+- progetti ordinati con `Project::latest()->get()`
+- link al dettaglio generati con `route('projects.show', $project)`
+- route `DELETE /projects/{project:slug}` gestita da `ProjectController@destroy`
+- form di cancellazione protetto con `@csrf` e `@method('DELETE')`
+- cancellazione del progetto tramite `$project->delete()`
+- redirect dopo la creazione verso `projects.index`
+- messaggio flash mostrato nella view indice dei progetti
 
 ## Come ripartire da zero
 
@@ -122,6 +133,10 @@ Poi apri nel browser:
 Homepage:
 
     http://127.0.0.1:8000
+
+Lista progetti:
+
+    http://127.0.0.1:8000/projects
 
 Form creazione progetto:
 
@@ -176,6 +191,10 @@ Creare la view dettaglio progetto:
 Creare la view form progetto:
 
     php artisan make:view projects.create
+
+Creare la view indice dei progetti:
+
+    php artisan make:view projects.index
 
 Creare un controller:
 

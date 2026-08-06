@@ -288,8 +288,8 @@ class BilingualValidatorTests(unittest.TestCase):
         )
 
         self.assertEqual(errors, [])
-        self.assertEqual(len(english.code_blocks), 36)
-        self.assertEqual(len(italian.code_blocks), 36)
+        self.assertEqual(len(english.code_blocks), 38)
+        self.assertEqual(len(italian.code_blocks), 38)
 
         english_lines = sum(
             len(body.splitlines())
@@ -300,8 +300,8 @@ class BilingualValidatorTests(unittest.TestCase):
             for _, body in italian.code_blocks
         )
 
-        self.assertEqual(english_lines, 37)
-        self.assertEqual(italian_lines, 37)
+        self.assertEqual(english_lines, 39)
+        self.assertEqual(italian_lines, 39)
         self.assertEqual(
             english.code_blocks,
             italian.code_blocks,

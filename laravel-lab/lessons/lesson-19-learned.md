@@ -1,50 +1,52 @@
-# Getting Started with Laravel — Lezione 19
+# Getting Started with Laravel — Lesson 19
 ## Listing in Blade
 
-Data laboratorio: 2026-08-06  
-Corso: Getting Started with Laravel  
-Episodio: 19 — Listing in Blade  
-Framework usato nel laboratorio: Laravel Framework 13.7.0
+[English](lesson-19-learned.md) | [Italiano](lesson-19-learned.it.md)
+
+Lab date: 2026-08-06
+Course: Getting Started with Laravel
+Episode: 19 — Listing in Blade
+Framework used in the lab: Laravel Framework 13.7.0
 
 ---
 
-## 1. Obiettivo della lezione
+## 1. Lesson objective
 
-L’obiettivo della lezione è mostrare una lista di progetti in una view Blade.
+The objective of this lesson is to display a list of projects in a Blade view.
 
-Nelle lezioni precedenti abbiamo già imparato a:
+In the previous lessons, we already learned how to:
 
-- creare un progetto tramite form
-- validare il form
-- mostrare errori
-- mostrare un messaggio flash
-- vedere il dettaglio di un singolo progetto tramite slug
+- create a project through a form
+- validate the form
+- display errors
+- display a flash message
+- view the details of a single project through its slug
 
-Ora aggiungiamo la pagina indice:
+Now we add the index page:
 
 ```text
 GET /projects
 ```
 
-Questa pagina deve mostrare tutti i progetti salvati nel database.
+This page must display all projects stored in the database.
 
 ---
 
-## 2. Nuovo metodo `index()`
+## 2. New `index()` method
 
-In un controller RESTful Laravel, il metodo convenzionale per mostrare una lista di risorse è:
+In a RESTful Laravel controller, the conventional method for displaying a list of resources is:
 
 ```php
 index()
 ```
 
-Nel nostro caso lo aggiungiamo a:
+In our case, we add it to:
 
 ```text
 app/Http/Controllers/ProjectController.php
 ```
 
-Metodo iniziale:
+Initial method:
 
 ```php
 public function index()
@@ -53,31 +55,31 @@ public function index()
 }
 ```
 
-Per ora mostra solo la view.
+For now, it only displays the view.
 
 ---
 
-## 3. Nuova view `projects.index`
+## 3. New `projects.index` view
 
-Comando Artisan:
+Artisan command:
 
 ```bash
 php artisan make:view projects.index
 ```
 
-Questo crea:
+This creates:
 
 ```text
 resources/views/projects/index.blade.php
 ```
 
-La dot notation:
+The dot notation:
 
 ```php
 view('projects.index')
 ```
 
-corrisponde a:
+corresponds to:
 
 ```text
 resources/views/projects/index.blade.php
@@ -85,22 +87,22 @@ resources/views/projects/index.blade.php
 
 ---
 
-## 4. Nuova route `GET /projects`
+## 4. New `GET /projects` route
 
-In `routes/web.php` aggiungiamo:
+In `routes/web.php`, we add:
 
 ```php
 Route::get('/projects', [ProjectController::class, 'index'])
     ->name('projects.index');
 ```
 
-Questa route collega:
+This route connects:
 
 ```text
 GET /projects
 ```
 
-al metodo:
+to the method:
 
 ```text
 ProjectController@index
@@ -108,47 +110,47 @@ ProjectController@index
 
 ---
 
-## 5. Nominare le route
+## 5. Naming routes
 
-La lezione rafforza l’uso delle named routes.
+The lesson reinforces the use of named routes.
 
-Invece di scrivere URL direttamente nelle view:
+Instead of writing URLs directly in views:
 
 ```blade
 <a href="/projects/create">New project</a>
 ```
 
-è meglio usare:
+it is better to use:
 
 ```blade
 <a href="{{ route('projects.create') }}">New project</a>
 ```
 
-Perché?
+Why?
 
-Se domani l’URL cambia, ad esempio da:
+If the URL changes in the future, for example from:
 
 ```text
 /projects/create
 ```
 
-a:
+to:
 
 ```text
 /project/new
 ```
 
-non dobbiamo modificare tutte le view.
+we do not need to modify every view.
 
-Ci basta aggiornare la route.
+We only need to update the route.
 
-Il nome resta stabile.
+The name remains stable.
 
 ---
 
-## 6. Convenzione nomi route
+## 6. Route naming convention
 
-La lezione usa nomi coerenti con la struttura RESTful:
+The lesson uses names consistent with the RESTful structure:
 
 ```text
 projects.index
@@ -157,50 +159,50 @@ projects.store
 projects.show
 ```
 
-Questa forma è chiara perché segue lo schema:
+This form is clear because it follows the pattern:
 
 ```text
 risorsa.azione
 ```
 
-Esempi:
+Examples:
 
-| Nome route | Significato |
+| Route name | Meaning |
 |---|---|
-| `projects.index` | lista dei progetti |
-| `projects.create` | form di creazione progetto |
-| `projects.store` | endpoint POST di salvataggio |
-| `projects.show` | dettaglio di un singolo progetto |
+| `projects.index` | project list |
+| `projects.create` | project creation form |
+| `projects.store` | POST endpoint for saving |
+| `projects.show` | details of a single project |
 
 ---
 
-## 7. Aggiornare il form con `route()`
+## 7. Updating the form with `route()`
 
-Nella view `projects.create`, il form può passare da:
+In the `projects.create` view, the form can change from:
 
 ```blade
 <form action="/projects" method="POST">
 ```
 
-a:
+to:
 
 ```blade
 <form action="{{ route('projects.store') }}" method="POST">
 ```
 
-Questo evita di hardcodare l’URL.
+This avoids hardcoding the URL.
 
-Regola pratica:
+Practical rule:
 
-> nelle view, preferisci `route('nome.route')` agli URL scritti a mano.
+> in views, prefer `route('nome.route')` over manually written URLs.
 
 ---
 
-## 8. Passare dati alla view
+## 8. Passing data to the view
 
-Per mostrare tutti i progetti, il controller deve recuperarli e passarli alla view.
+To display all projects, the controller must retrieve them and pass them to the view.
 
-Abbiamo già visto che `view()` accetta un secondo argomento:
+We have already seen that `view()` accepts a second argument:
 
 ```php
 return view('projects.index', [
@@ -208,7 +210,7 @@ return view('projects.index', [
 ]);
 ```
 
-Questo rende disponibile nella view la variabile:
+This makes the following variable available in the view:
 
 ```php
 $projects
@@ -216,25 +218,25 @@ $projects
 
 ---
 
-## 9. Recuperare i progetti con Eloquent
+## 9. Retrieving projects with Eloquent
 
-La lezione usa:
+The lesson uses:
 
 ```php
 Project::get()
 ```
 
-`get()` esegue la query e restituisce una collection di model.
+`get()` executes the query and returns a collection of models.
 
-Nel nostro caso:
+In our case:
 
 ```php
 $projects = Project::get();
 ```
 
-restituisce una collection di oggetti `Project`.
+returns a collection of `Project` objects.
 
-Codice:
+Code:
 
 ```php
 public function index()
@@ -249,36 +251,36 @@ public function index()
 
 ## 10. Collection
 
-Una collection Laravel è un contenitore di elementi.
+A Laravel collection is a container of items.
 
-Nel caso di Eloquent:
+In the case of Eloquent:
 
 ```php
 Project::get()
 ```
 
-restituisce una collection di model.
+returns a collection of models.
 
-Ma il concetto di collection non è limitato al database.
+However, the concept of a collection is not limited to the database.
 
-Una collection può contenere:
+A collection can contain:
 
-- model Eloquent
-- stringhe
-- oggetti
-- array
-- dati arrivati da API
-- elementi costruiti manualmente
+- Eloquent models
+- strings
+- objects
+- arrays
+- data received from APIs
+- manually created items
 
-Le collection hanno molti metodi utili per manipolare dati.
+Collections provide many useful methods for manipulating data.
 
-In questa lezione ci interessa soprattutto che siano iterabili.
+In this lesson, we are mainly interested in the fact that they are iterable.
 
 ---
 
-## 11. Iterare una collection in Blade
+## 11. Iterating over a collection in Blade
 
-Per scorrere tutti i progetti nella view, usiamo la direttiva Blade:
+To loop through all projects in the view, we use the Blade directive:
 
 ```blade
 @foreach ($projects as $project)
@@ -286,21 +288,21 @@ Per scorrere tutti i progetti nella view, usiamo la direttiva Blade:
 @endforeach
 ```
 
-È simile a un normale `foreach` PHP.
+It is similar to a regular PHP `foreach`.
 
-Dentro il ciclo:
+Inside the loop:
 
 ```php
 $project
 ```
 
-rappresenta un singolo model `Project`.
+represents a single `Project` model.
 
 ---
 
-## 12. Prima view indice
+## 12. First index view
 
-Versione minima:
+Minimal version:
 
 ```blade
 <!DOCTYPE html>
@@ -325,19 +327,19 @@ Versione minima:
 </html>
 ```
 
-Questa view mostra titolo, link al form di creazione e lista dei nomi dei progetti.
+This view displays a title, a link to the creation form, and a list of project names.
 
 ---
 
-## 13. Linkare ogni progetto al dettaglio
+## 13. Linking each project to its detail page
 
-Ora che abbiamo una pagina dettaglio:
+Now that we have a detail page:
 
 ```text
 GET /projects/{project:slug}
 ```
 
-ogni progetto nella lista può diventare un link.
+each project in the list can become a link.
 
 Route:
 
@@ -346,7 +348,7 @@ Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])
     ->name('projects.show');
 ```
 
-Nella view:
+In the view:
 
 ```blade
 <a href="{{ route('projects.show', $project) }}">
@@ -354,61 +356,61 @@ Nella view:
 </a>
 ```
 
-Laravel riceve il model `$project` e costruisce l’URL corretto.
+Laravel receives the `$project` model and builds the correct URL.
 
 ---
 
-## 14. Perché posso passare il model a `route()`
+## 14. Why the model can be passed to `route()`
 
-La route `projects.show` richiede un parametro:
+The `projects.show` route requires a parameter:
 
 ```text
 {project:slug}
 ```
 
-Se chiamiamo:
+If we call:
 
 ```blade
 route('projects.show', $project)
 ```
 
-Laravel sa usare il model per generare il parametro richiesto.
+Laravel knows how to use the model to generate the required parameter.
 
-Con il binding su slug, l’URL diventa qualcosa come:
+With slug binding, the URL becomes something like:
 
 ```text
 /projects/a-first-project
 ```
 
-In alternativa, si potrebbe essere espliciti:
+Alternatively, we could be explicit:
 
 ```blade
 route('projects.show', $project->slug)
 ```
 
-Ma passare il model è più flessibile.
+However, passing the model is more flexible.
 
-Se in futuro cambia la chiave usata nella route, si riduce il codice da modificare.
+If the key used by the route changes in the future, less code needs to be modified.
 
 ---
 
-## 15. Errore: parametro mancante
+## 15. Error: missing parameter
 
-Se proviamo a generare la route senza passare il progetto:
+If we try to generate the route without passing the project:
 
 ```blade
 route('projects.show')
 ```
 
-Laravel non sa quale progetto inserire nell’URL.
+Laravel does not know which project to insert into the URL.
 
-Errore tipico:
+Typical error:
 
 ```text
 Missing required parameter
 ```
 
-Questo ha senso perché la route ha bisogno di sapere quale valore usare per:
+This makes sense because the route needs to know which value to use for:
 
 ```text
 {project:slug}
@@ -416,17 +418,17 @@ Questo ha senso perché la route ha bisogno di sapere quale valore usare per:
 
 ---
 
-## 16. Passare parametri multipli a `route()`
+## 16. Passing multiple parameters to `route()`
 
-La lezione accenna anche al caso di più parametri.
+The lesson also briefly mentions the case of multiple parameters.
 
-Se una route richiede più valori, si può passare un array:
+If a route requires multiple values, an array can be passed:
 
 ```blade
 route('some.route', [$first, $second])
 ```
 
-Nel nostro caso serve un solo parametro, quindi basta:
+In our case, only one parameter is required, so this is enough:
 
 ```blade
 route('projects.show', $project)
@@ -434,7 +436,7 @@ route('projects.show', $project)
 
 ---
 
-## 17. View finale consigliata
+## 17. Recommended final view
 
 `resources/views/projects/index.blade.php`:
 
@@ -467,7 +469,7 @@ route('projects.show', $project)
 
 ---
 
-## 18. `ProjectController` aggiornato
+## 18. Updated `ProjectController`
 
 `app/Http/Controllers/ProjectController.php`:
 
@@ -518,9 +520,9 @@ class ProjectController extends Controller
 
 ---
 
-## 19. `routes/web.php` aggiornato
+## 19. Updated `routes/web.php`
 
-Ordine consigliato:
+Recommended order:
 
 ```php
 Route::get('/projects', [ProjectController::class, 'index'])
@@ -536,55 +538,55 @@ Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])
     ->name('projects.show');
 ```
 
-L’ordine è importante.
+The order matters.
 
-`/projects/create` deve restare prima di `/projects/{project:slug}` oppure Laravel potrebbe interpretare `create` come slug.
+`/projects/create` must remain before `/projects/{project:slug}`, otherwise Laravel might interpret `create` as a slug.
 
 ---
 
-## 20. Cosa verrà dopo
+## 20. What comes next
 
-La lezione chiude anticipando l’ordinamento.
+The lesson ends by anticipating ordering.
 
-Al momento:
+At the moment:
 
 ```php
 Project::get()
 ```
 
-recupera i progetti senza ordine esplicito.
+retrieves projects without an explicit order.
 
-La prossima lezione introdurrà probabilmente:
+The next lesson will probably introduce:
 
 ```php
 Project::orderBy(...)->get()
 ```
 
-oppure metodi equivalenti di Eloquent.
+or equivalent Eloquent methods.
 
 ---
 
-## 21. Lesson Learned
+## 21. Lessons learned
 
-### 1. `index()` mostra la lista di una risorsa
+### 1. `index()` displays a resource list
 
-Nel controller RESTful, `index()` è il metodo convenzionale per la pagina elenco.
+In a RESTful controller, `index()` is the conventional method for the listing page.
 
-### 2. `projects.index` è la view della lista
+### 2. `projects.index` is the list view
 
-Corrisponde a:
+It corresponds to:
 
 ```text
 resources/views/projects/index.blade.php
 ```
 
-### 3. `Project::get()` restituisce una collection
+### 3. `Project::get()` returns a collection
 
-La collection contiene più model `Project`.
+The collection contains multiple `Project` models.
 
-### 4. Una collection può essere iterata in Blade
+### 4. A collection can be iterated over in Blade
 
-Esempio:
+Example:
 
 ```blade
 @foreach ($projects as $project)
@@ -592,97 +594,97 @@ Esempio:
 @endforeach
 ```
 
-### 5. Le named routes evitano URL hardcoded
+### 5. Named routes avoid hardcoded URLs
 
-Meglio:
+Better:
 
 ```blade
 route('projects.create')
 ```
 
-rispetto a:
+than:
 
 ```blade
 /projects/create
 ```
 
-### 6. `route()` può generare URL anche con parametri
+### 6. `route()` can also generate URLs with parameters
 
-Esempio:
+Example:
 
 ```blade
 route('projects.show', $project)
 ```
 
-### 7. Con `{project:slug}`, Laravel può usare il model per generare l’URL
+### 7. With `{project:slug}`, Laravel can use the model to generate the URL
 
-Passare `$project` a `route()` produce un URL con lo slug corretto.
+Passing `$project` to `route()` produces a URL with the correct slug.
 
-### 8. Se manca un parametro, Laravel segnala errore
+### 8. Laravel reports an error when a parameter is missing
 
-Esempio:
+Example:
 
 ```blade
 route('projects.show')
 ```
 
-può generare:
+can generate:
 
 ```text
 Missing required parameter
 ```
 
-### 9. L’ordine delle route conta
+### 9. Route order matters
 
-`/projects/create` deve stare prima di `/projects/{project:slug}`.
+`/projects/create` must appear before `/projects/{project:slug}`.
 
 ---
 
-## 22. Comandi utili
+## 22. Useful commands
 
-Entrare nel progetto Laravel:
+Enter the Laravel project:
 
 ```bash
 cd ~/Progetti/labs/web/laravel-lab/first-project
 ```
 
-Creare la view:
+Create the view:
 
 ```bash
 php artisan make:view projects.index
 ```
 
-Controllare route:
+Inspect routes:
 
 ```bash
 php artisan route:list
 ```
 
-Avviare server:
+Start the server:
 
 ```bash
 php artisan serve
 ```
 
-Aprire lista progetti:
+Open the project list:
 
 ```text
 http://127.0.0.1:8000/projects
 ```
 
-Aprire form creazione:
+Open the creation form:
 
 ```text
 http://127.0.0.1:8000/projects/create
 ```
 
-Controllare controller:
+Inspect the controller:
 
 ```bash
 sed -n '1,240p' app/Http/Controllers/ProjectController.php
 ```
 
-Controllare view indice:
+Inspect the index view:
 
 ```bash
 sed -n '1,220p' resources/views/projects/index.blade.php
@@ -690,20 +692,20 @@ sed -n '1,220p' resources/views/projects/index.blade.php
 
 ---
 
-## 23. Stato finale della lezione
+## 23. Final lesson state
 
-Alla fine della lezione sappiamo:
+At the end of the lesson, we know how to:
 
-- creare una pagina indice per una risorsa
-- aggiungere `ProjectController@index`
-- creare `projects.index`
-- recuperare più model con `Project::get()`
-- passare una collection a Blade
-- iterare con `@foreach`
-- creare link con named routes
-- usare `route('projects.show', $project)`
-- evitare URL hardcoded nelle view
+- create an index page for a resource
+- add `ProjectController@index`
+- create `projects.index`
+- retrieve multiple models with `Project::get()`
+- pass a collection to Blade
+- iterate with `@foreach`
+- create links with named routes
+- use `route('projects.show', $project)`
+- avoid hardcoded URLs in views
 
-Obiettivo raggiunto:
+Objective achieved:
 
-> l’app mostra una lista di progetti e ogni progetto linka alla propria pagina dettaglio.
+> the application displays a list of projects, and each project links to its detail page.
