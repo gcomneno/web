@@ -15,6 +15,9 @@ Route::get('/eloquent', function () {
     dd(Project::all());
 })->name('eloquent');
 
+Route::get('/projects', [ProjectController::class, 'index'])
+    ->name('projects.index');
+
 Route::get('/projects/create', [ProjectController::class, 'create'])
     ->name('projects.create');
 
