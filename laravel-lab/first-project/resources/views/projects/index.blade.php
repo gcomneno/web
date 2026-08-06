@@ -7,6 +7,10 @@
 <body>
     <h1>Projects</h1>
 
+    @session('status')
+        <p>{{ $value }}</p>
+    @endsession
+
     <p>
         <a href="{{ route('projects.create') }}">New project</a>
     </p>
@@ -17,6 +21,13 @@
                 <a href="{{ route('projects.show', $project) }}">
                     {{ $project->name }}
                 </a>
+
+                <form action="{{ route('projects.destroy', $project) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+
+                    <button type="submit">Delete</button>
+                </form>
             </li>
         @endforeach
     </ul>

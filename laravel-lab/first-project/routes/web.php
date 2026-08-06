@@ -26,3 +26,6 @@ Route::post('/projects', [ProjectController::class, 'store'])
 
 Route::get('/projects/{project:slug}', [ProjectController::class, 'show'])
     ->name('projects.show');
+
+Route::delete('/projects/{project:slug}', [ProjectController::class, 'destroy'])
+    ->name('projects.destroy');
