@@ -11,7 +11,7 @@
         <p>{{ $value }}</p>
     @endsession
 
-    <form action="/projects" method="POST">
+    <form action="{{ route('projects.store') }}" method="POST">
         @csrf
 
         <div>
