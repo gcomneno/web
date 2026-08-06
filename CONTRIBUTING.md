@@ -76,6 +76,33 @@ Migration is performed one document pair at a time:
 
 New public documentation must not introduce additional Italian-only legacy files.
 
+## Creating new Laravel lessons
+
+Starting with lesson 22, Laravel lesson notes are not part of the progressive legacy migration. Every new lesson must be introduced as a complete bilingual pair in the same change.
+
+For lesson `NN`, create:
+
+- the canonical English document at `laravel-lab/lessons/lesson-NN-learned.md`
+- the Italian translation at `laravel-lab/lessons/lesson-NN-learned.it.md`
+
+Both files must include this reciprocal navigation pattern near the beginning:
+
+```markdown
+[English](lesson-NN-learned.md) | [Italiano](lesson-NN-learned.it.md)
+```
+
+The complete workflow for a new lesson is:
+
+1. create both language versions before staging or committing
+2. preserve the same heading hierarchy, code blocks, commands, paths, identifiers, and literal output
+3. register `laravel-lab/lessons/lesson-NN-learned.md` in `canonical_documents` inside `.github/bilingual-docs.json`
+4. add the lesson to both `laravel-lab/README.md` and `laravel-lab/README.it.md`
+5. update regression expectations only when a reference document intentionally gains or loses technical blocks
+6. run the validator tests and the complete bilingual validation
+7. inspect the documentation diff before committing
+
+A newly created lesson must never be added to `legacy_unpaired_documents`. That list is reserved for public documents that existed before the bilingual policy was adopted.
+
 ## Updating documentation
 
 When changing an already migrated document:
