@@ -30,7 +30,16 @@ class ProjectController extends Controller
             'slug' => str($request->name)->slug(),
         ]);
 
-        return back()->with('status', 'Your project was created.');
+        return redirect()
+            ->route('projects.index')
+            ->with('status', 'Your project was created.');
+    }
+
+    public function destroy(Project $project)
+    {
+        $project->delete();
+
+        return back();
     }
 
     public function show(Project $project)
