@@ -76,6 +76,33 @@ La migrazione viene eseguita una coppia documentale alla volta:
 
 La nuova documentazione pubblica non deve introdurre ulteriori file storici disponibili soltanto in italiano.
 
+## Creazione delle nuove lezioni Laravel
+
+A partire dalla lezione 22, gli appunti delle lezioni Laravel non fanno parte della migrazione progressiva dei documenti storici. Ogni nuova lezione deve essere introdotta come coppia bilingue completa nello stesso cambiamento.
+
+Per la lezione `NN`, creare:
+
+- il documento canonico inglese in `laravel-lab/lessons/lesson-NN-learned.md`
+- la traduzione italiana in `laravel-lab/lessons/lesson-NN-learned.it.md`
+
+Entrambi i file devono includere vicino all'inizio questo schema di navigazione reciproca:
+
+```markdown
+[English](lesson-NN-learned.md) | [Italiano](lesson-NN-learned.it.md)
+```
+
+Il workflow completo per una nuova lezione è:
+
+1. creare entrambe le versioni linguistiche prima dello staging o del commit
+2. conservare la stessa gerarchia degli heading, gli stessi blocchi di codice, comandi, percorsi, identificatori e output letterali
+3. registrare `laravel-lab/lessons/lesson-NN-learned.md` in `canonical_documents` dentro `.github/bilingual-docs.json`
+4. aggiungere la lezione sia a `laravel-lab/README.md` sia a `laravel-lab/README.it.md`
+5. aggiornare le attese dei test di regressione soltanto quando un documento di riferimento acquisisce o perde intenzionalmente blocchi tecnici
+6. eseguire i test del validatore e la validazione bilingue completa
+7. controllare il diff documentale prima del commit
+
+Una lezione appena creata non deve mai essere aggiunta a `legacy_unpaired_documents`. Quell'elenco è riservato ai documenti pubblici esistenti prima dell'adozione della policy bilingue.
+
 ## Aggiornamento della documentazione
 
 Quando si modifica un documento già migrato:

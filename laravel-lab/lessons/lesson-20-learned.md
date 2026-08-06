@@ -1,99 +1,101 @@
-# Getting Started with Laravel — Lezione 20
+# Getting Started with Laravel — Lesson 20
 ## Ordering with Eloquent
 
-Data laboratorio: 2026-08-06  
-Corso: Getting Started with Laravel  
-Episodio: 20 — Ordering with Eloquent  
-Framework usato nel laboratorio: Laravel Framework 13.7.0
+[English](lesson-20-learned.md) | [Italiano](lesson-20-learned.it.md)
+
+Lab date: 2026-08-06
+Course: Getting Started with Laravel
+Episode: 20 — Ordering with Eloquent
+Framework used in the lab: Laravel Framework 13.7.0
 
 ---
 
-## 1. Obiettivo della lezione
+## 1. Lesson objective
 
-L’obiettivo della lezione è ordinare i record recuperati dal database con Eloquent.
+The objective of this lesson is to order records retrieved from the database with Eloquent.
 
-Nella lezione 19 abbiamo creato la pagina indice dei progetti:
+In lesson 19, we created the project index page:
 
 ```text
 GET /projects
 ```
 
-Nel controller avevamo:
+In the controller, we had:
 
 ```php
 'projects' => Project::get(),
 ```
 
-Questo recupera i progetti, ma senza un ordine esplicito deciso da noi.
+This retrieves the projects, but without an explicit order chosen by us.
 
-Ora vogliamo mostrare in alto i progetti più recenti.
+Now we want to display the most recent projects at the top.
 
 ---
 
-## 2. Il problema dell’ordine implicito
+## 2. The problem with implicit ordering
 
-Quando scriviamo:
+When we write:
 
 ```php
 Project::get()
 ```
 
-Laravel recupera i record, ma non stiamo specificando l’ordinamento.
+Laravel retrieves the records, but we are not specifying their order.
 
-Il database può restituire i record in un ordine che sembra naturale, ma non è una regola affidabile da usare nell’applicazione.
+The database may return records in an order that appears natural, but this is not a reliable rule for the application.
 
-Regola pratica:
+Practical rule:
 
-> se l’ordine è importante per la pagina, dichiaralo nella query.
+> if the order matters for the page, declare it in the query.
 
 ---
 
-## 3. Colonne utili per ordinare
+## 3. Useful columns for ordering
 
-La tabella `projects` contiene già:
+The `projects` table already contains:
 
 ```text
 created_at
 updated_at
 ```
 
-Queste colonne sono state create dalla migration con:
+These columns were created by the migration with:
 
 ```php
 $table->timestamps();
 ```
 
-Significato:
+Meaning:
 
-- `created_at`: quando il record è stato creato
-- `updated_at`: quando il record è stato aggiornato
+- `created_at`: when the record was created
+- `updated_at`: when the record was updated
 
-Per una lista di progetti, ha senso ordinare per `created_at`.
+For a project list, it makes sense to order by `created_at`.
 
 ---
 
-## 4. Ordinare con `orderBy()`
+## 4. Ordering with `orderBy()`
 
-Il modo base per ordinare una query Eloquent è:
+The basic way to order an Eloquent query is:
 
 ```php
 Project::orderBy('created_at', 'desc')->get()
 ```
 
-Significato:
+Meaning:
 
 ```text
 ordina per created_at in ordine discendente
 ```
 
-Quindi:
+Therefore:
 
 ```text
 record più recente → in alto
 record più vecchio → in basso
 ```
 
-Nel controller:
+In the controller:
 
 ```php
 public function index()
@@ -108,23 +110,23 @@ public function index()
 
 ## 5. Query chain
 
-`orderBy()` si usa prima di `get()`.
+`orderBy()` is used before `get()`.
 
-Schema:
+Pattern:
 
 ```php
 Project::orderBy(...)->get()
 ```
 
-Questo è simile a quanto già visto con `where()`:
+This is similar to what we have already seen with `where()`:
 
 ```php
 Project::where(...)->get()
 ```
 
-Eloquent permette di concatenare più metodi per costruire una query.
+Eloquent lets us chain multiple methods to build a query.
 
-Esempio concettuale:
+Conceptual example:
 
 ```php
 Project::where('name', 'A project')
@@ -132,61 +134,61 @@ Project::where('name', 'A project')
     ->get();
 ```
 
-La query viene eseguita quando chiamiamo `get()`.
+The query is executed when we call `get()`.
 
 ---
 
-## 6. Ascendente e discendente
+## 6. Ascending and descending
 
-`orderBy()` riceve:
+`orderBy()` receives:
 
 ```text
 colonna
 direzione
 ```
 
-Esempio discendente:
+Descending example:
 
 ```php
 Project::orderBy('created_at', 'desc')->get();
 ```
 
-Esempio ascendente:
+Ascending example:
 
 ```php
 Project::orderBy('created_at', 'asc')->get();
 ```
 
-Direzioni:
+Directions:
 
-| Direzione | Significato |
+| Direction | Meaning |
 |---|---|
-| `asc` | dal più piccolo/vecchio al più grande/recente |
-| `desc` | dal più grande/recente al più piccolo/vecchio |
+| `asc` | from the smallest/oldest to the largest/most recent |
+| `desc` | from the largest/most recent to the smallest/oldest |
 
 ---
 
 ## 7. `latest()`
 
-Laravel offre una scorciatoia molto comoda:
+Laravel provides a very convenient shortcut:
 
 ```php
 Project::latest()->get()
 ```
 
-Per default, `latest()` ordina per:
+By default, `latest()` orders by:
 
 ```text
 created_at desc
 ```
 
-Quindi è equivalente, nel nostro caso, a:
+In our case, it is therefore equivalent to:
 
 ```php
 Project::orderBy('created_at', 'desc')->get()
 ```
 
-Codice consigliato nel laboratorio:
+Recommended code for the lab:
 
 ```php
 public function index()
@@ -199,49 +201,49 @@ public function index()
 
 ---
 
-## 8. `latest()` con colonna personalizzata
+## 8. `latest()` with a custom column
 
-`latest()` può anche ricevere una colonna.
+`latest()` can also receive a column.
 
-Esempio:
+Example:
 
 ```php
 Project::latest('updated_at')->get()
 ```
 
-Significato:
+Meaning:
 
 ```text
 ordina per updated_at dal più recente al più vecchio
 ```
 
-Quindi `latest()` non è limitato per forza a `created_at`, anche se quello è il default.
+Therefore, `latest()` is not necessarily limited to `created_at`, although that is the default.
 
 ---
 
 ## 9. `oldest()`
 
-Laravel offre anche l’opposto:
+Laravel also provides the opposite:
 
 ```php
 Project::oldest()->get()
 ```
 
-Per default, `oldest()` ordina per:
+By default, `oldest()` orders by:
 
 ```text
 created_at asc
 ```
 
-Quindi mostra prima i record più vecchi.
+It therefore displays the oldest records first.
 
-Esempio:
+Example:
 
 ```php
 Project::oldest()->get()
 ```
 
-equivale a:
+is equivalent to:
 
 ```php
 Project::orderBy('created_at', 'asc')->get()
@@ -249,21 +251,21 @@ Project::orderBy('created_at', 'asc')->get()
 
 ---
 
-## 10. Scope Eloquent
+## 10. Eloquent scopes
 
-La lezione introduce molto rapidamente il concetto di scope.
+The lesson introduces the concept of scopes very briefly.
 
-Uno scope è un metodo che incapsula una parte di query.
+A scope is a method that encapsulates part of a query.
 
-`latest()` e `oldest()` possono essere pensati come scorciatoie leggibili per ordinamenti comuni.
+`latest()` and `oldest()` can be thought of as readable shortcuts for common ordering operations.
 
-In questa fase non creiamo scope personalizzati.
+At this stage, we do not create custom scopes.
 
-Ci limitiamo a usare gli scope/metodi già disponibili.
+We only use the scopes and methods that are already available.
 
 ---
 
-## 11. Codice finale consigliato
+## 11. Recommended final code
 
 `app/Http/Controllers/ProjectController.php`:
 
@@ -276,47 +278,47 @@ public function index()
 }
 ```
 
-Questo mostra i progetti più recenti in alto.
+This displays the most recent projects at the top.
 
 ---
 
-## 12. Prima e dopo
+## 12. Before and after
 
-Prima:
+Before:
 
 ```php
 'projects' => Project::get(),
 ```
 
-Dopo:
+After:
 
 ```php
 'projects' => Project::latest()->get(),
 ```
 
-La view non cambia.
+The view does not change.
 
-Cambia solo il modo in cui il controller recupera i dati.
+Only the way the controller retrieves the data changes.
 
 ---
 
-## 13. Test manuale
+## 13. Manual test
 
-Apri:
+Open:
 
 ```text
 http://127.0.0.1:8000/projects
 ```
 
-Crea alcuni progetti dalla pagina:
+Create some projects from the page:
 
 ```text
 http://127.0.0.1:8000/projects/create
 ```
 
-Torna alla lista.
+Return to the list.
 
-Risultato atteso:
+Expected result:
 
 ```text
 il progetto creato più recentemente appare in alto
@@ -324,17 +326,17 @@ il progetto creato più recentemente appare in alto
 
 ---
 
-## 14. Lesson Learned
+## 14. Lessons learned
 
-### 1. `get()` senza ordine esplicito non basta se l’ordine conta
+### 1. `get()` without explicit ordering is not enough when order matters
 
-Meglio dichiarare l’ordinamento nella query.
+It is better to declare the order in the query.
 
 ---
 
-### 2. `orderBy()` ordina per una colonna
+### 2. `orderBy()` orders by a column
 
-Esempio:
+Example:
 
 ```php
 Project::orderBy('created_at', 'desc')->get()
@@ -342,79 +344,79 @@ Project::orderBy('created_at', 'desc')->get()
 
 ---
 
-### 3. L’ordinamento va prima di `get()`
+### 3. Ordering comes before `get()`
 
-`get()` esegue la query.
+`get()` executes the query.
 
-Prima di `get()` possiamo concatenare condizioni e ordinamenti.
+Before `get()`, we can chain conditions and ordering operations.
 
 ---
 
-### 4. `latest()` è una scorciatoia utile
+### 4. `latest()` is a useful shortcut
 
-Esempio:
+Example:
 
 ```php
 Project::latest()->get()
 ```
 
-Per default ordina per `created_at` discendente.
+By default, it orders by `created_at` in descending order.
 
 ---
 
-### 5. `oldest()` fa l’opposto
+### 5. `oldest()` does the opposite
 
-Esempio:
+Example:
 
 ```php
 Project::oldest()->get()
 ```
 
-Per default ordina per `created_at` ascendente.
+By default, it orders by `created_at` in ascending order.
 
 ---
 
-### 6. La view non deve sapere come sono ordinati i dati
+### 6. The view should not know how the data is ordered
 
-L’ordinamento appartiene alla query nel controller.
+Ordering belongs in the controller query.
 
-La view si limita a iterare `$projects`.
+The view only iterates over `$projects`.
 
 ---
 
-## 15. Comandi utili
+## 15. Useful commands
 
-Entrare nel progetto Laravel:
+Enter the Laravel project:
 
 ```bash
 cd ~/Progetti/labs/web/laravel-lab/first-project
 ```
 
-Controllare il controller:
+Inspect the controller:
 
 ```bash
 sed -n '1,160p' app/Http/Controllers/ProjectController.php
 ```
 
-Avviare server:
+Start the server:
 
 ```bash
 php artisan serve
 ```
 
-Aprire lista progetti:
+Open the project list:
 
 ```text
 http://127.0.0.1:8000/projects
 ```
 
-Controllare in Tinker:
+Inspect the data in Tinker:
 
 ```bash
 php artisan tinker
 ```
 
-Dentro Tinker:
+Inside Tinker:
 
 ```php
 App\Models\Project::latest()->get();
@@ -424,18 +426,18 @@ exit
 
 ---
 
-## 16. Stato finale della lezione
+## 16. Final lesson state
 
-Alla fine della lezione sappiamo:
+At the end of the lesson, we know how to:
 
-- ordinare record Eloquent con `orderBy()`
-- ordinare in modo discendente con `desc`
-- ordinare in modo ascendente con `asc`
-- usare `latest()` come scorciatoia per i record più recenti
-- usare `oldest()` come scorciatoia opposta
-- concatenare metodi di query prima di `get()`
-- mostrare nella lista i progetti più recenti in alto
+- order Eloquent records with `orderBy()`
+- sort in descending order with `desc`
+- sort in ascending order with `asc`
+- use `latest()` as a shortcut for the most recent records
+- use `oldest()` as the opposite shortcut
+- chain query methods before `get()`
+- display the most recent projects at the top of the list
 
-Obiettivo raggiunto:
+Objective achieved:
 
-> la pagina `/projects` mostra i progetti ordinati dal più recente al più vecchio.
+> the `/projects` page displays projects ordered from the most recent to the oldest.

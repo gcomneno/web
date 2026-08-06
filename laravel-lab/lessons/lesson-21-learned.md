@@ -1,20 +1,22 @@
-# Getting Started with Laravel — Lezione 21
+# Getting Started with Laravel — Lesson 21
 ## Other HTTP verbs
 
-Data laboratorio: 2026-08-06  
-Corso: Getting Started with Laravel  
-Episodio: 21 — Other HTTP verbs  
-Framework usato nel laboratorio: Laravel Framework 13.7.0
+[English](lesson-21-learned.md) | [Italiano](lesson-21-learned.it.md)
+
+Lab date: 2026-08-06
+Course: Getting Started with Laravel
+Episode: 21 — Other HTTP verbs
+Framework used in the lab: Laravel Framework 13.7.0
 
 ---
 
-## 1. Obiettivo della lezione
+## 1. Lesson objective
 
-L’obiettivo della lezione è usare verbi HTTP diversi da `GET` e `POST` dentro un’app Blade tradizionale.
+The objective of this lesson is to use HTTP verbs other than `GET` and `POST` inside a traditional Blade application.
 
-Il caso pratico scelto è la cancellazione di un progetto.
+The practical case chosen is deleting a project.
 
-Finora abbiamo:
+So far, we have:
 
 ```text
 GET  /projects          → lista progetti
@@ -23,7 +25,7 @@ POST /projects          → salva progetto
 GET  /projects/{slug}   → dettaglio progetto
 ```
 
-Ora aggiungiamo:
+Now we add:
 
 ```text
 DELETE /projects/{slug} → elimina progetto
@@ -31,49 +33,49 @@ DELETE /projects/{slug} → elimina progetto
 
 ---
 
-## 2. Perché non usare un link GET per cancellare
+## 2. Why a GET link should not be used for deletion
 
-Una tentazione sbagliata sarebbe creare una route tipo:
+A wrong temptation would be to create a route such as:
 
 ```php
 Route::get('/projects/{project:slug}/delete', ...);
 ```
 
-oppure un link:
+or a link:
 
 ```blade
 <a href="/projects/some-project/delete">Delete</a>
 ```
 
-Questo è sbagliato perché una richiesta `GET` non dovrebbe modificare lo stato dell’applicazione.
+This is wrong because a `GET` request should not change the state of the application.
 
-Una cancellazione modifica dati.
+A deletion changes data.
 
-Quindi non deve essere eseguita con `GET`.
+It must therefore not be performed with `GET`.
 
 ---
 
-## 3. Problema di sicurezza
+## 3. Security problem
 
-Se la cancellazione fosse una semplice route `GET`, basterebbe visitare un URL per eliminare un progetto.
+If deletion were a simple `GET` route, merely visiting a URL would be enough to delete a project.
 
-Esempio:
+Example:
 
 ```text
 /projects/a-first-project/delete
 ```
 
-Questo sarebbe pericoloso.
+This would be dangerous.
 
-Un attaccante potrebbe indurre l’utente a visitare quell’URL, per esempio tramite link o immagine nascosta.
+An attacker could trick the user into visiting that URL, for example through a link or hidden image.
 
-Per operazioni distruttive serve usare il verbo HTTP corretto e proteggere la richiesta con CSRF.
+Destructive operations require the correct HTTP verb and CSRF protection.
 
 ---
 
-## 4. Verbo HTTP corretto: `DELETE`
+## 4. Correct HTTP verb: `DELETE`
 
-Per cancellare una risorsa, il verbo HTTP corretto è:
+To delete a resource, the correct HTTP verb is:
 
 ```text
 DELETE
@@ -86,7 +88,7 @@ Route::delete('/projects/{project:slug}', [ProjectController::class, 'destroy'])
     ->name('projects.destroy');
 ```
 
-Questa route dice:
+This route means:
 
 ```text
 DELETE /projects/{project:slug} → ProjectController@destroy
@@ -94,15 +96,15 @@ DELETE /projects/{project:slug} → ProjectController@destroy
 
 ---
 
-## 5. Metodo `destroy()`
+## 5. The `destroy()` method
 
-Nel controller RESTful, il metodo convenzionale per eliminare una risorsa è:
+In a RESTful controller, the conventional method for deleting a resource is:
 
 ```php
 destroy()
 ```
 
-Nel nostro caso:
+In our case:
 
 ```php
 public function destroy(Project $project)
@@ -113,9 +115,9 @@ public function destroy(Project $project)
 }
 ```
 
-Il parametro `Project $project` usa route model binding.
+The `Project $project` parameter uses route model binding.
 
-Laravel carica automaticamente il progetto usando lo slug definito nella route:
+Laravel automatically loads the project using the slug defined in the route:
 
 ```text
 {project:slug}
@@ -123,84 +125,84 @@ Laravel carica automaticamente il progetto usando lo slug definito nella route:
 
 ---
 
-## 6. Route model binding anche per DELETE
+## 6. Route model binding for DELETE as well
 
-La route:
+The route:
 
 ```php
 Route::delete('/projects/{project:slug}', [ProjectController::class, 'destroy'])
     ->name('projects.destroy');
 ```
 
-e il metodo:
+and the method:
 
 ```php
 public function destroy(Project $project)
 ```
 
-funzionano insieme.
+work together.
 
 Laravel:
 
-1. legge lo slug dall’URL
-2. cerca il `Project`
-3. lo passa al metodo `destroy()`
-4. se non lo trova, genera 404
+1. reads the slug from the URL
+2. looks for the `Project`
+3. passes it to the `destroy()` method
+4. returns a 404 if it cannot be found
 
 ---
 
-## 7. I form HTML non supportano direttamente DELETE
+## 7. HTML forms do not directly support DELETE
 
-Un form HTML tradizionale supporta direttamente soprattutto:
+A traditional HTML form directly supports mainly:
 
 ```text
 GET
 POST
 ```
 
-Non possiamo fare semplicemente:
+We cannot simply use:
 
 ```blade
 <form method="DELETE">
 ```
 
-in modo affidabile nei browser.
+reliably in browsers.
 
-Per questo Laravel usa il method spoofing.
+Laravel therefore uses method spoofing.
 
 ---
 
 ## 8. Method spoofing
 
-Method spoofing significa:
+Method spoofing means:
 
-> inviare realmente una richiesta POST, ma dire a Laravel di trattarla come DELETE.
+> actually sending a POST request while telling Laravel to treat it as DELETE.
 
-Il form usa:
+The form uses:
 
 ```blade
 method="POST"
 ```
 
-ma dentro contiene:
+but contains:
 
 ```blade
 @method('DELETE')
 ```
 
-Laravel genera un campo hidden simile a:
+Laravel generates a hidden field similar to:
 
 ```html
 <input type="hidden" name="_method" value="DELETE">
 ```
 
-Quando la request arriva, Laravel capisce che deve trattarla come `DELETE`.
+When the request arrives, Laravel understands that it must treat it as `DELETE`.
 
 ---
 
-## 9. Form di cancellazione
+## 9. Deletion form
 
-Nella lista progetti possiamo aggiungere un form per ogni progetto:
+In the project list, we can add a form for each project:
 
 ```blade
 <form action="{{ route('projects.destroy', $project) }}" method="POST">
@@ -211,31 +213,31 @@ Nella lista progetti possiamo aggiungere un form per ogni progetto:
 </form>
 ```
 
-Punti importanti:
+Important points:
 
-- `action` usa la named route `projects.destroy`
-- passiamo `$project` perché la route richiede `{project:slug}`
-- il metodo HTML è `POST`
-- `@method('DELETE')` dice a Laravel di usare `DELETE`
-- `@csrf` protegge la richiesta
+- `action` uses the `projects.destroy` named route
+- we pass `$project` because the route requires `{project:slug}`
+- the HTML method is `POST`
+- `@method('DELETE')` tells Laravel to use `DELETE`
+- `@csrf` protects the request
 
 ---
 
-## 10. Perché serve ancora `@csrf`
+## 10. Why `@csrf` is still required
 
-Anche se stiamo simulando `DELETE`, il form invia comunque una richiesta che modifica dati.
+Even though we are simulating `DELETE`, the form still sends a request that changes data.
 
-Quindi serve:
+Therefore, it requires:
 
 ```blade
 @csrf
 ```
 
-Regola pratica:
+Practical rule:
 
-> ogni form che modifica dati deve avere `@csrf`.
+> every form that changes data must include `@csrf`.
 
-Questo vale per:
+This applies to:
 
 ```text
 POST
@@ -246,30 +248,30 @@ DELETE
 
 ---
 
-## 11. Errore senza `@method('DELETE')`
+## 11. Error without `@method('DELETE')`
 
-Se il form usa solo:
+If the form only uses:
 
 ```blade
 <form method="POST">
 ```
 
-ma la route è:
+but the route is:
 
 ```php
 Route::delete(...)
 ```
 
-Laravel non trova una route `POST` compatibile.
+Laravel cannot find a compatible `POST` route.
 
-Errore tipico:
+Typical error:
 
 ```text
 The POST method is not supported for route ...
 Supported methods: DELETE
 ```
 
-La correzione è aggiungere:
+The fix is to add:
 
 ```blade
 @method('DELETE')
@@ -277,15 +279,15 @@ La correzione è aggiungere:
 
 ---
 
-## 12. Cancellare con Eloquent
+## 12. Deleting with Eloquent
 
-Abbiamo già visto che un model Eloquent può essere cancellato con:
+We have already seen that an Eloquent model can be deleted with:
 
 ```php
 $project->delete();
 ```
 
-Nel metodo `destroy()`:
+Inside the `destroy()` method:
 
 ```php
 public function destroy(Project $project)
@@ -296,49 +298,49 @@ public function destroy(Project $project)
 }
 ```
 
-Dato che `$project` arriva già dal route model binding, non dobbiamo fare una query manuale.
+Because `$project` already comes from route model binding, we do not need to perform a manual query.
 
 ---
 
-## 13. Redirect dopo cancellazione
+## 13. Redirect after deletion
 
-Dopo la cancellazione possiamo usare:
+After deletion, we can use:
 
 ```php
 return back();
 ```
 
-oppure un redirect esplicito:
+or an explicit redirect:
 
 ```php
 return redirect()->route('projects.index');
 ```
 
-La lezione mostra anche la scorciatoia:
+The lesson also shows the shortcut:
 
 ```php
 return to_route('projects.index');
 ```
 
-Tutte queste opzioni possono funzionare.
+All these options can work.
 
-Per un’azione distruttiva dalla lista progetti, è sensato tornare alla lista.
+For a destructive action performed from the project list, returning to the list makes sense.
 
 ---
 
-## 14. Redirect dopo creazione
+## 14. Redirect after creation
 
-La lezione migliora anche il comportamento dopo la creazione.
+The lesson also improves the behavior after creation.
 
-Prima:
+Before:
 
 ```php
 return back()->with('status', 'Your project was created.');
 ```
 
-cioè dopo aver creato il progetto, l’utente tornava al form.
+that is, after creating the project, the user returned to the form.
 
-Ora ha più senso tornare alla lista:
+It now makes more sense to return to the list:
 
 ```php
 return redirect()
@@ -346,21 +348,21 @@ return redirect()
     ->with('status', 'Your project was created.');
 ```
 
-Così l’utente vede subito il progetto appena creato nella lista.
+This lets the user immediately see the newly created project in the list.
 
 ---
 
-## 15. Spostare il flash message sulla lista
+## 15. Moving the flash message to the list
 
-Se dopo la creazione reindirizziamo verso:
+If, after creation, we redirect to:
 
 ```text
 /projects
 ```
 
-il messaggio flash deve essere mostrato nella view `projects.index`, non solo in `projects.create`.
+the flash message must be displayed in the `projects.index` view, not only in `projects.create`.
 
-Quindi il blocco:
+Therefore, the block:
 
 ```blade
 @session('status')
@@ -368,17 +370,17 @@ Quindi il blocco:
 @endsession
 ```
 
-va messo in:
+must be placed in:
 
 ```text
 resources/views/projects/index.blade.php
 ```
 
-Possiamo anche tenerlo in entrambe le view, ma in questa fase è più coerente metterlo dove reindirizziamo.
+We could also keep it in both views, but at this stage it is more consistent to place it where we redirect.
 
 ---
 
-## 16. View indice aggiornata
+## 16. Updated index view
 
 `resources/views/projects/index.blade.php`:
 
@@ -420,11 +422,11 @@ Possiamo anche tenerlo in entrambe le view, ma in questa fase è più coerente m
 </html>
 ```
 
-L’HTML è volutamente semplice e non ancora curato.
+The HTML is intentionally simple and not yet styled.
 
 ---
 
-## 17. Controller aggiornato
+## 17. Updated controller
 
 `app/Http/Controllers/ProjectController.php`:
 
@@ -455,7 +457,7 @@ public function destroy(Project $project)
 
 ---
 
-## 18. Route aggiornata
+## 18. Updated route
 
 `routes/web.php`:
 
@@ -464,9 +466,9 @@ Route::delete('/projects/{project:slug}', [ProjectController::class, 'destroy'])
     ->name('projects.destroy');
 ```
 
-Questa route va insieme alle altre route dei progetti.
+This route belongs together with the other project routes.
 
-Ordine consigliato:
+Recommended order:
 
 ```php
 Route::get('/projects', [ProjectController::class, 'index'])
@@ -487,29 +489,29 @@ Route::delete('/projects/{project:slug}', [ProjectController::class, 'destroy'])
 
 ---
 
-## 19. `redirect()->route()` e `to_route()`
+## 19. `redirect()->route()` and `to_route()`
 
-La lezione cita due modi per reindirizzare a una named route.
+The lesson mentions two ways to redirect to a named route.
 
-Forma esplicita:
+Explicit form:
 
 ```php
 return redirect()->route('projects.index');
 ```
 
-Scorciatoia:
+Shortcut:
 
 ```php
 return to_route('projects.index');
 ```
 
-In questa fase usiamo `redirect()->route()` perché è più descrittivo per lo studio.
+At this stage, we use `redirect()->route()` because it is more descriptive for learning purposes.
 
 ---
 
-## 20. Messaggi flash anche con redirect esplicito
+## 20. Flash messages with explicit redirects as well
 
-Possiamo concatenare `with()` anche a un redirect verso una route:
+We can chain `with()` to a redirect to a route as well:
 
 ```php
 return redirect()
@@ -517,59 +519,59 @@ return redirect()
     ->with('status', 'Your project was created.');
 ```
 
-Quindi `with()` non funziona solo con `back()`.
+Therefore, `with()` does not work only with `back()`.
 
-Funziona anche con redirect verso named route.
+It also works with redirects to named routes.
 
 ---
 
-## 21. Problema ancora non risolto: slug duplicati
+## 21. Problem not yet solved: duplicate slugs
 
-Durante la lezione compare ancora il problema dello slug duplicato.
+The duplicate slug problem appears again during the lesson.
 
-Se creiamo due progetti con lo stesso nome:
+If we create two projects with the same name:
 
 ```text
 Great project
 Great project
 ```
 
-entrambi generano:
+both generate:
 
 ```text
 great-project
 ```
 
-La colonna `slug` è unica, quindi il secondo insert può fallire.
+The `slug` column is unique, so the second insert may fail.
 
-Questo sarà da gestire più avanti con validazione o logica dedicata.
-
----
-
-## 22. Cosa non viene ancora gestito
-
-Questa lezione non introduce ancora:
-
-- pagina di conferma cancellazione
-- dialog JavaScript di conferma
-- autorizzazioni
-- policy
-- soft delete
-- messaggio flash dopo cancellazione
-- gestione elegante dello slug duplicato
-- layout condiviso per flash messages
+This will need to be handled later with validation or dedicated logic.
 
 ---
 
-## 23. Lesson Learned
+## 22. What is not handled yet
 
-### 1. Non usare GET per azioni distruttive
+This lesson does not yet introduce:
 
-Una cancellazione non deve essere un link GET.
+- a deletion confirmation page
+- a JavaScript confirmation dialog
+- authorization
+- policies
+- soft deletes
+- a flash message after deletion
+- graceful handling of duplicate slugs
+- a shared layout for flash messages
 
 ---
 
-### 2. Per cancellare si usa DELETE
+## 23. Lessons learned
+
+### 1. Do not use GET for destructive actions
+
+A deletion must not be a GET link.
+
+---
+
+### 2. DELETE is used for deletion
 
 In Laravel:
 
@@ -579,9 +581,9 @@ Route::delete(...)
 
 ---
 
-### 3. I form Blade usano POST + method spoofing
+### 3. Blade forms use POST plus method spoofing
 
-Esempio:
+Example:
 
 ```blade
 <form method="POST">
@@ -592,21 +594,21 @@ Esempio:
 
 ---
 
-### 4. `@method('DELETE')` genera un campo hidden `_method`
+### 4. `@method('DELETE')` generates a hidden `_method` field
 
-Laravel lo usa per trattare la request come DELETE.
-
----
-
-### 5. `@csrf` serve anche per DELETE
-
-Ogni form che modifica dati deve essere protetto.
+Laravel uses it to treat the request as DELETE.
 
 ---
 
-### 6. `destroy()` è il metodo RESTful per eliminare
+### 5. `@csrf` is also required for DELETE
 
-Esempio:
+Every form that changes data must be protected.
+
+---
+
+### 6. `destroy()` is the RESTful method for deletion
+
+Example:
 
 ```php
 public function destroy(Project $project)
@@ -619,9 +621,9 @@ public function destroy(Project $project)
 
 ---
 
-### 7. Dopo una creazione è spesso meglio tornare alla lista
+### 7. After creation, returning to the list is often better
 
-Esempio:
+Example:
 
 ```php
 return redirect()
@@ -631,51 +633,51 @@ return redirect()
 
 ---
 
-### 8. `with()` funziona anche con redirect verso named route
+### 8. `with()` also works with redirects to named routes
 
-Non solo con `back()`.
-
----
-
-### 9. Il flash message va mostrato nella pagina di destinazione
-
-Se reindirizzi a `projects.index`, mostra il messaggio in `projects.index`.
+Not only with `back()`.
 
 ---
 
-## 24. Comandi utili
+### 9. The flash message must be displayed on the destination page
 
-Entrare nel progetto Laravel:
+If you redirect to `projects.index`, display the message in `projects.index`.
+
+---
+
+## 24. Useful commands
+
+Enter the Laravel project:
 
 ```bash
 cd ~/Progetti/labs/web/laravel-lab/first-project
 ```
 
-Controllare route:
+Inspect the routes:
 
 ```bash
 php artisan route:list
 ```
 
-Controllare controller:
+Inspect the controller:
 
 ```bash
 sed -n '1,260p' app/Http/Controllers/ProjectController.php
 ```
 
-Controllare view indice:
+Inspect the index view:
 
 ```bash
 sed -n '1,260p' resources/views/projects/index.blade.php
 ```
 
-Avviare server:
+Start the server:
 
 ```bash
 php artisan serve
 ```
 
-Aprire lista progetti:
+Open the project list:
 
 ```text
 http://127.0.0.1:8000/projects
@@ -683,20 +685,20 @@ http://127.0.0.1:8000/projects
 
 ---
 
-## 25. Stato finale della lezione
+## 25. Final lesson state
 
-Alla fine della lezione sappiamo:
+At the end of the lesson, we know how to:
 
-- usare una route `DELETE`
-- creare un metodo `destroy()`
-- cancellare un model con `$project->delete()`
-- usare un form Blade per inviare una cancellazione
-- usare `@method('DELETE')`
-- proteggere il form con `@csrf`
-- reindirizzare verso `projects.index`
-- flashare un messaggio anche su redirect esplicito
-- spostare il messaggio flash nella view di destinazione
+- use a `DELETE` route
+- create a `destroy()` method
+- delete a model with `$project->delete()`
+- use a Blade form to submit a deletion
+- use `@method('DELETE')`
+- protect the form with `@csrf`
+- redirect to `projects.index`
+- flash a message on an explicit redirect as well
+- move the flash message to the destination view
 
-Obiettivo raggiunto:
+Objective achieved:
 
-> la lista progetti ora permette di cancellare un progetto usando il verbo HTTP corretto.
+> the project list now allows a project to be deleted using the correct HTTP verb.

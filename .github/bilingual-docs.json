@@ -6,7 +6,10 @@
   "canonical_documents": [
     "CONTRIBUTING.md",
     "README.md",
-    "laravel-lab/README.md"
+    "laravel-lab/README.md",
+    "laravel-lab/lessons/lesson-19-learned.md",
+    "laravel-lab/lessons/lesson-20-learned.md",
+    "laravel-lab/lessons/lesson-21-learned.md"
   ],
   "legacy_unpaired_documents": [
     "laravel-lab/GLOSSARY.md",
