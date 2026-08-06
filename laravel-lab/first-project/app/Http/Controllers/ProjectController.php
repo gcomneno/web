@@ -10,7 +10,7 @@ class ProjectController extends Controller
     public function index()
     {
         return view('projects.index', [
-            'projects' => Project::get(),
+            'projects' => Project::latest()->get(),
         ]);
     }
 
