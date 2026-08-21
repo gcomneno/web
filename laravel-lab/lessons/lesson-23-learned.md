@@ -1,35 +1,37 @@
-# Getting Started with Laravel — Lezione 23
+# Getting Started with Laravel — Lesson 23
 ## JavaScript and CSS with Vite
 
-Data laboratorio: 2026-08-21  
-Corso: Getting Started with Laravel  
-Episodio: 23 — JavaScript and CSS with Vite  
-Framework usato nel laboratorio: Laravel Framework 13.7.0
+[English](lesson-23-learned.md) | [Italiano](lesson-23-learned.it.md)
+
+Lab date: 2026-08-21  
+Course: Getting Started with Laravel  
+Episode: 23 — JavaScript and CSS with Vite  
+Framework used in the lab: Laravel Framework 13.7.0
 
 ---
 
-## 1. Obiettivo della lezione
+## 1. Lesson objective
 
-L’obiettivo della lezione è introdurre il modo standard con cui Laravel include JavaScript e CSS in una pagina Blade.
+The goal of this lesson is to introduce the standard way Laravel includes JavaScript and CSS in a Blade page.
 
-Laravel usa Vite come asset builder.
+Laravel uses Vite as its asset builder.
 
-In questa lezione vediamo:
+In this lesson we cover:
 
-- dove stanno i file CSS e JavaScript
-- come Laravel configura Vite
-- come installare le dipendenze npm
-- come avviare Vite in sviluppo
-- come includere CSS e JS in una view Blade con `@vite`
-- come verificare che Tailwind e JavaScript funzionino
+- where CSS and JavaScript files live
+- how Laravel configures Vite
+- how to install npm dependencies
+- how to start Vite during development
+- how to include CSS and JS in a Blade view with `@vite`
+- how to verify that Tailwind and JavaScript work
 
 ---
 
-## 2. Punto di partenza
+## 2. Starting point
 
-Finora le view sono volutamente molto semplici.
+So far, the views have deliberately been very simple.
 
-Esempio:
+Example:
 
 ```blade
 <!DOCTYPE html>
@@ -46,30 +48,30 @@ Esempio:
 </html>
 ```
 
-Questa struttura funziona per imparare, ma non è sostenibile.
+This structure works for learning, but it is not sustainable.
 
-Se ripetiamo tutto l’HTML in ogni pagina, dovremo duplicare:
+If we repeat all the HTML on every page, we will have to duplicate:
 
 - `<html>`
 - `<head>`
 - `<title>`
-- inclusione CSS
-- inclusione JavaScript
-- struttura comune della pagina
+- CSS inclusion
+- JavaScript inclusion
+- the common page structure
 
-Il corso anticipa che la prossima lezione parlerà di Blade components per risolvere questo problema.
+The course anticipates that the next lesson will cover Blade components to solve this problem.
 
 ---
 
-## 3. File frontend in Laravel
+## 3. Frontend files in Laravel
 
-Nel progetto Laravel sono già presenti file frontend dentro:
+The Laravel project already contains frontend files under:
 
 ```text
 resources/
 ```
 
-In particolare:
+In particular:
 
 ```text
 resources/css/app.css
@@ -77,45 +79,45 @@ resources/js/app.js
 resources/js/bootstrap.js
 ```
 
-Significato:
+Meaning:
 
-- `resources/css/app.css`: CSS principale dell’applicazione
-- `resources/js/app.js`: JavaScript principale dell’applicazione
-- `resources/js/bootstrap.js`: file importato da `app.js`, usato per inizializzare parti comuni
+- `resources/css/app.css`: the application's main CSS file
+- `resources/js/app.js`: the application's main JavaScript file
+- `resources/js/bootstrap.js`: a file imported by `app.js`, used to initialize common functionality
 
 ---
 
-## 4. Tailwind già configurato
+## 4. Tailwind already configured
 
-Nel progetto Laravel moderno, Tailwind è già predisposto.
+In a modern Laravel project, Tailwind is already set up.
 
-Il file CSS principale contiene o richiama la configurazione necessaria per generare gli stili in base alle classi usate nelle view.
+The main CSS file contains or references the configuration needed to generate styles based on the classes used in the views.
 
-L’idea è:
+The idea is:
 
 ```text
-scrivo classi Tailwind nelle view
-Vite/Tailwind analizzano i file sorgente
-viene generato il CSS finale
+write Tailwind classes in the views
+Vite/Tailwind scan the source files
+the final CSS is generated
 ```
 
-Il corso non entra ancora nel dettaglio completo di Tailwind.
+The course does not yet go into Tailwind in full detail.
 
-Mostra solo che, una volta collegato `app.css`, lo stile della pagina cambia.
+It only shows that once `app.css` is connected, the page styling changes.
 
 ---
 
-## 5. Configurazione Vite
+## 5. Vite configuration
 
-La configurazione di Vite si trova in:
+Vite configuration lives in:
 
 ```text
 vite.config.js
 ```
 
-Dentro questo file Laravel indica a Vite quali asset prendere in input.
+In this file, Laravel tells Vite which assets to use as inputs.
 
-In genere troviamo qualcosa di questo tipo:
+Typically, we find something like:
 
 ```js
 laravel({
@@ -127,65 +129,65 @@ laravel({
 })
 ```
 
-Questi sono i file che Vite compila e rende disponibili alla pagina.
+These are the files Vite compiles and makes available to the page.
 
 ---
 
 ## 6. npm dependencies
 
-Per usare Vite servono le dipendenze Node/npm.
+Vite requires Node/npm dependencies.
 
-Se non sono ancora installate, `npm run dev` fallisce perché mancano i pacchetti.
+If they have not been installed yet, `npm run dev` fails because the packages are missing.
 
-Comando:
+Command:
 
 ```bash
 npm install
 ```
 
-oppure forma abbreviata:
+or the abbreviated form:
 
 ```bash
 npm i
 ```
 
-Questo legge `package.json` e installa le dipendenze in:
+This reads `package.json` and installs the dependencies into:
 
 ```text
 node_modules/
 ```
 
-Nota importante per Git:
+Important Git note:
 
 ```text
-node_modules/ non deve essere committata
+node_modules/ must not be committed
 ```
 
 ---
 
-## 7. Avviare Vite in sviluppo
+## 7. Starting Vite in development
 
-Dopo aver installato le dipendenze:
+After installing the dependencies:
 
 ```bash
 npm run dev
 ```
 
-Questo avvia il dev server di Vite.
+This starts the Vite development server.
 
-Durante lo sviluppo va lasciato in esecuzione.
+It should remain running during development.
 
-Vite compila e aggiorna gli asset mentre lavoriamo.
+Vite compiles and updates the assets while we work.
 
-Nel workflow Laravel locale, spesso servono due terminali:
+In a local Laravel workflow, we often need two terminals:
 
-Terminale 1:
+Terminal 1:
 
 ```bash
 php artisan serve
 ```
 
-Terminale 2:
+Terminal 2:
 
 ```bash
 npm run dev
@@ -193,9 +195,9 @@ npm run dev
 
 ---
 
-## 8. Includere CSS e JS con `@vite`
+## 8. Including CSS and JS with `@vite`
 
-Per collegare gli asset a una view Blade, Laravel usa la direttiva:
+To connect assets to a Blade view, Laravel uses the directive:
 
 ```blade
 @vite([
@@ -204,17 +206,17 @@ Per collegare gli asset a una view Blade, Laravel usa la direttiva:
 ])
 ```
 
-Questa direttiva genera automaticamente i tag necessari per caricare CSS e JavaScript.
+This directive automatically generates the tags needed to load CSS and JavaScript.
 
-In sviluppo punta al dev server Vite.
+During development, it points to the Vite development server.
 
-In produzione userà gli asset compilati da build.
+In production, it will use the assets generated by the build.
 
 ---
 
-## 9. Modifica alla homepage
+## 9. Homepage modification
 
-Nel corso la demo viene fatta sulla homepage.
+In the course, the demonstration is done on the homepage.
 
 File:
 
@@ -222,7 +224,7 @@ File:
 resources/views/pages/home.blade.php
 ```
 
-Versione aggiornata:
+Updated version:
 
 ```blade
 <!DOCTYPE html>
@@ -244,122 +246,122 @@ Versione aggiornata:
 </html>
 ```
 
-Questo collega `app.css` e `app.js` alla pagina.
+This connects `app.css` and `app.js` to the page.
 
 ---
 
-## 10. Verifica nel browser
+## 10. Browser verification
 
-Dopo aver avviato:
+After starting:
 
 ```bash
 npm run dev
 ```
 
-e il server Laravel:
+and the Laravel server:
 
 ```bash
 php artisan serve
 ```
 
-apri:
+open:
 
 ```text
 http://127.0.0.1:8000/
 ```
 
-Risultato atteso:
+Expected result:
 
-- la pagina continua a funzionare
-- lo stile cambia perché Tailwind/CSS viene caricato
-- il sorgente pagina mostra asset serviti tramite Vite
+- the page continues to work
+- the styling changes because Tailwind/CSS is loaded
+- the page source shows assets served through Vite
 
 ---
 
-## 11. Verifica JavaScript
+## 11. JavaScript verification
 
-Per verificare che `app.js` venga caricato, si può aggiungere temporaneamente:
+To verify that `app.js` is being loaded, we can temporarily add:
 
 ```js
 console.log('It works');
 ```
 
-in:
+to:
 
 ```text
 resources/js/app.js
 ```
 
-Poi si apre la console del browser.
+Then open the browser console.
 
-Risultato atteso:
+Expected result:
 
 ```text
 It works
 ```
 
-Questa modifica è didattica.
+This is a teaching change.
 
-Può essere mantenuta se il corso la lascia, oppure rimossa più avanti quando non serve più.
+It can be kept if the course leaves it in place, or removed later when it is no longer needed.
 
 ---
 
 ## 12. `npm run dev` vs `npm run build`
 
-La lezione cita due comandi distinti.
+The lesson mentions two distinct commands.
 
-Sviluppo:
+Development:
 
 ```bash
 npm run dev
 ```
 
-Produzione:
+Production:
 
 ```bash
 npm run build
 ```
 
-`npm run dev` serve mentre sviluppiamo.
+`npm run dev` is used while developing.
 
-`npm run build` crea gli asset ottimizzati per produzione.
+`npm run build` creates optimized assets for production.
 
-Il corso non approfondisce ancora la build di produzione.
+The course does not yet explore the production build in depth.
 
 ---
 
-## 13. Dove mettere JavaScript futuro
+## 13. Where to put future JavaScript
 
-Il file principale è:
+The main file is:
 
 ```text
 resources/js/app.js
 ```
 
-Qui si può aggiungere JavaScript leggero oppure importare librerie.
+Here we can add lightweight JavaScript or import libraries.
 
-La lezione cita esempi futuri come:
+The lesson mentions future examples such as:
 
-- Alpine.js per interazioni leggere
-- Inertia per applicazioni frontend più strutturate
+- Alpine.js for lightweight interactions
+- Inertia for more structured frontend applications
 
-Per ora l’obiettivo è solo capire come collegare JavaScript e CSS.
-
----
-
-## 14. Problema ancora aperto: duplicazione layout
-
-La lezione collega asset alla homepage, ma segnala subito un limite:
-
-> non vogliamo ripetere tutta la struttura HTML in ogni view.
-
-Se dovessimo aggiungere `@vite` manualmente in tutte le view, duplicheremmo codice.
-
-La prossima lezione affronterà questo problema con Blade components.
+For now, the goal is only to understand how JavaScript and CSS are connected.
 
 ---
 
-## 15. Codice finale consigliato
+## 14. Still-open problem: duplicated layout
+
+The lesson connects assets to the homepage, but immediately points out a limitation:
+
+> we do not want to repeat the entire HTML structure in every view.
+
+If we had to add `@vite` manually to every view, we would duplicate code.
+
+The next lesson will address this problem with Blade components.
+
+---
+
+## 15. Recommended final code
 
 `resources/views/pages/home.blade.php`:
 
@@ -387,15 +389,15 @@ La prossima lezione affronterà questo problema con Blade components.
 
 ## 16. Lesson Learned
 
-### 1. Laravel usa Vite per compilare asset frontend
+### 1. Laravel uses Vite to compile frontend assets
 
-Vite gestisce CSS e JavaScript dell’applicazione.
+Vite manages the application's CSS and JavaScript.
 
 ---
 
-### 2. Gli asset sorgente stanno in `resources/`
+### 2. Source assets live under `resources/`
 
-File principali:
+Main files:
 
 ```text
 resources/css/app.css
@@ -404,15 +406,15 @@ resources/js/app.js
 
 ---
 
-### 3. `vite.config.js` definisce gli input
+### 3. `vite.config.js` defines the inputs
 
-Laravel comunica a Vite quali file compilare.
+Laravel tells Vite which files to compile.
 
 ---
 
-### 4. Prima di usare Vite servono le dipendenze npm
+### 4. npm dependencies are required before using Vite
 
-Comando:
+Command:
 
 ```bash
 npm install
@@ -420,15 +422,15 @@ npm install
 
 ---
 
-### 5. Durante lo sviluppo si usa `npm run dev`
+### 5. During development, use `npm run dev`
 
-Va lasciato in esecuzione mentre si lavora sugli asset.
+It should remain running while working on the assets.
 
 ---
 
-### 6. Blade include gli asset con `@vite`
+### 6. Blade includes assets with `@vite`
 
-Esempio:
+Example:
 
 ```blade
 @vite([
@@ -439,69 +441,69 @@ Esempio:
 
 ---
 
-### 7. `npm run build` serve per produzione
+### 7. `npm run build` is used for production
 
-Genera asset compilati e ottimizzati.
-
----
-
-### 8. La struttura HTML non va duplicata in ogni view
-
-La prossima lezione introdurrà Blade components per risolvere questo problema.
+It generates compiled and optimized assets.
 
 ---
 
-## 17. Comandi utili
+### 8. The HTML structure should not be duplicated in every view
 
-Entrare nel progetto Laravel:
+The next lesson will introduce Blade components to solve this problem.
+
+---
+
+## 17. Useful commands
+
+Enter the Laravel project:
 
 ```bash
 cd ~/Progetti/labs/web/laravel-lab/first-project
 ```
 
-Installare dipendenze frontend:
+Install frontend dependencies:
 
 ```bash
 npm install
 ```
 
-Avviare Vite:
+Start Vite:
 
 ```bash
 npm run dev
 ```
 
-In un altro terminale, avviare Laravel:
+In another terminal, start Laravel:
 
 ```bash
 php artisan serve
 ```
 
-Aprire homepage:
+Open the homepage:
 
 ```text
 http://127.0.0.1:8000/
 ```
 
-Controllare la view homepage:
+Inspect the homepage view:
 
 ```bash
 sed -n '1,160p' resources/views/pages/home.blade.php
 ```
 
-Controllare file JS:
+Inspect the JS file:
 
 ```bash
 sed -n '1,120p' resources/js/app.js
 ```
 
-Controllare configurazione Vite:
+Inspect Vite configuration:
 
 ```bash
 sed -n '1,160p' vite.config.js
 ```
 
-Build produzione:
+Production build:
 
 ```bash
 npm run build
@@ -509,19 +511,19 @@ npm run build
 
 ---
 
-## 18. Stato finale della lezione
+## 18. Final lesson state
 
-Alla fine della lezione sappiamo:
+At the end of the lesson we know:
 
-- dove Laravel tiene CSS e JavaScript sorgenti
-- che Vite compila gli asset frontend
-- che `npm install` installa le dipendenze Node
-- che `npm run dev` avvia il processo di sviluppo
-- che `@vite` collega CSS e JS a Blade
-- che `app.js` può contenere codice JavaScript dell’app
-- che `app.css` viene caricato nella pagina
-- che la duplicazione dell’HTML verrà affrontata con Blade components
+- where Laravel keeps source CSS and JavaScript
+- that Vite compiles frontend assets
+- that `npm install` installs Node dependencies
+- that `npm run dev` starts the development process
+- that `@vite` connects CSS and JS to Blade
+- that `app.js` can contain the application's JavaScript code
+- that `app.css` is loaded into the page
+- that duplicated HTML will be addressed with Blade components
 
-Obiettivo raggiunto:
+Objective achieved:
 
-> la homepage Laravel carica JavaScript e CSS tramite Vite.
+> the Laravel homepage loads JavaScript and CSS through Vite.

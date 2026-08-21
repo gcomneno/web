@@ -1,20 +1,22 @@
-# Getting Started with Laravel — Lezione 22
+# Getting Started with Laravel — Lesson 22
 ## Eloquent events
 
-Data laboratorio: 2026-08-21  
-Corso: Getting Started with Laravel  
-Episodio: 22 — Eloquent events  
-Framework usato nel laboratorio: Laravel Framework 13.7.0
+[English](lesson-22-learned.md) | [Italiano](lesson-22-learned.it.md)
+
+Lab date: 2026-08-21  
+Course: Getting Started with Laravel  
+Episode: 22 — Eloquent events  
+Framework used in the lab: Laravel Framework 13.7.0
 
 ---
 
-## 1. Obiettivo della lezione
+## 1. Lesson objective
 
-L’obiettivo della lezione è introdurre gli eventi Eloquent e usarli per spostare nel model una logica che finora stava nel controller.
+The goal of this lesson is to introduce Eloquent events and use them to move logic that previously lived in the controller into the model.
 
-Il problema pratico è lo slug duplicato.
+The practical problem is duplicate slugs.
 
-Nelle lezioni precedenti, quando creavamo un progetto, facevamo:
+In previous lessons, when creating a project, we used:
 
 ```php
 Project::create([
@@ -23,96 +25,96 @@ Project::create([
 ]);
 ```
 
-Questo genera lo slug partendo dal nome.
+This generates the slug from the name.
 
-Se però creiamo due progetti con lo stesso nome, otteniamo lo stesso slug.
+However, if we create two projects with the same name, we get the same slug.
 
-Esempio:
+Example:
 
 ```text
 A new project
 A new project
 ```
 
-produce due volte:
+produces twice:
 
 ```text
 a-new-project
 ```
 
-Dato che la colonna `slug` è unica, Laravel/database restituisce un errore di vincolo.
+Because the `slug` column is unique, Laravel/the database returns a constraint error.
 
 ---
 
-## 2. Il problema dello slug duplicato
+## 2. The duplicate slug problem
 
-La tabella `projects` ha una colonna `slug` con vincolo `unique`.
+The `projects` table has a `slug` column with a `unique` constraint.
 
-Questo è sensato perché lo slug viene usato nella URL:
+This makes sense because the slug is used in the URL:
 
 ```text
 /projects/{project:slug}
 ```
 
-Se due progetti avessero lo stesso slug, Laravel non saprebbe distinguere quale progetto caricare da quella URL.
+If two projects had the same slug, Laravel would not know which project to load from that URL.
 
-Quindi il vincolo `unique` è corretto.
+Therefore, the `unique` constraint is correct.
 
-Il problema non è il vincolo.
+The constraint is not the problem.
 
-Il problema è che la generazione dello slug è troppo semplice.
+The problem is that slug generation is too simple.
 
 ---
 
-## 3. Soluzione pigra: aggiungere timestamp
+## 3. Quick solution: add a timestamp
 
-Una soluzione veloce è aggiungere un valore che renda lo slug diverso.
+A quick solution is to add a value that makes the slug different.
 
-La lezione mostra l’idea di concatenare un timestamp.
+The lesson demonstrates concatenating a timestamp.
 
-Esempio concettuale:
+Conceptual example:
 
 ```php
 'slug' => str($request->name . '-' . now()->getTimestamp())->slug(),
 ```
 
-Così:
+This way:
 
 ```text
 A new project
 ```
 
-può diventare:
+can become:
 
 ```text
 a-new-project-1787313600
 ```
 
-Il timestamp riduce il rischio di duplicati.
+The timestamp reduces the risk of duplicates.
 
-Non è la soluzione più elegante in assoluto, ma è sufficiente per il laboratorio.
+It is not the most elegant solution possible, but it is sufficient for the lab.
 
 ---
 
-## 4. Perché spostare la logica fuori dal controller
+## 4. Why move the logic out of the controller
 
-Finora lo slug viene creato dentro `ProjectController@store`.
+Until now, the slug has been created inside `ProjectController@store`.
 
-Questo funziona solo quando il progetto viene creato da quel controller.
+This works only when the project is created through that controller.
 
-Ma in un’app reale potremmo creare progetti da area admin, API, seeder, job in background, comandi Artisan, altri controller o test automatici.
+But in a real application we might create projects from an admin area, API, seeder, background job, Artisan command, another controller, or automated tests.
 
-Se la logica dello slug resta nel controller, dobbiamo ricordarci di duplicarla ovunque.
+If slug logic remains in the controller, we have to remember to duplicate it everywhere.
 
-Meglio spostarla nel model `Project`.
+It is better to move it into the `Project` model.
 
 ---
 
 ## 5. Eloquent events
 
-Eloquent permette di agganciarsi agli eventi del ciclo di vita di un model.
+Eloquent lets us hook into events in a model's lifecycle.
 
-Esempi di eventi:
+Examples of events:
 
 ```text
 creating
@@ -123,11 +125,11 @@ deleting
 deleted
 ```
 
-Questi eventi permettono di eseguire codice in momenti specifici.
+These events let us execute code at specific moments.
 
-Nel nostro caso vogliamo impostare lo slug prima che il record venga salvato.
+In our case, we want to set the slug before the record is saved.
 
-Quindi usiamo:
+Therefore, we use:
 
 ```text
 creating
@@ -137,28 +139,28 @@ creating
 
 ## 6. `creating` vs `created`
 
-Differenza importante:
+An important difference:
 
 ```text
-creating → prima che il record venga inserito nel database
-created  → dopo che il record è stato inserito nel database
+creating → before the record is inserted into the database
+created  → after the record has been inserted into the database
 ```
 
-Per impostare lo slug dobbiamo intervenire prima dell’inserimento.
+To set the slug, we need to act before insertion.
 
-Quindi l’evento giusto è:
+Therefore, the correct event is:
 
 ```php
 creating
 ```
 
-Se usassimo `created`, il record sarebbe già stato salvato e sarebbe troppo tardi per valorizzare lo slug al primo insert.
+If we used `created`, the record would already have been saved and it would be too late to populate the slug for the initial insert.
 
 ---
 
-## 7. Metodo `booted()`
+## 7. The `booted()` method
 
-Nel model possiamo definire:
+In the model we can define:
 
 ```php
 protected static function booted()
@@ -167,11 +169,11 @@ protected static function booted()
 }
 ```
 
-Questo metodo viene chiamato quando il model viene avviato da Eloquent.
+This method is called when the model is booted by Eloquent.
 
-Dentro `booted()` possiamo registrare eventi del model.
+Inside `booted()` we can register model events.
 
-Nel corso viene usata l’idea:
+The course uses this approach:
 
 ```php
 static::creating(function (Project $project) {
@@ -181,9 +183,9 @@ static::creating(function (Project $project) {
 
 ---
 
-## 8. Spostare la generazione dello slug nel model
+## 8. Moving slug generation into the model
 
-Nel model `Project` aggiungiamo:
+In the `Project` model we add:
 
 ```php
 protected static function booted()
@@ -194,7 +196,7 @@ protected static function booted()
 }
 ```
 
-Quando chiamiamo:
+When we call:
 
 ```php
 Project::create([
@@ -202,9 +204,9 @@ Project::create([
 ]);
 ```
 
-Eloquent esegue l’evento `creating`.
+Eloquent runs the `creating` event.
 
-Prima di salvare il record, assegna automaticamente:
+Before saving the record, it automatically assigns:
 
 ```php
 $project->slug
@@ -212,11 +214,11 @@ $project->slug
 
 ---
 
-## 9. Controller più pulito
+## 9. A cleaner controller
 
-Dopo questa modifica, il controller non deve più occuparsi dello slug.
+After this change, the controller no longer needs to handle the slug.
 
-Prima:
+Before:
 
 ```php
 Project::create([
@@ -225,7 +227,7 @@ Project::create([
 ]);
 ```
 
-Dopo:
+After:
 
 ```php
 Project::create([
@@ -233,17 +235,17 @@ Project::create([
 ]);
 ```
 
-Il controller gestisce la request.
+The controller handles the request.
 
-Il model gestisce una regola interna del model.
+The model handles an internal rule of the model.
 
 ---
 
-## 10. Perché questa scelta è utile
+## 10. Why this choice is useful
 
-Spostare lo slug nel model significa che ovunque venga creato un `Project`, lo slug viene generato automaticamente.
+Moving slug generation into the model means that wherever a `Project` is created, its slug is generated automatically.
 
-Esempio:
+Example:
 
 ```php
 Project::create([
@@ -251,19 +253,19 @@ Project::create([
 ]);
 ```
 
-funziona da controller, Tinker, seeder, test, job e API.
+works from a controller, Tinker, seeder, test, job, and API.
 
-Questo rende il comportamento più coerente.
+This makes the behavior more consistent.
 
 ---
 
-## 11. Attenzione: logica nascosta
+## 11. Caution: hidden logic
 
-La lezione nota anche un aspetto importante.
+The lesson also points out an important aspect.
 
-Gli eventi Eloquent possono nascondere comportamento.
+Eloquent events can hide behavior.
 
-Quando leggiamo il controller:
+When we read the controller:
 
 ```php
 Project::create([
@@ -271,38 +273,38 @@ Project::create([
 ]);
 ```
 
-non vediamo immediatamente da dove arrivi lo slug.
+we cannot immediately see where the slug comes from.
 
-La logica è nel model.
+The logic lives in the model.
 
-Questo può essere comodo, ma bisogna sapere che esiste.
+This can be convenient, but we need to know that it exists.
 
-Regola pratica:
+Practical rule:
 
-> gli eventi Eloquent sono potenti, ma non vanno usati per nascondere troppa logica in modo poco leggibile.
-
----
-
-## 12. Soluzione ancora provvisoria
-
-La lezione non implementa una logica sofisticata per controllare se uno slug esiste già.
-
-Usa un timestamp per evitare il conflitto.
-
-Questa è una soluzione didattica accettabile in questa fase.
-
-Non viene ancora trattato:
-
-- controllo incrementale tipo `a-new-project-2`
-- validazione del nome duplicato
-- generazione slug più leggibile
-- retry in caso di collisione
-- service dedicato per slug
-- observer separato
+> Eloquent events are powerful, but they should not be used to hide too much logic in a way that makes the code hard to understand.
 
 ---
 
-## 13. Model finale consigliato
+## 12. Still a temporary solution
+
+The lesson does not implement sophisticated logic to check whether a slug already exists.
+
+It uses a timestamp to avoid the conflict.
+
+This is an acceptable teaching solution at this stage.
+
+It does not yet cover:
+
+- incremental checks such as `a-new-project-2`
+- duplicate-name validation
+- more readable slug generation
+- retries in case of collision
+- a dedicated slug service
+- a separate observer
+
+---
+
+## 13. Recommended final model
 
 `app/Models/Project.php`:
 
@@ -329,13 +331,13 @@ class Project extends Model
 }
 ```
 
-Nota: anche se ora lo slug viene generato automaticamente, lasciamo `slug` in `$fillable` per coerenza con lo stato didattico precedente del corso, salvo diversa evoluzione futura.
+Note: even though the slug is now generated automatically, we leave `slug` in `$fillable` for consistency with the previous teaching state of the course, unless the course evolves differently later.
 
 ---
 
-## 14. Controller finale consigliato
+## 14. Recommended final controller
 
-Nel controller, `store()` diventa:
+In the controller, `store()` becomes:
 
 ```php
 public function store(Request $request)
@@ -356,31 +358,31 @@ public function store(Request $request)
 
 ---
 
-## 15. Test manuale
+## 15. Manual test
 
-Apri:
+Open:
 
 ```text
 http://127.0.0.1:8000/projects/create
 ```
 
-Crea un progetto con un nome già usato, per esempio:
+Create a project with a name that has already been used, for example:
 
 ```text
 A new project
 ```
 
-Risultato atteso:
+Expected result:
 
 ```text
-nessun errore di unique constraint
-redirect a /projects
-messaggio flash visibile
-nuovo progetto nella lista
-URL con slug contenente anche timestamp
+no unique constraint error
+redirect to /projects
+flash message visible
+new project in the list
+URL with a slug that also contains a timestamp
 ```
 
-Esempio di slug:
+Example slug:
 
 ```text
 a-new-project-1787313600
@@ -388,15 +390,15 @@ a-new-project-1787313600
 
 ---
 
-## 16. Test con Tinker
+## 16. Test with Tinker
 
-Entrare in Tinker:
+Enter Tinker:
 
 ```bash
 php artisan tinker
 ```
 
-Creare un progetto:
+Create a project:
 
 ```php
 App\Models\Project::create([
@@ -404,27 +406,27 @@ App\Models\Project::create([
 ]);
 ```
 
-Controllare lo slug:
+Check the slug:
 
 ```php
 App\Models\Project::latest()->first();
 ```
 
-Uscire:
+Exit:
 
 ```php
 exit
 ```
 
-Il punto importante è che lo slug venga creato anche da Tinker, non solo dal controller.
+The important point is that the slug is created from Tinker too, not only from the controller.
 
 ---
 
 ## 17. Lesson Learned
 
-### 1. Gli Eloquent events permettono di agganciarsi al ciclo di vita del model
+### 1. Eloquent events let us hook into the model lifecycle
 
-Esempi:
+Examples:
 
 ```text
 creating
@@ -435,17 +437,17 @@ deleting
 deleted
 ```
 
-### 2. `creating` avviene prima del salvataggio
+### 2. `creating` happens before saving
 
-È il posto giusto per impostare dati necessari prima dell’insert.
+It is the right place to set data required before the insert.
 
-### 3. `created` avviene dopo il salvataggio
+### 3. `created` happens after saving
 
-Non è adatto per valorizzare una colonna richiesta prima dell’insert.
+It is not suitable for populating a column required before the insert.
 
-### 4. `booted()` registra eventi del model
+### 4. `booted()` registers model events
 
-Esempio:
+Example:
 
 ```php
 protected static function booted()
@@ -456,57 +458,57 @@ protected static function booted()
 }
 ```
 
-### 5. Lo slug può essere generato automaticamente dal model
+### 5. The slug can be generated automatically by the model
 
-Così il controller non deve più occuparsene.
+This way, the controller no longer needs to handle it.
 
-### 6. Spostare logica nel model rende il comportamento più globale
+### 6. Moving logic into the model makes the behavior global
 
-Ogni `Project::create()` genera lo slug, indipendentemente da dove viene chiamato.
+Every `Project::create()` generates the slug, regardless of where it is called.
 
-### 7. Gli eventi Eloquent vanno usati con attenzione
+### 7. Eloquent events should be used carefully
 
-Possono rendere il controller più pulito, ma anche nascondere comportamento.
+They can make the controller cleaner, but they can also hide behavior.
 
-### 8. Il timestamp evita il conflitto didattico degli slug duplicati
+### 8. The timestamp avoids the teaching example's duplicate-slug conflict
 
-Non è una soluzione perfetta, ma risolve il problema incontrato nella lezione.
+It is not a perfect solution, but it solves the problem encountered in the lesson.
 
 ---
 
-## 18. Comandi utili
+## 18. Useful commands
 
-Entrare nel progetto Laravel:
+Enter the Laravel project:
 
 ```bash
 cd ~/Progetti/labs/web/laravel-lab/first-project
 ```
 
-Controllare il model:
+Inspect the model:
 
 ```bash
 sed -n '1,220p' app/Models/Project.php
 ```
 
-Controllare il controller:
+Inspect the controller:
 
 ```bash
 sed -n '1,220p' app/Http/Controllers/ProjectController.php
 ```
 
-Avviare server:
+Start the server:
 
 ```bash
 php artisan serve
 ```
 
-Testare Tinker:
+Test with Tinker:
 
 ```bash
 php artisan tinker
 ```
 
-Dentro Tinker:
+Inside Tinker:
 
 ```php
 App\Models\Project::create(['name' => 'A new project']);
@@ -516,18 +518,18 @@ exit
 
 ---
 
-## 19. Stato finale della lezione
+## 19. Final lesson state
 
-Alla fine della lezione sappiamo:
+At the end of the lesson we know:
 
-- che cosa sono gli Eloquent events
-- usare `booted()` nel model
-- agganciarci all’evento `creating`
-- modificare il model prima del salvataggio
-- spostare la generazione dello slug dal controller al model
-- evitare il problema dello slug duplicato aggiungendo un timestamp
-- rendere la creazione dello slug coerente ovunque venga creato un progetto
+- what Eloquent events are
+- how to use `booted()` in the model
+- how to hook into the `creating` event
+- how to modify the model before saving
+- how to move slug generation from the controller to the model
+- how to avoid the duplicate-slug problem by adding a timestamp
+- how to make slug creation consistent wherever a project is created
 
-Obiettivo raggiunto:
+Objective achieved:
 
-> ogni nuovo progetto genera automaticamente il proprio slug tramite un evento Eloquent del model.
+> every new project automatically generates its slug through an Eloquent model event.
