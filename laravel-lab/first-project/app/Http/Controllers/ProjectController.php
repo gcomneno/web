@@ -27,7 +27,6 @@ class ProjectController extends Controller
 
         Project::create([
             'name' => $request->name,
-            'slug' => str($request->name)->slug(),
         ]);
 
         return redirect()

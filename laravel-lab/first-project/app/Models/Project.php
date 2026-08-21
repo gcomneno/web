@@ -10,4 +10,11 @@ class Project extends Model
         'name',
         'slug',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function (Project $project) {
+            $project->slug = str($project->name . '-' . now()->getTimestamp())->slug();
+        });
+    }
 }
