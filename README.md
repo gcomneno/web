@@ -11,6 +11,7 @@ This repository contains experiments, notes, and small educational projects rela
 | Directory | Description |
 |---|---|
 | `laravel-lab/` | Step-by-step Laravel learning laboratory for beginners. |
+| `php-lab/` | Evidence-driven reconstruction and hands-on reproduction of the Kleis PHP course module. |
 
 ## Laravel learning path
 
