@@ -76,14 +76,14 @@ La migrazione viene eseguita una coppia documentale alla volta:
 
 La nuova documentazione pubblica non deve introdurre ulteriori file storici disponibili soltanto in italiano.
 
-## Creazione delle nuove lezioni Laravel
+## Creazione delle nuove lezioni
 
-A partire dalla lezione 22, gli appunti delle lezioni Laravel non fanno parte della migrazione progressiva dei documenti storici. Ogni nuova lezione deve essere introdotta come coppia bilingue completa nello stesso cambiamento.
+La documentazione di ogni nuova lezione deve essere introdotta come coppia bilingue completa nello stesso cambiamento.
 
-Per la lezione `NN`, creare:
+Per una lezione `NN` all'interno di un learning lab `<lab>`, creare:
 
-- il documento canonico inglese in `laravel-lab/lessons/lesson-NN-learned.md`
-- la traduzione italiana in `laravel-lab/lessons/lesson-NN-learned.it.md`
+- il documento canonico inglese in `<lab>/lessons/lesson-NN-learned.md`
+- la traduzione italiana in `<lab>/lessons/lesson-NN-learned.it.md`
 
 Entrambi i file devono includere vicino all'inizio questo schema di navigazione reciproca:
 
@@ -95,13 +95,28 @@ Il workflow completo per una nuova lezione è:
 
 1. creare entrambe le versioni linguistiche prima dello staging o del commit
 2. conservare la stessa gerarchia degli heading, gli stessi blocchi di codice, comandi, percorsi, identificatori e output letterali
-3. registrare `laravel-lab/lessons/lesson-NN-learned.md` in `canonical_documents` dentro `.github/bilingual-docs.json`
-4. aggiungere la lezione sia a `laravel-lab/README.md` sia a `laravel-lab/README.it.md`
+3. registrare `<lab>/lessons/lesson-NN-learned.md` in `canonical_documents` dentro `.github/bilingual-docs.json`
+4. aggiungere la lezione sia a `<lab>/README.md` sia a `<lab>/README.it.md`
 5. aggiornare le attese dei test di regressione soltanto quando un documento di riferimento acquisisce o perde intenzionalmente blocchi tecnici
 6. eseguire i test del validatore e la validazione bilingue completa
 7. controllare il diff documentale prima del commit
 
 Una lezione appena creata non deve mai essere aggiunta a `legacy_unpaired_documents`. Quell'elenco è riservato ai documenti pubblici esistenti prima dell'adozione della policy bilingue.
+
+### Confine delle lezioni Laravel esistenti
+
+Le lezioni Laravel dalla 1 alla 18 rimangono parte della migrazione progressiva dei documenti storici. Le lezioni dalla 19 alla 21 sono già state migrate a coppie bilingui canoniche.
+
+A partire dalla lezione Laravel 22, ogni nuova lezione segue il workflow per le nuove lezioni descritto sopra.
+
+### Confine del PHP lab
+
+Il PHP lab è stato introdotto dopo l'adozione della policy bilingue. Non possiede quindi un intervallo iniziale di lezioni legacy.
+
+Ogni lezione PHP, a partire dalla lezione PHP 1, deve seguire il workflow per le nuove lezioni descritto sopra usando:
+
+- `php-lab/lessons/lesson-NN-learned.md`
+- `php-lab/lessons/lesson-NN-learned.it.md`
 
 ## Aggiornamento della documentazione
 

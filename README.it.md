@@ -11,6 +11,7 @@ Questo repository raccoglie esperimenti, appunti e piccoli progetti didattici le
 | Cartella | Descrizione |
 |---|---|
 | `laravel-lab/` | Laboratorio didattico Laravel per principianti, seguito lezione per lezione. |
+| `php-lab/` | Ricostruzione basata su evidence e riproduzione pratica del modulo PHP del corso Kleis. |
 
 ## Percorso Laravel
 
