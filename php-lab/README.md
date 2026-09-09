@@ -14,10 +14,14 @@ source evidence -> reconstruct -> understand -> reproduce -> run -> verify -> do
 
 | Lesson | Reconstruction status | Local reproduction |
 | --- | --- | --- |
-| PHP 1 | RECONSTRUCTED | NOT STARTED |
+| PHP 1 | RECONSTRUCTED | REPRODUCED AND VERIFIED |
 | PHP 2 | RECONSTRUCTED WITH EVIDENCE GAP | NOT STARTED |
 | PHP 3 | RECONSTRUCTED | NOT STARTED |
 | PHP 4 | RECONSTRUCTED TO AVAILABLE SNAPSHOT | NOT STARTED |
+
+## Lessons
+
+- [Lesson 1 — Language fundamentals and first dynamic page](lessons/lesson-01-learned.md)
 
 ## Evidence boundary
 
