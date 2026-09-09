@@ -15,13 +15,14 @@ source evidence -> reconstruct -> understand -> reproduce -> run -> verify -> do
 | Lesson | Reconstruction status | Local reproduction |
 | --- | --- | --- |
 | PHP 1 | RECONSTRUCTED | REPRODUCED AND VERIFIED |
-| PHP 2 | RECONSTRUCTED WITH EVIDENCE GAP | NOT STARTED |
+| PHP 2 | RECONSTRUCTED TO AVAILABLE ARTIFACT | REPRODUCED AND VERIFIED |
 | PHP 3 | RECONSTRUCTED | NOT STARTED |
 | PHP 4 | RECONSTRUCTED TO AVAILABLE SNAPSHOT | NOT STARTED |
 
 ## Lessons
 
 - [Lesson 1 — Language fundamentals and first dynamic page](lessons/lesson-01-learned.md)
+- [Lesson 2 — Static catalog layout as a bridge to dynamic rendering](lessons/lesson-02-learned.md)
 
 ## Evidence boundary
 
