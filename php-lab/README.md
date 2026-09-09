@@ -17,13 +17,14 @@ source evidence -> reconstruct -> understand -> reproduce -> run -> verify -> do
 | PHP 1 | RECONSTRUCTED | REPRODUCED AND VERIFIED |
 | PHP 2 | RECONSTRUCTED TO AVAILABLE ARTIFACT | REPRODUCED AND VERIFIED |
 | PHP 3 | RECONSTRUCTED TO AVAILABLE ARTIFACT | REPRODUCED AND VERIFIED |
-| PHP 4 | RECONSTRUCTED TO AVAILABLE SNAPSHOT | NOT STARTED |
+| PHP 4 | RECONSTRUCTED TO AVAILABLE SNAPSHOT | REPRODUCED AND VERIFIED |
 
 ## Lessons
 
 - [Lesson 1 — Language fundamentals and first dynamic page](lessons/lesson-01-learned.md)
 - [Lesson 2 — Static catalog layout as a bridge to dynamic rendering](lessons/lesson-02-learned.md)
 - [Lesson 3 — Database-backed catalog with PDO, filtering, and pagination](lessons/lesson-03-learned.md)
+- [Lesson 4 — Dynamic pagination, administration form, and the POST boundary](lessons/lesson-04-learned.md)
 
 ## Evidence boundary
 
@@ -41,6 +42,6 @@ Current local baseline:
 - PDO available
 - pdo_sqlite available
 - pdo_mysql available
-- MySQL 8.0.46 available and verified for PHP 3
+- MySQL 8.0.46 available and verified for PHP 3 and PHP 4
 
-PDO/MySQL readiness was verified before reproducing the database-backed PHP 3 lesson.
+PDO/MySQL readiness was verified before reproducing the database-backed PHP 3 and PHP 4 lessons.
