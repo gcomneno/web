@@ -35,14 +35,27 @@ if ($prodotto === null) {
 ?>
 <?php include __DIR__ . "/include/header.php"; ?>
 
-<h5>Elimina prodotto</h5>
-<p>Confermi l'eliminazione di <strong><?= htmlspecialchars($prodotto["titolo"], ENT_QUOTES, "UTF-8") ?></strong>?</p>
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card border-danger shadow-sm">
+      <div class="card-body p-4">
+        <span class="badge text-bg-danger mb-3">Operazione distruttiva</span>
+        <h1 class="h3">Elimina prodotto</h1>
+        <p class="text-secondary">Stai per eliminare definitivamente:</p>
+        <p class="fs-5 fw-semibold mb-4"><?= htmlspecialchars($prodotto["titolo"], ENT_QUOTES, "UTF-8") ?></p>
 
-<form method="POST" action="eliminaprodotto.php">
-  <input type="hidden" name="id" value="<?= (int) $prodotto["id"] ?>">
-  <input type="submit" value="Conferma eliminazione">
-</form>
+        <div class="alert alert-warning" role="alert">
+          L'eliminazione non può essere annullata.
+        </div>
 
-<p><a href="prodotti.php">Annulla</a></p>
+        <form method="POST" action="eliminaprodotto.php" class="d-flex flex-wrap gap-2">
+          <input type="hidden" name="id" value="<?= (int) $prodotto["id"] ?>">
+          <button type="submit" class="btn btn-danger">Conferma eliminazione</button>
+          <a href="prodotti.php" class="btn btn-outline-secondary">Annulla</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 <?php include __DIR__ . "/include/footer.php"; ?>
