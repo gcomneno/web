@@ -1,24 +1,28 @@
 # PHP — Lesson 4
-## Dynamic pagination, administration form, and the POST boundary
+## Dynamic pagination, product administration, and complete CRUD
 
 [English](lesson-04-learned.md) | [Italiano](lesson-04-learned.it.md)
 
-This document records the reconstruction and independent local reproduction of the fourth recovered PHP lesson.
+This document records both the recovered evidence for the fourth PHP lesson and the operational completion required for the lesson's final delivery.
 
-## 1. Lesson objective
+## 1. Final lesson objective
 
-PHP 4 extends the database-backed catalog from PHP 3 with:
+PHP 4 brings the database-backed catalog from PHP 3 to complete product management:
 
-- a price field in the catalog database;
+- a `prezzo` field in the database;
 - dynamic pagination;
-- an administration form for product data;
-- dynamic author options loaded from MySQL;
-- static genre options;
-- a POST endpoint receiving the submitted product fields.
+- an administration form;
+- **Create**: insert new products;
+- **Read**: catalog and single-product detail;
+- **Update**: modify existing products;
+- **Delete**: remove existing products.
 
-The recovered snapshot reaches the POST boundary, but it does not implement database persistence.
+Each product card exposes the required simple text actions:
 
-## 2. Evidence boundary
+- `Modifica`;
+- `Elimina`.
+
+## 2. Recovered evidence boundary
 
 The recovered teacher snapshot is:
 
@@ -28,7 +32,7 @@ SHA-256:
 
 `f5245d47cd04938b846b0303f625f4948714ec38adfa3159fda0a3120a72282f`
 
-The archive passed its ZIP integrity check and contains ten PHP files:
+The archive contains ten PHP files:
 
 - `adminprodotti.php`
 - `prodotti.php`
@@ -41,214 +45,192 @@ The archive passed its ZIP integrity check and contains ten PHP files:
 - `include/pager.php`
 - `include/prodotto.php`
 
-The snapshot shows a dynamic pager. Its implementation selects all matching `brani`, calls `fetchAll()`, counts the returned rows, and generates page links by repeatedly subtracting the page size.
+The snapshot shows:
 
-The administration form submits these fields to `salva.php` using POST:
+- dynamic pagination;
+- an administration form;
+- authors loaded dynamically from MySQL;
+- static genre options `1`, `2`, `3`;
+- POST submission to `salva.php`;
+- reading `brani.prezzo`.
 
-- `titolo`
-- `autore`
-- `genere`
-- `durata`
-- `anno`
-- `prezzo`
-- `descrizione`
+The recovered snapshot stops at the **POST boundary**: it does not establish `INSERT`, `UPDATE`, or `DELETE`.
 
-Author options are loaded dynamically from `autori`. Genre options `1`, `2`, and `3` are hard-coded.
+It also contains a link to `dettaglioprodotto.php`, but that file is absent from the recovered archive.
 
-`salva.php` contains only a commented example of the received `$_POST` data. No `INSERT`, `UPDATE`, or `DELETE` is implemented there.
+This distinction matters: the snapshot documents the observed intermediate state, while the final lesson requirement is complete CRUD.
 
-The snapshot also contains a link to `dettaglioprodotto.php`, but that file is not present in the recovered archive. Product-detail behavior is therefore not part of this reproduction.
+## 3. Schema contract
 
-The snapshot reads `brani.prezzo`. Course SQL material independently corroborates the schema change:
+Course SQL material corroborates:
 
 `prezzo DECIMAL(6,2) NOT NULL DEFAULT 0.99`
 
-The PHP 4 snapshot does not prove the existence of a `brani.descrizione` column. The form contains a `descrizione` field, but the catalog query aliases `autori.nome` as `descrizione`, and `salva.php` does not persist the submitted value.
+The local `brani` schema persists:
 
-The original PHP 4 database dump and original dataset were not recovered.
+- `id`;
+- `titolo`;
+- `autore_id`;
+- `genere_id`;
+- `durata_minuti`;
+- `anno`;
+- `prezzo`.
 
-## 3. Local reproduction
+No `brani.descrizione` column is added: the recovered form contains a `descrizione` field, but the available evidence does not establish a matching database column.
 
-The independent reproduction is under:
+## 4. Final local implementation
+
+The lesson implementation is under:
 
 `php-lab/exercises/lesson-04/`
 
-It contains ten PHP files plus deterministic schema and seed fixtures.
-
-The PHP 3 schema contract is extended only with the corroborated column:
-
-`prezzo DECIMAL(6,2) NOT NULL DEFAULT 0.99`
-
-No `brani.descrizione` column is added because that column is not proven by the recovered PHP 4 evidence.
-
-The local database is deliberately isolated as:
+The local database remains isolated as:
 
 `php4_shop_lab`
-
-The application identity is:
-
-`php4_lab@localhost`
-
-and has SELECT-only access.
 
 The deterministic fixture contains:
 
 - 4 authors;
 - 3 genres;
 - 15 tracks;
-- two tracks with a NULL genre;
-- deterministic prices for exercising price rendering.
+- 2 tracks with a `NULL` genre;
+- deterministic prices.
 
 The catalog keeps 12 records per page.
 
-The administration form reproduces the observed boundary:
+### Create
 
-- seven submitted fields;
-- authors read dynamically from the database;
-- three static genre options;
-- POST submission to `salva.php`;
-- no database persistence.
+`adminprodotti.php` exposes the creation form and `salva.php` performs a parameterized `INSERT`.
 
-## 4. Intentional implementation differences
+After creation, the application redirects to the new product detail.
 
-### Efficient pagination count
+### Read
 
-The recovered snapshot performs:
+`prodotti.php` renders the paginated, filterable catalog.
 
-`SELECT * -> fetchAll() -> count()`
+`dettaglioprodotto.php` reads one product by `id` through a prepared statement.
 
-The local reproduction instead performs a parameterized `COUNT(*)` query.
+### Update
 
-This changes the implementation strategy, not the observable pagination contract.
+The text `Modifica` link on each card opens `modificaprodotto.php`.
 
-### Explicit integer binding
+The form is pre-filled with existing data and `aggiorna.php` performs a parameterized `UPDATE`.
 
-Pagination `LIMIT` and `OFFSET` values are explicitly bound with `PDO::PARAM_INT`.
+### Delete
 
-### Page normalization
+The text `Elimina` link on each card opens `eliminaprodotto.php`.
 
-The requested page is normalized to a minimum value of `1`.
+GET only shows the confirmation page; the actual deletion is performed with POST through `DELETE FROM brani WHERE id = :id`.
 
-### Escaped HTML output
+Therefore, simply loading a URL does not delete data.
 
-Reflected request values, database-backed text, author names, query strings, and POST values are escaped before HTML rendering.
+## 5. Validation and safety
 
-SQL parameterization and HTML escaping are treated as separate security boundaries.
+The final implementation uses:
 
-### Runtime database credential
+- PDO;
+- prepared statements for `INSERT`, single-record `SELECT`, `UPDATE`, and `DELETE`;
+- explicit integer binding where appropriate;
+- server-side validation;
+- author and genre existence checks;
+- nullable genre;
+- non-negative numeric price;
+- HTML escaping during rendering;
+- database credentials supplied at runtime;
+- redirects after Create and Update.
 
-No database password is committed.
+Because the final requirement includes writes, the CRUD application identity needs:
 
-`PHP4_DB_PASSWORD` supplies the local runtime credential.
+`SELECT, INSERT, UPDATE, DELETE`
 
-### Least privilege and no persistence
+The earlier SELECT-only configuration remains meaningful only as evidence for the pre-CRUD checkpoint.
 
-The application identity remains SELECT-only.
+## 6. Pagination
 
-This is deliberate: the recovered PHP 4 snapshot contains an administration form and a POST endpoint, but no database write operation.
+The reproduction uses a parameterized `COUNT(*)` query to determine the total record count.
 
-The reproduction therefore does not invent an `INSERT` capability that the recovered artifact does not demonstrate.
+`LIMIT` and `OFFSET` are bound as integers and the requested page is normalized to at least `1`.
 
-## 5. Verification
+This preserves the observable lesson behavior without fetching all rows merely to count them.
 
-Runtime verification used:
+## 7. End-to-end verification
 
-- PHP 8.3.6;
-- PDO with `pdo_mysql`;
-- MySQL 8.0.46;
-- the isolated `php4_shop_lab` database.
+The isolated road test is:
 
-Database verification confirmed:
+`php-lab/exercises/lesson-04/road-test-crud.sh`
 
-- `brani.prezzo` is `DECIMAL(6,2) NOT NULL DEFAULT 0.99`;
-- 4 authors;
-- 3 genres;
-- 15 tracks;
-- the application identity has SELECT-only access;
-- an attempted application write is denied.
+It creates a temporary MySQL database and user, imports schema and fixture data, starts the local PHP server, and exercises the complete cycle for real.
 
-Catalog HTTP verification confirmed:
+Verified result:
 
-- page 1 renders 12 records from 15;
-- page 2 renders the remaining 3;
-- dynamic pagination reports 15 records;
-- filtering for `Road` returns `Dream Road` and `Open Road`;
-- a NULL genre renders as `Non specificato`;
-- negative page input is normalized to page 1;
-- prices are read from MySQL and rendered;
-- hostile reflected markup is HTML-escaped;
-- raw injected script markup is not rendered.
+```text
+CREATE=PASS
+READ_DETAIL=PASS
+UPDATE=PASS
+DELETE=PASS
+PHP_SYNTAX=PASS
+PHP_SERVER_ERROR_GATE=PASS
+PHP_4_CREATE=PASS
+PHP_4_READ=PASS
+PHP_4_UPDATE=PASS
+PHP_4_DELETE=PASS
+PHP_4_CRUD=COMPLETE
+PHP_4_END_TO_END_RUNTIME=PASS
+```
 
-Administration HTTP verification confirmed:
+## 8. Lesson Learned
 
-- `adminprodotti.php` responds successfully;
-- all seven expected fields are present;
-- all 4 fixture authors are rendered dynamically;
-- the 3 observed genre options remain static.
+### 1. CRUD describes four distinct capabilities
 
-POST verification confirmed:
+Create, Read, Update, and Delete must be implemented and verified separately. The presence of a form does not imply persistence.
 
-- all submitted values reach `salva.php`;
-- hostile POST markup is HTML-escaped;
-- raw injected script markup is not rendered;
-- `brani` contains 15 rows before the POST;
-- `brani` still contains 15 rows after the POST;
-- the application identity cannot write to the database.
+### 2. POST reception and persistence are not the same thing
 
-All ten PHP files pass `php -l`.
+Receiving `$_POST` only means receiving data. Persistence means executing a verifiable SQL mutation.
 
-The PHP development server was stopped after verification.
+### 3. Every mutation must be parameterized
 
-`PHP_4_END_TO_END_RUNTIME=PASS`
+User-provided values are never concatenated directly into SQL queries.
 
-## 6. Lesson Learned
+### 4. UPDATE first requires identifying the record
 
-### 1. PHP 4 extends a data-driven catalog without yet completing persistence
+To modify a product, the application must load the current record, pre-fill the form, and update exactly the requested `id`.
 
-A form that submits product data is not evidence that the application can create database records.
+### 5. DELETE should not be a GET mutation
 
-### 2. POST reception and database persistence are separate boundaries
+`Elimina` may be a simple text link, but it should lead to confirmation. The actual deletion is executed via POST.
 
-Receiving `$_POST` values and executing an `INSERT` are distinct application capabilities and must be verified independently.
+### 6. Database constraints and application validation complement each other
 
-### 3. Dynamic pagination depends on both selection and total-count information
+The application validates author, genre, price, and primary inputs before mutation; the database retains its structural constraints.
 
-The catalog needs the current page of records and enough information to determine how many pages exist.
+### 7. Least privilege follows real capabilities
 
-### 4. Equivalent behavior can have different query costs
+A read-only version needs only `SELECT`; a CRUD version also requires `INSERT`, `UPDATE`, and `DELETE`.
 
-Fetching every matching row merely to count it works on a small dataset, while `COUNT(*)` expresses the counting operation directly.
+### 8. Prepared statements and HTML escaping protect different boundaries
 
-### 5. Form options can combine database-backed and static data
+Prepared statements protect the SQL boundary. `htmlspecialchars()` protects HTML rendering. Both remain necessary.
 
-The recovered form demonstrates this explicitly: authors come from MySQL while genres remain hard-coded.
+### 9. Schema must be inferred from evidence, not from form field names
 
-### 6. Schema claims require evidence
+The recovered `descrizione` form field is not sufficient to establish `brani.descrizione`; therefore that column was not invented.
 
-The presence of a form field named `descrizione` does not prove that a matching database column exists.
+### 10. Reconstruction can have two levels of truth
 
-### 7. Later material must not be projected backward
+Recovered material documents what was observable in the snapshot. The final project documents what the lesson actually requires at delivery. Keeping these levels separate avoids falsifying provenance.
 
-A later mini-ecommerce model contains a description concept, but that does not establish that `brani.descrizione` belonged to this PHP 4 snapshot.
+## 9. Final lesson state
 
-### 8. Least privilege should follow implemented capabilities
+```text
+PHP_4_SNAPSHOT_RECONSTRUCTION=POST_BOUNDARY_VERIFIED
+PHP_4_FINAL_REQUIREMENT=FULL_CRUD
+PHP_4_CREATE=PASS
+PHP_4_READ=PASS
+PHP_4_UPDATE=PASS
+PHP_4_DELETE=PASS
+PHP_4_CRUD=COMPLETE
+PHP_4_END_TO_END_RUNTIME=PASS
+```
 
-Because this reproduction does not persist POST data, its application identity does not need write privileges.
-
-### 9. Output escaping remains necessary on both GET and POST paths
-
-Prepared SQL statements do not protect HTML output. Request and database values must still be encoded for their output context.
-
-### 10. Reconstruction preserves incomplete boundaries
-
-A recovered lesson can legitimately end at an intermediate stage. Reproduction should verify that stage rather than silently completing the application.
-
-## 7. Final lesson state
-
-`PHP_4_RECONSTRUCTION=RECONSTRUCTED_TO_AVAILABLE_SNAPSHOT`
-
-`PHP_4_LOCAL_REPRODUCTION=PASS`
-
-`PHP_4_END_TO_END_RUNTIME=PASS`
-
-The recovered snapshot reaches the POST boundary but does not implement database persistence.
+PHP 4 is therefore ready as study material: the historical snapshot boundary remains documented, while the final operational state is complete CRUD.
