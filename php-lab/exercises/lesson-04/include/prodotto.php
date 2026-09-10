@@ -14,6 +14,11 @@ $prezzo = number_format((float) $prod["prezzo"], 2, ",", ".");
       <p class="card-text">Genere: <?= $genere ?></p>
       <p class="card-text">Prezzo: € <?= $prezzo ?></p>
       <p class="card-text">Cod. prodotto: <?= $id ?></p>
+      <p class="card-text">
+        <a href="dettaglioprodotto.php?id=<?= $id ?>">Dettaglio</a>
+        · <a href="modificaprodotto.php?id=<?= $id ?>">Modifica</a>
+        · <a href="eliminaprodotto.php?id=<?= $id ?>">Elimina</a>
+      </p>
     </div>
   </div>
 </div>
