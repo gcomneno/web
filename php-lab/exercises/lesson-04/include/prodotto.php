@@ -6,18 +6,30 @@ $genere = htmlspecialchars($prod["genere"] ?? "Non specificato", ENT_QUOTES, "UT
 $prezzo = number_format((float) $prod["prezzo"], 2, ",", ".");
 ?>
 
-<div class="col-md-4 mb-4">
-  <div class="card h-100">
-    <div class="card-body">
-      <h6 class="card-title"><a href="dettaglioprodotto.php?id=<?= $id ?>"><?= $titolo ?></a></h6>
-      <p class="card-text">Autore: <?= $autore ?></p>
-      <p class="card-text">Genere: <?= $genere ?></p>
-      <p class="card-text">Prezzo: € <?= $prezzo ?></p>
-      <p class="card-text">Cod. prodotto: <?= $id ?></p>
-      <p class="card-text">
-        <a href="modificaprodotto.php?id=<?= $id ?>">Modifica</a>
-        · <a href="eliminaprodotto.php?id=<?= $id ?>">Elimina</a>
-      </p>
+<div class="col-md-6 col-xl-4">
+  <article class="card h-100 border-0 shadow-sm">
+    <div class="card-body d-flex flex-column">
+      <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+        <h3 class="h5 card-title mb-0">
+          <a class="link-dark text-decoration-none stretched-link" href="dettaglioprodotto.php?id=<?= $id ?>"><?= $titolo ?></a>
+        </h3>
+        <span class="badge text-bg-light">#<?= $id ?></span>
+      </div>
+
+      <dl class="row small mb-3">
+        <dt class="col-5 text-secondary fw-normal">Autore</dt>
+        <dd class="col-7 mb-2"><?= $autore ?></dd>
+        <dt class="col-5 text-secondary fw-normal">Genere</dt>
+        <dd class="col-7 mb-2"><?= $genere ?></dd>
+        <dt class="col-5 text-secondary fw-normal">Prezzo</dt>
+        <dd class="col-7 mb-0 fw-semibold">€ <?= $prezzo ?></dd>
+      </dl>
+
+      <div class="mt-auto pt-3 border-top position-relative" style="z-index: 2">
+        <a class="link-primary text-decoration-none" href="modificaprodotto.php?id=<?= $id ?>">Modifica</a>
+        <span class="text-secondary mx-1">·</span>
+        <a class="link-danger text-decoration-none" href="eliminaprodotto.php?id=<?= $id ?>">Elimina</a>
+      </div>
     </div>
-  </div>
+  </article>
 </div>
