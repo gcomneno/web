@@ -32,24 +32,39 @@ if ($prodotto === false) {
 ?>
 <?php include __DIR__ . "/include/header.php"; ?>
 
-<h5><?= htmlspecialchars($prodotto["titolo"], ENT_QUOTES, "UTF-8") ?></h5>
-<dl>
-  <dt>Autore</dt>
-  <dd><?= htmlspecialchars($prodotto["autore"], ENT_QUOTES, "UTF-8") ?></dd>
-  <dt>Genere</dt>
-  <dd><?= htmlspecialchars($prodotto["genere"] ?? "Non specificato", ENT_QUOTES, "UTF-8") ?></dd>
-  <dt>Durata</dt>
-  <dd><?= htmlspecialchars((string) ($prodotto["durata_minuti"] ?? ""), ENT_QUOTES, "UTF-8") ?></dd>
-  <dt>Anno</dt>
-  <dd><?= htmlspecialchars((string) ($prodotto["anno"] ?? ""), ENT_QUOTES, "UTF-8") ?></dd>
-  <dt>Prezzo</dt>
-  <dd>€ <?= number_format((float) $prodotto["prezzo"], 2, ",", ".") ?></dd>
-</dl>
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="d-flex justify-content-between align-items-start gap-3 mb-4">
+      <div>
+        <p class="text-uppercase small fw-semibold text-secondary mb-1">Dettaglio prodotto</p>
+        <h1 class="h2 mb-0"><?= htmlspecialchars($prodotto["titolo"], ENT_QUOTES, "UTF-8") ?></h1>
+      </div>
+      <span class="badge text-bg-secondary">#<?= (int) $prodotto["id"] ?></span>
+    </div>
 
-<p>
-  <a href="modificaprodotto.php?id=<?= (int) $prodotto["id"] ?>">Modifica</a>
-  · <a href="eliminaprodotto.php?id=<?= (int) $prodotto["id"] ?>">Elimina</a>
-  · <a href="prodotti.php">Catalogo</a>
-</p>
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4">
+        <dl class="row mb-0">
+          <dt class="col-sm-4 text-secondary fw-normal">Autore</dt>
+          <dd class="col-sm-8 fw-semibold"><?= htmlspecialchars($prodotto["autore"], ENT_QUOTES, "UTF-8") ?></dd>
+          <dt class="col-sm-4 text-secondary fw-normal">Genere</dt>
+          <dd class="col-sm-8"><?= htmlspecialchars($prodotto["genere"] ?? "Non specificato", ENT_QUOTES, "UTF-8") ?></dd>
+          <dt class="col-sm-4 text-secondary fw-normal">Durata</dt>
+          <dd class="col-sm-8"><?= htmlspecialchars((string) ($prodotto["durata_minuti"] ?? "—"), ENT_QUOTES, "UTF-8") ?></dd>
+          <dt class="col-sm-4 text-secondary fw-normal">Anno</dt>
+          <dd class="col-sm-8"><?= htmlspecialchars((string) ($prodotto["anno"] ?? "—"), ENT_QUOTES, "UTF-8") ?></dd>
+          <dt class="col-sm-4 text-secondary fw-normal">Prezzo</dt>
+          <dd class="col-sm-8 fs-5 fw-semibold mb-0">€ <?= number_format((float) $prodotto["prezzo"], 2, ",", ".") ?></dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-3 mt-4">
+      <a href="modificaprodotto.php?id=<?= (int) $prodotto["id"] ?>" class="btn btn-primary">Modifica</a>
+      <a href="eliminaprodotto.php?id=<?= (int) $prodotto["id"] ?>" class="btn btn-outline-danger">Elimina</a>
+      <a href="prodotti.php" class="btn btn-link text-decoration-none">Torna al catalogo</a>
+    </div>
+  </div>
+</div>
 
 <?php include __DIR__ . "/include/footer.php"; ?>
