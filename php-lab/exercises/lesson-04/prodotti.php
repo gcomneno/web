@@ -19,7 +19,7 @@ include __DIR__ . "/include/header.php";
   <section class="col-lg-9">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h2 class="h4 mb-0">Prodotti</h2>
-      <span class="badge text-bg-secondary"><?= (int) $totale ?> risultati</span>
+      <span class="badge text-bg-secondary"><?= (int) $numProdotti ?> risultati</span>
     </div>
 
     <div class="row g-4">
