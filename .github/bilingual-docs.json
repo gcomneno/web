@@ -16,7 +16,8 @@
     "php-lab/lessons/lesson-01-learned.md",
     "php-lab/lessons/lesson-02-learned.md",
     "php-lab/lessons/lesson-03-learned.md",
-    "php-lab/lessons/lesson-04-learned.md"
+    "php-lab/lessons/lesson-04-learned.md",
+    "php-lab/lessons/lesson-04-crud-completion.md"
   ],
   "legacy_unpaired_documents": [
     "laravel-lab/GLOSSARY.md",
