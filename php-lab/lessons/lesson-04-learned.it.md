@@ -1,26 +1,30 @@
 # PHP — Lezione 4
-## Paginazione dinamica, form di amministrazione e confine POST
+## Paginazione dinamica, amministrazione prodotti e CRUD completo
 
 [English](lesson-04-learned.md) | [Italiano](lesson-04-learned.it.md)
 
-Questo documento registra la ricostruzione e la riproduzione locale indipendente della quarta lezione PHP recuperata.
+Questo documento registra sia l'evidence recuperata della quarta lezione PHP sia il completamento operativo richiesto per la consegna finale della lezione.
 
-## 1. Obiettivo della lezione
+## 1. Obiettivo finale della lezione
 
-PHP 4 estende il catalogo basato su database di PHP 3 con:
+PHP 4 porta il catalogo basato su database di PHP 3 a una gestione completa dei prodotti:
 
-- un campo prezzo nel database del catalogo;
+- campo `prezzo` nel database;
 - paginazione dinamica;
-- un form di amministrazione per i dati del prodotto;
-- opzioni autore dinamiche caricate da MySQL;
-- opzioni genere statiche;
-- un endpoint POST che riceve i campi inviati del prodotto.
+- form di amministrazione;
+- **Create**: inserimento di nuovi prodotti;
+- **Read**: catalogo e dettaglio del singolo prodotto;
+- **Update**: modifica di prodotti esistenti;
+- **Delete**: eliminazione di prodotti esistenti.
 
-Lo snapshot recuperato raggiunge il confine POST, ma non implementa la persistenza nel database.
+Nelle card prodotto le azioni richieste sono link testuali semplici:
 
-## 2. Confine dell'evidence
+- `Modifica`;
+- `Elimina`.
 
-Lo snapshot recuperato dal docente è:
+## 2. Confine dell'evidence recuperata
+
+Lo snapshot docente recuperato è:
 
 `20260908_prodottiadmin.zip`
 
@@ -28,7 +32,7 @@ SHA-256:
 
 `f5245d47cd04938b846b0303f625f4948714ec38adfa3159fda0a3120a72282f`
 
-L'archivio ha superato il controllo di integrità ZIP e contiene dieci file PHP:
+L'archivio contiene dieci file PHP:
 
 - `adminprodotti.php`
 - `prodotti.php`
@@ -41,214 +45,192 @@ L'archivio ha superato il controllo di integrità ZIP e contiene dieci file PHP:
 - `include/pager.php`
 - `include/prodotto.php`
 
-Lo snapshot mostra un pager dinamico. La sua implementazione seleziona tutti i `brani` corrispondenti, esegue `fetchAll()`, conta le righe restituite e genera i link delle pagine sottraendo ripetutamente la dimensione della pagina.
+Lo snapshot mostra:
 
-Il form di amministrazione invia questi campi a `salva.php` tramite POST:
+- paginazione dinamica;
+- form amministrativo;
+- autori caricati dinamicamente da MySQL;
+- opzioni genere statiche `1`, `2`, `3`;
+- invio POST a `salva.php`;
+- lettura di `brani.prezzo`.
 
-- `titolo`
-- `autore`
-- `genere`
-- `durata`
-- `anno`
-- `prezzo`
-- `descrizione`
+Lo snapshot recuperato si ferma però al **confine POST**: non dimostra `INSERT`, `UPDATE` o `DELETE`.
 
-Le opzioni autore vengono caricate dinamicamente da `autori`. Le opzioni genere `1`, `2` e `3` sono hard-coded.
+Contiene inoltre un link a `dettaglioprodotto.php`, ma il file non è presente nell'archivio recuperato.
 
-`salva.php` contiene soltanto un esempio commentato dei dati `$_POST` ricevuti. Non vi è implementato alcun `INSERT`, `UPDATE` o `DELETE`.
+Questa distinzione resta importante: lo snapshot documenta il punto intermedio osservato; il requisito finale della lezione richiede invece CRUD completo.
 
-Lo snapshot contiene anche un link a `dettaglioprodotto.php`, ma tale file non è presente nell'archivio recuperato. Il comportamento del dettaglio prodotto non fa quindi parte di questa riproduzione.
+## 3. Contratto dello schema
 
-Lo snapshot legge `brani.prezzo`. Il materiale SQL del corso corrobora indipendentemente la modifica dello schema:
+Il materiale SQL del corso corrobora:
 
 `prezzo DECIMAL(6,2) NOT NULL DEFAULT 0.99`
 
-Lo snapshot PHP 4 non prova l'esistenza di una colonna `brani.descrizione`. Il form contiene un campo `descrizione`, ma la query del catalogo assegna a `autori.nome` l'alias `descrizione` e `salva.php` non persiste il valore inviato.
+Lo schema locale di `brani` persiste:
 
-Il dump originale del database PHP 4 e il dataset originale non sono stati recuperati.
+- `id`;
+- `titolo`;
+- `autore_id`;
+- `genere_id`;
+- `durata_minuti`;
+- `anno`;
+- `prezzo`.
 
-## 3. Riproduzione locale
+Non viene aggiunta una colonna `brani.descrizione`: il form recuperato contiene un campo `descrizione`, ma l'evidence disponibile non dimostra una colonna corrispondente nel database.
 
-La riproduzione indipendente si trova in:
+## 4. Implementazione locale finale
+
+La lezione è implementata in:
 
 `php-lab/exercises/lesson-04/`
 
-Contiene dieci file PHP più fixture deterministiche per schema e seed.
-
-Il contratto dello schema PHP 3 viene esteso soltanto con la colonna corroborata:
-
-`prezzo DECIMAL(6,2) NOT NULL DEFAULT 0.99`
-
-Non viene aggiunta alcuna colonna `brani.descrizione`, perché tale colonna non è provata dall'evidence PHP 4 recuperata.
-
-Il database locale è deliberatamente isolato come:
+Il database locale resta isolato come:
 
 `php4_shop_lab`
-
-L'identità applicativa è:
-
-`php4_lab@localhost`
-
-e dispone esclusivamente di accesso SELECT.
 
 La fixture deterministica contiene:
 
 - 4 autori;
 - 3 generi;
 - 15 brani;
-- due brani con genere NULL;
-- prezzi deterministici per esercitare il rendering del prezzo.
+- 2 brani con genere `NULL`;
+- prezzi deterministici.
 
 Il catalogo mantiene 12 record per pagina.
 
-Il form di amministrazione riproduce il confine osservato:
+### Create
 
-- sette campi inviati;
-- autori letti dinamicamente dal database;
-- tre opzioni genere statiche;
-- invio POST a `salva.php`;
-- nessuna persistenza nel database.
+`adminprodotti.php` espone il form di creazione e `salva.php` esegue un `INSERT` parametrizzato.
 
-## 4. Differenze implementative intenzionali
+Dopo la creazione viene eseguito un redirect verso il dettaglio del nuovo prodotto.
 
-### Conteggio efficiente per la paginazione
+### Read
 
-Lo snapshot recuperato esegue:
+`prodotti.php` mostra il catalogo paginato e filtrabile.
 
-`SELECT * -> fetchAll() -> count()`
+`dettaglioprodotto.php` legge un singolo prodotto per `id` tramite prepared statement.
 
-La riproduzione locale usa invece una query parametrizzata `COUNT(*)`.
+### Update
 
-Questo modifica la strategia implementativa, non il contratto osservabile della paginazione.
+Il link testuale `Modifica` nella card apre `modificaprodotto.php`.
 
-### Binding esplicito degli interi
+Il form viene precompilato con i dati esistenti e `aggiorna.php` esegue un `UPDATE` parametrizzato.
 
-I valori `LIMIT` e `OFFSET` della paginazione vengono associati esplicitamente con `PDO::PARAM_INT`.
+### Delete
 
-### Normalizzazione della pagina
+Il link testuale `Elimina` nella card apre `eliminaprodotto.php`.
 
-La pagina richiesta viene normalizzata a un valore minimo di `1`.
+Il GET mostra soltanto la conferma; la cancellazione effettiva avviene con POST tramite `DELETE FROM brani WHERE id = :id`.
 
-### Escaping dell'output HTML
+In questo modo un semplice caricamento URL non elimina dati.
 
-I valori riflessi dalla richiesta, il testo proveniente dal database, i nomi degli autori, le query string e i valori POST vengono sottoposti a escaping prima del rendering HTML.
+## 5. Validazione e sicurezza
 
-La parametrizzazione SQL e l'escaping HTML vengono trattati come confini di sicurezza distinti.
+L'implementazione finale usa:
 
-### Credenziale database a runtime
+- PDO;
+- prepared statements per `INSERT`, `SELECT` singolo, `UPDATE` e `DELETE`;
+- binding intero esplicito dove appropriato;
+- validazione server-side;
+- verifica dell'esistenza di autore e genere;
+- genere nullable;
+- prezzo numerico non negativo;
+- escaping HTML nell'output;
+- credenziali database fornite a runtime;
+- redirect dopo Create e Update.
 
-Nessuna password del database viene committata.
+Poiché il requisito finale comprende scritture, l'identità applicativa CRUD necessita di:
 
-`PHP4_DB_PASSWORD` fornisce la credenziale del runtime locale.
+`SELECT, INSERT, UPDATE, DELETE`
 
-### Minimo privilegio e assenza di persistenza
+La precedente configurazione SELECT-only resta significativa soltanto come evidence del checkpoint pre-CRUD.
 
-L'identità applicativa rimane SELECT-only.
+## 6. Paginazione
 
-È una scelta deliberata: lo snapshot PHP 4 recuperato contiene un form di amministrazione e un endpoint POST, ma nessuna operazione di scrittura sul database.
+La riproduzione usa una query parametrizzata `COUNT(*)` per determinare il numero totale di record.
 
-La riproduzione quindi non inventa una capacità `INSERT` che l'artifact recuperato non dimostra.
+`LIMIT` e `OFFSET` vengono associati come interi e la pagina richiesta viene normalizzata ad almeno `1`.
 
-## 5. Verifica
+Questo mantiene il comportamento osservabile della lezione evitando di recuperare tutte le righe solo per contarle.
 
-La verifica runtime ha utilizzato:
+## 7. Verifica end-to-end
 
-- PHP 8.3.6;
-- PDO con `pdo_mysql`;
-- MySQL 8.0.46;
-- il database isolato `php4_shop_lab`.
+La road test isolata è:
 
-La verifica del database ha confermato:
+`php-lab/exercises/lesson-04/road-test-crud.sh`
 
-- `brani.prezzo` è `DECIMAL(6,2) NOT NULL DEFAULT 0.99`;
-- 4 autori;
-- 3 generi;
-- 15 brani;
-- l'identità applicativa dispone esclusivamente di accesso SELECT;
-- un tentativo di scrittura dell'applicazione viene negato.
+Crea un database e un utente MySQL temporanei, importa schema e fixture, avvia il server PHP locale e verifica realmente l'intero ciclo.
 
-La verifica HTTP del catalogo ha confermato:
+Esito verificato:
 
-- pagina 1 mostra 12 record su 15;
-- pagina 2 mostra i 3 rimanenti;
-- la paginazione dinamica riporta 15 record;
-- il filtro `Road` restituisce `Dream Road` e `Open Road`;
-- un genere NULL viene mostrato come `Non specificato`;
-- una pagina negativa viene normalizzata alla pagina 1;
-- i prezzi vengono letti da MySQL e mostrati;
-- il markup ostile riflesso viene sottoposto a escaping HTML;
-- il markup script grezzo iniettato non viene renderizzato.
+```text
+CREATE=PASS
+READ_DETAIL=PASS
+UPDATE=PASS
+DELETE=PASS
+PHP_SYNTAX=PASS
+PHP_SERVER_ERROR_GATE=PASS
+PHP_4_CREATE=PASS
+PHP_4_READ=PASS
+PHP_4_UPDATE=PASS
+PHP_4_DELETE=PASS
+PHP_4_CRUD=COMPLETE
+PHP_4_END_TO_END_RUNTIME=PASS
+```
 
-La verifica HTTP dell'amministrazione ha confermato:
+## 8. Lesson Learned
 
-- `adminprodotti.php` risponde correttamente;
-- sono presenti tutti e sette i campi attesi;
-- tutti i 4 autori della fixture vengono mostrati dinamicamente;
-- le 3 opzioni genere osservate rimangono statiche.
+### 1. CRUD descrive quattro capacità distinte
 
-La verifica POST ha confermato:
+Create, Read, Update e Delete devono essere implementate e verificate separatamente. La presenza di un form non implica persistenza.
 
-- tutti i valori inviati raggiungono `salva.php`;
-- il markup POST ostile viene sottoposto a escaping HTML;
-- il markup script grezzo iniettato non viene renderizzato;
-- `brani` contiene 15 righe prima del POST;
-- `brani` contiene ancora 15 righe dopo il POST;
-- l'identità applicativa non può scrivere nel database.
+### 2. POST e persistenza non sono la stessa cosa
 
-Tutti i dieci file PHP superano `php -l`.
+Ricevere `$_POST` significa soltanto ricevere dati. Persistenza significa eseguire una mutation SQL verificabile.
 
-Il server di sviluppo PHP è stato arrestato dopo la verifica.
+### 3. Ogni mutation deve essere parametrizzata
 
-`PHP_4_END_TO_END_RUNTIME=PASS`
+I valori provenienti dall'utente non vengono concatenati direttamente nelle query SQL.
 
-## 6. Lesson Learned
+### 4. UPDATE richiede prima l'identificazione del record
 
-### 1. PHP 4 estende un catalogo data-driven senza completare ancora la persistenza
+Per modificare un prodotto occorre caricare il record corrente, precompilare il form e aggiornare esattamente l'`id` richiesto.
 
-Un form che invia dati del prodotto non costituisce evidence che l'applicazione possa creare record nel database.
+### 5. DELETE non dovrebbe essere una mutation GET
 
-### 2. Ricezione POST e persistenza nel database sono confini distinti
+Il link `Elimina` può essere un semplice link testuale, ma deve condurre a una conferma. La cancellazione reale viene eseguita via POST.
 
-Ricevere valori `$_POST` ed eseguire un `INSERT` sono capacità applicative differenti e devono essere verificate indipendentemente.
+### 6. Vincoli del database e validazione applicativa si completano
 
-### 3. La paginazione dinamica dipende sia dalla selezione sia dall'informazione sul totale
+L'applicazione verifica autore, genere, prezzo e valori principali prima della mutation; il database conserva i propri vincoli strutturali.
 
-Il catalogo necessita della pagina corrente di record e di informazioni sufficienti per determinare quante pagine esistono.
+### 7. Il minimo privilegio segue le capacità reali
 
-### 4. Un comportamento equivalente può avere costi di query differenti
+Una versione read-only richiede solo `SELECT`; una versione CRUD necessita anche di `INSERT`, `UPDATE` e `DELETE`.
 
-Recuperare tutte le righe corrispondenti soltanto per contarle funziona su un dataset piccolo, mentre `COUNT(*)` esprime direttamente l'operazione di conteggio.
+### 8. Prepared statements ed escaping HTML proteggono confini diversi
 
-### 5. Le opzioni di un form possono combinare dati dal database e dati statici
+Le prepared statements proteggono il confine SQL. `htmlspecialchars()` protegge il rendering HTML. Sono entrambe necessarie.
 
-Il form recuperato lo dimostra esplicitamente: gli autori provengono da MySQL mentre i generi rimangono hard-coded.
+### 9. Lo schema va dedotto dall'evidence, non dal nome dei campi del form
 
-### 6. Le affermazioni sullo schema richiedono evidence
+Il campo `descrizione` del form recuperato non basta a dimostrare `brani.descrizione`; per questo non è stato inventato nello schema.
 
-La presenza di un campo form chiamato `descrizione` non prova l'esistenza di una corrispondente colonna nel database.
+### 10. Una ricostruzione può avere due livelli di verità
 
-### 7. Il materiale successivo non deve essere proiettato all'indietro
+Il materiale recuperato documenta ciò che era osservabile nello snapshot. Il progetto finale documenta ciò che la lezione richiede realmente alla consegna. Tenere distinti questi due livelli evita di falsificare la provenienza.
 
-Un modello mini-ecommerce successivo contiene il concetto di descrizione, ma questo non stabilisce che `brani.descrizione` appartenesse allo snapshot PHP 4.
+## 9. Stato finale della lezione
 
-### 8. Il minimo privilegio deve seguire le capacità implementate
+```text
+PHP_4_SNAPSHOT_RECONSTRUCTION=POST_BOUNDARY_VERIFIED
+PHP_4_FINAL_REQUIREMENT=FULL_CRUD
+PHP_4_CREATE=PASS
+PHP_4_READ=PASS
+PHP_4_UPDATE=PASS
+PHP_4_DELETE=PASS
+PHP_4_CRUD=COMPLETE
+PHP_4_END_TO_END_RUNTIME=PASS
+```
 
-Poiché questa riproduzione non persiste i dati POST, la sua identità applicativa non necessita di privilegi di scrittura.
-
-### 9. L'escaping dell'output rimane necessario sia sul percorso GET sia sul percorso POST
-
-Le prepared statement SQL non proteggono l'output HTML. I valori della richiesta e del database devono comunque essere codificati per il loro contesto di output.
-
-### 10. La ricostruzione conserva anche i confini incompleti
-
-Una lezione recuperata può legittimamente terminare in uno stadio intermedio. La riproduzione deve verificare quello stadio invece di completare silenziosamente l'applicazione.
-
-## 7. Stato finale della lezione
-
-`PHP_4_RECONSTRUCTION=RECONSTRUCTED_TO_AVAILABLE_SNAPSHOT`
-
-`PHP_4_LOCAL_REPRODUCTION=PASS`
-
-`PHP_4_END_TO_END_RUNTIME=PASS`
-
-Lo snapshot recuperato raggiunge il confine POST ma non implementa la persistenza nel database.
+PHP 4 è quindi pronto come materiale di ripasso per la lezione: il confine storico dello snapshot resta documentato, ma lo stato operativo finale è CRUD completo.
