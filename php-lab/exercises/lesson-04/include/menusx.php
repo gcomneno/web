@@ -16,11 +16,4 @@
       class="btn btn-primary"
     >
   </form>
-
-  <h5>Categorie Kleis</h5>
-  <div class="list-group">
-    <a href="#" class="list-group-item list-group-item-action active">Categoria 1</a>
-    <a href="#" class="list-group-item list-group-item-action">Categoria 2</a>
-    <a href="#" class="list-group-item list-group-item-action">Categoria 3</a>
-  </div>
 </div>
